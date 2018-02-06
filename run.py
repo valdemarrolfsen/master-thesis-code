@@ -1,15 +1,14 @@
 from generator.generator import TiffGenerator
-from osgeo import ogr
+from osgeo import ogr, gdal
 
 # Test file path
 from generator.utils import get_bounding_box_from_tiff
 
 file_path = "data/trondheim_small"
-output_path = "data/output"
+output_path = "data/output/"
 
 
 def run():
-
     # Create a new tiff generator
     generator = TiffGenerator(file_path)
 
@@ -20,7 +19,6 @@ def run():
 
     for file in tiff_files:
         min_x, min_y, max_x, max_y = get_bounding_box_from_tiff(file)
-
         records = generator.get_geometry_from_bounding_box(
             min_x,
             min_y,
@@ -28,13 +26,15 @@ def run():
             max_y
         )
 
-        print(len(records))
+        rast = records[0][0]
+        if rast is None:
+            continue
 
-        for rec in records:
-            b = bytes(rec[0])
-            g = ogr.CreateGeometryFromWkb(b)
-            if g is not None:
-                print(g.ExportToWkt())
+        filename = 'label_' + file.split('/')[-1]
+        path = output_path + filename
+        file = open(path, 'wb')
+        file.write(rast)
+        file.close()
 
 
 if __name__ == '__main__':

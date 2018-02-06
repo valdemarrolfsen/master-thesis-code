@@ -42,12 +42,17 @@ class TiffGenerator(object):
 
         self.conn = psycopg2.connect(connect_string)
         self.cursor = self.conn.cursor()
+        # GDAL hack
+        self.cursor.execute("SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';")
+        self.cursor.execute("SET postgis.enable_outdb_rasters TO True;")
 
         print("Connected!")
 
     def get_geometry_from_bounding_box(self, min_x, min_y, max_x, max_y):
         query = """
-                    SELECT st_AsBinary(geom)
+                    SELECT ST_AsGDALRaster(st_asraster(
+                        st_intersection(st_union(geom), st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+                        , 1000, 1000, ARRAY['8BUI', '8BUI', '8BUI'], ARRAY[118,154,118], ARRAY[0,0,0]), 'GTiff')
                     FROM veg_flate
                     WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
                 """.format(
@@ -56,7 +61,6 @@ class TiffGenerator(object):
                     max_x=max_x,
                     max_y=max_y
                 )
-
         if not self.cursor:
             raise ValueError("No cursor detected! Is the current generator connected to a database?")
 
