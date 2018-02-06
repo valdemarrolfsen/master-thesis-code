@@ -47,7 +47,7 @@ class TiffGenerator(object):
 
     def get_geometry_from_bounding_box(self, min_x, min_y, max_x, max_y):
         query = """
-                    SELECT ST_AsEWKB(geom)
+                    SELECT st_AsBinary(geom)
                     FROM veg_flate
                     WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
                 """.format(

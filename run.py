@@ -33,7 +33,8 @@ def run():
         for rec in records:
             b = bytes(rec[0])
             g = ogr.CreateGeometryFromWkb(b)
-            print(g.ExportToWkt())
+            if g is not None:
+                print(g.ExportToWkt())
 
 
 if __name__ == '__main__':
