@@ -1,4 +1,7 @@
 venv/
+data/
+.idea/
+.DS_STORE
 # Created by https://www.gitignore.io/api/jupyternotebook
 
 ### JupyterNotebook ###
