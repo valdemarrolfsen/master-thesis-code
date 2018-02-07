@@ -48,19 +48,26 @@ class TiffGenerator(object):
 
         print("Connected!")
 
-    def get_geometry_from_bounding_box(self, min_x, min_y, max_x, max_y):
+    def get_tif_from_bbox(self, min_x, min_y, max_x, max_y, table_name, color_attribute='255'):
         query = """
-                    SELECT ST_AsGDALRaster(st_asraster(
-                        st_intersection(st_union(geom), st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
-                        , 1000, 1000, ARRAY['8BUI', '8BUI', '8BUI'], ARRAY[118,154,118], ARRAY[0,0,0]), 'GTiff')
-                    FROM veg_flate
-                    WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
-                """.format(
+        WITH mygeoms AS (
+          SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
+            ST_MakeEmptyRaster( 1000, 1000, 1, 1, 0.5, 0.5, 0, 0, 25833),
+            ARRAY['8BUI', '8BUI', '8BUI'], ARRAY[{color_attribute}::INTEGER,{color_attribute}::INTEGER,{color_attribute}::INTEGER], ARRAY[0,0,0]) as rast
+          FROM {table_name}
+          WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+        )
+        SELECT ST_AsGDALRaster(st_union(rast),'GTiff')
+        FROM mygeoms
+        """.format(
                     min_x=min_x,
                     min_y=min_y,
                     max_x=max_x,
-                    max_y=max_y
+                    max_y=max_y,
+                    table_name=table_name,
+                    color_attribute=color_attribute
                 )
+
         if not self.cursor:
             raise ValueError("No cursor detected! Is the current generator connected to a database?")
 
