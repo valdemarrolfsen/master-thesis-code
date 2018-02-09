@@ -1,7 +1,4 @@
-import os
 import psycopg2
-
-from .utils import is_tiff
 
 database_server = "129.241.91.231"
 database_name = "rubval"
@@ -9,28 +6,16 @@ database_user = "postgres"
 database_password = "postgres"
 
 
-class TiffGenerator(object):
+class Db(object):
     """
     The generator class is responsible for creating a data set
     """
 
-    def __init__(self, tiff_path):
-        self.tiff_path = tiff_path
+    def __init__(self):
         self.conn = None
         self.cursor = None
 
-    def get_file_paths(self):
-        tiff_paths = []
-
-        for root, dirs, files in os.walk(self.tiff_path, topdown=False):
-            for name in files:
-                # Check if the file is a tif
-                if is_tiff(name):
-                    tiff_paths.append("{}/{}".format(self.tiff_path, name))
-
-        return tiff_paths
-
-    def connect_to_db(self):
+    def connect(self):
         connect_string = "host={} dbname={} user={} password={}".format(
             database_server,
             database_name,
@@ -49,10 +34,15 @@ class TiffGenerator(object):
         print("Connected!")
 
     def get_tif_from_bbox(self, min_x, min_y, max_x, max_y, table_name, color_attribute='255'):
+        x_res = 1000
+        y_res = 1000
+        x_scale = (max_x - min_x) / 1000
+        y_scale = (max_y - min_y) / 1000
         query = """
         WITH mygeoms AS (
+           --  SELECT ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833) as rast UNION ALL
           SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
-            ST_MakeEmptyRaster( 1000, 1000, 1, 1, 0.5, 0.5, 0, 0, 25833),
+            ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
             ARRAY['8BUI', '8BUI', '8BUI'], ARRAY[{color_attribute}::INTEGER,{color_attribute}::INTEGER,{color_attribute}::INTEGER], ARRAY[0,0,0]) as rast
           FROM {table_name}
           WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
@@ -64,6 +54,10 @@ class TiffGenerator(object):
                     min_y=min_y,
                     max_x=max_x,
                     max_y=max_y,
+                    x_res=x_res,
+                    y_res=y_res,
+                    x_scale=x_scale,
+                    y_scale=y_scale,
                     table_name=table_name,
                     color_attribute=color_attribute
                 )
