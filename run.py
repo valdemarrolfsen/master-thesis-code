@@ -66,7 +66,7 @@ def run():
     for i, file in enumerate(tiff_files):
         q.put((file, i))
 
-    print("Starting process with {} thread ".format(thread_count))
+    print("Starting process with {} threads ".format(thread_count))
 
     for i in range(thread_count):
         # Create a new database connection for each thread.
