@@ -1,4 +1,6 @@
+from osgeo import gdal
 
 
 def generate_set(path):
-    pass
+    gtif = gdal.Open(path)
+    print(gtif.GetMetadata())

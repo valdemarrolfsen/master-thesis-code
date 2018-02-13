@@ -37,14 +37,13 @@ class Db(object):
         y_scale = (max_y - min_y) / 1000
         query = """
         WITH mygeoms AS (
-           --  SELECT ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833) as rast UNION ALL
-          SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
+          SELECT st_asraster(geom,
             ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
             ARRAY['8BUI', '8BUI', '8BUI'], ARRAY[{color_attribute}::INTEGER,{color_attribute}::INTEGER,{color_attribute}::INTEGER], ARRAY[0,0,0]) as rast
           FROM {table_name}
           WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
         )
-        SELECT ST_AsGDALRaster(st_union(rast),'GTiff')
+        SELECT ST_AsGDALRaster(ST_Clip(st_union(rast), st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833), TRUE),'GTiff')
         FROM mygeoms
         """.format(
                     min_x=min_x,

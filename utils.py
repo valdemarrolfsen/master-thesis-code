@@ -99,7 +99,7 @@ def make_path(path):
     """
     Create the requested path if it does not exist
     :param path:
-    :return:
+    :return If the path was created:
     """
     if not os.path.exists(os.path.dirname(path)):
         try:
