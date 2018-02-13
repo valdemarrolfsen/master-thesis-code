@@ -44,7 +44,10 @@ class Db(object):
           WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
         ),
         empty as (
-          SELECT st_asraster(st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833), ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833), '8BUI', 0, 0) as rast
+          SELECT st_asraster(
+                  st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833), 
+                  ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
+                '8BUI', 0, 0) as rast
         )
         SELECT ST_AsGDALRaster(st_union(foo.rast, 'sum'),'GTiff')
         FROM (SELECT rast FROM mygeoms UNION SELECT rast FROM empty) foo
