@@ -56,8 +56,8 @@ def run():
     global thread_count
 
     tiff_files = utils.get_file_paths(file_path)
-    table_name = 'veg_flate'
-    color_attribute = '255'
+    table_name = 'ar5_flate'
+    color_attribute = 'artype'
     total_files = len(tiff_files)
     print('Using table {}'.format(table_name))
     print('Found {} files'.format(total_files))
@@ -120,7 +120,6 @@ def work(q, db, table_name, color_attribute):
             utils.save_blank_raster(path, width, height)
         else:
             utils.save_file(rast, path)
-
         # Save the original image to examples with the same name
         shutil.copy(file, os.path.join(examples_path, filename))
 
