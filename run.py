@@ -14,6 +14,8 @@ output_path = None
 thread_count = None
 examples_path = None
 labels_path = None
+color_attribute = None
+table_name = None
 file_type = 'tif'
 
 
@@ -23,11 +25,15 @@ def setup():
     global thread_count
     global examples_path
     global labels_path
+    global color_attribute
+    global table_name
 
     # Set ut the argument parser
     ap = argparse.ArgumentParser()
     ap.add_argument('-i', '--input', required=True, help='path to input file')
     ap.add_argument('-o', '--output', required=True, help='path for output file')
+    ap.add_argument('-c', '--color', required=True, help='color value or color attribute in table')
+    ap.add_argument('-n', '--table', required=True, help='table name')
     ap.add_argument(
         '-t',
         '--threads',
@@ -43,7 +49,8 @@ def setup():
     file_path = args['input']
     output_path = args['output']
     thread_count = args['threads']
-
+    color_attribute = args['color']
+    table_name = args['table']
     labels_path = os.path.join(output_path, "labels/")
     examples_path = os.path.join(output_path, "examples/")
 
@@ -54,10 +61,9 @@ def setup():
 def run():
     global file_path
     global thread_count
-
+    global color_attribute
+    global table_name
     tiff_files = utils.get_file_paths(file_path)
-    table_name = 'ar5_flate'
-    color_attribute = 'artype'
     total_files = len(tiff_files)
     print('Using table {}'.format(table_name))
     print('Found {} files'.format(total_files))
