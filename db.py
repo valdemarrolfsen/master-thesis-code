@@ -23,15 +23,12 @@ class Db(object):
             database_password
         )
 
-        print("Connecting to database: {}".format(database_name))
-
         self.conn = psycopg2.connect(connect_string)
         self.cursor = self.conn.cursor()
+
         # GDAL hack
         self.cursor.execute("SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';")
         self.cursor.execute("SET postgis.enable_outdb_rasters TO True;")
-
-        print("Connected!")
 
     def get_tif_from_bbox(self, min_x, min_y, max_x, max_y, table_name, color_attribute='255'):
         x_res = 1000

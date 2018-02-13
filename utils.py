@@ -1,4 +1,6 @@
 import os
+
+import errno
 from osgeo import gdal
 
 
@@ -91,3 +93,23 @@ def save_file(content, path):
     file = open(path, 'wb')
     file.write(content)
     file.close()
+
+
+def make_path(path):
+    """
+    Create the requested path if it does not exist
+    :param path:
+    :return:
+    """
+    if not os.path.exists(os.path.dirname(path)):
+        try:
+            os.makedirs(os.path.dirname(path))
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+
+        # Returns true if the path was created
+        return True
+
+    # Returns false if the path was not created
+    return False
