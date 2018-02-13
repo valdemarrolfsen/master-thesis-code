@@ -66,6 +66,7 @@ def get_file_paths(path):
 
 
 def print_process(i, tot):
+    i = tot - i
     print("Processing file {}%: 8{}D".format(int((i / tot) * 100), '=' * int(i / 2)), end="\r", flush=True)
 
 

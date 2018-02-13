@@ -72,16 +72,17 @@ def run():
         # Create a new database connection for each thread.
         db = Db()
         db.connect()
-        t = threading.Thread(target=work, args=(q, db, table_name, color_attribute))
+        t = threading.Thread(target=work, args=(q, db, table_name, color_attribute, total_files))
 
         # Sticks the thread in a list so that it remains accessible
         t.daemon = True
         t.start()
 
     q.join()
+    print("")
 
 
-def work(q, db, table_name, color_attribute):
+def work(q, db, table_name, color_attribute, total_files=0):
     global file_type
     global examples_path
     global labels_path
@@ -91,6 +92,8 @@ def work(q, db, table_name, color_attribute):
             file, i = q.get(False)
         except Empty:
             break
+
+        utils.print_process(q.qsize(), total_files)
 
         min_x, min_y, max_x, max_y = utils.get_bounding_box_from_tiff(file)
         records = db.get_tif_from_bbox(
