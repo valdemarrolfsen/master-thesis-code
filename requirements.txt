@@ -1,0 +1,4 @@
+GDAL==1.11.2
+numpy==1.14.0
+Pillow==5.0.0
+psycopg2==2.7.4

@@ -36,7 +36,6 @@ def setup():
     ap.add_argument(
         '-t',
         '--threads',
-        required=True,
         type=int,
         default=10,
         help='the number of threads (defaults to 10)'
@@ -99,7 +98,6 @@ def work(q, db, table_name, color_attribute, total_files=0):
             break
 
         utils.print_process(q.qsize(), total_files)
-
         min_x, min_y, max_x, max_y = utils.get_bounding_box_from_tiff(file)
         raster_records = db.get_tif_from_bbox(
             min_x,
@@ -127,6 +125,7 @@ def work(q, db, table_name, color_attribute, total_files=0):
             utils.save_blank_raster(path, width, height)
         else:
             utils.save_file(rast, path)
+
         # Save the original image to examples with the same name
         shutil.copy(file, os.path.join(examples_path, filename))
 
