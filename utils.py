@@ -1,3 +1,4 @@
+import json
 import os
 
 import errno
@@ -94,6 +95,11 @@ def save_file(content, path):
     file = open(path, 'wb')
     file.write(content)
     file.close()
+
+
+def save_json(content, path):
+    with open(path, 'w') as outfile:
+        json.dump(content, outfile)
 
 
 def make_path(path):

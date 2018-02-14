@@ -1,3 +1,5 @@
+import json
+
 import psycopg2
 
 database_server = "129.241.91.231"
@@ -52,17 +54,17 @@ class Db(object):
         SELECT ST_AsGDALRaster(st_union(foo.rast, 'sum'),'GTiff')
         FROM (SELECT rast FROM mygeoms UNION SELECT rast FROM empty) foo
         """.format(
-                    min_x=min_x,
-                    min_y=min_y,
-                    max_x=max_x,
-                    max_y=max_y,
-                    x_res=x_res,
-                    y_res=y_res,
-                    x_scale=x_scale,
-                    y_scale=y_scale,
-                    table_name=table_name,
-                    color_attribute=color_attribute
-                )
+            min_x=min_x,
+            min_y=min_y,
+            max_x=max_x,
+            max_y=max_y,
+            x_res=x_res,
+            y_res=y_res,
+            x_scale=x_scale,
+            y_scale=y_scale,
+            table_name=table_name,
+            color_attribute=color_attribute
+        )
 
         if not self.cursor:
             raise ValueError("No cursor detected! Is the current generator connected to a database?")
@@ -72,3 +74,30 @@ class Db(object):
 
         return records
 
+    def get_geojson_from_bbox(self, min_x, max_y, max_x, min_y, table_name):
+        query = """
+            SELECT st_asgeojson(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)))
+            FROM {table_name}
+            WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+        """.format(
+            min_x=min_x,
+            min_y=min_y,
+            max_x=max_x,
+            max_y=max_y,
+            table_name=table_name
+        )
+
+        if not self.cursor:
+            raise ValueError("No cursor detected! Is the current generator connected to a database?")
+
+        self.cursor.execute(query)
+        records = self.cursor.fetchall()
+        collection = {
+            "type": "FeatureCollection",
+            "features": []
+        }
+        for rec in records:
+            j = json.loads(rec[0])
+            feat = {"type": "Feature", "geometry": {}, 'geometry': j}
+            collection['features'].append(feat)
+        return collection

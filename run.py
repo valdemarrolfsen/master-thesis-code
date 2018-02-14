@@ -8,7 +8,6 @@ from db import Db
 import argparse
 import shutil
 
-
 file_path = None
 output_path = None
 thread_count = None
@@ -102,7 +101,7 @@ def work(q, db, table_name, color_attribute, total_files=0):
         utils.print_process(q.qsize(), total_files)
 
         min_x, min_y, max_x, max_y = utils.get_bounding_box_from_tiff(file)
-        records = db.get_tif_from_bbox(
+        raster_records = db.get_tif_from_bbox(
             min_x,
             min_y,
             max_x,
@@ -110,19 +109,18 @@ def work(q, db, table_name, color_attribute, total_files=0):
             table_name,
             color_attribute
         )
-
         # Save the file to an unique id and add the correct file ending
         filename = "{}.{}".format(i, file_type)
 
         path = os.path.join(labels_path, filename)
         width, height = utils.get_raster_size(file)
 
-        if not records:
+        if not raster_records:
             utils.save_blank_raster(path, width, height)
             q.task_done()
             continue
 
-        rast = records[0][0]
+        rast = raster_records[0][0]
 
         # Sometimes the raster is empty. We therefore have to save it as an empty raster
         if rast is None:
@@ -132,6 +130,22 @@ def work(q, db, table_name, color_attribute, total_files=0):
         # Save the original image to examples with the same name
         shutil.copy(file, os.path.join(examples_path, filename))
 
+        # Get the geojson for the geometries
+        geojson = db.get_geojson_from_bbox(
+            min_x,
+            min_y,
+            max_x,
+            max_y,
+            table_name,
+        )
+
+        filename = "{}.{}".format(i, 'geojson')
+        path = os.path.join(labels_path, filename)
+        if not geojson:
+            # Save empty json file
+            utils.save_json('{}', path)
+            continue
+        utils.save_json(geojson, path)
         q.task_done()
 
 
