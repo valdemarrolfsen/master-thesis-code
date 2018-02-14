@@ -131,14 +131,14 @@ def work(q, db, table_name, color_attribute, total_files=0):
         shutil.copy(file, os.path.join(examples_path, filename))
 
         # Get the geojson for the geometries
-        geojson = db.get_geojson_from_bbox(
+        geojson_record = db.get_geojson_from_bbox(
             min_x,
             min_y,
             max_x,
             max_y,
             table_name,
         )
-
+        geojson = geojson_record[0][0]
         filename = "{}.{}".format(i, 'geojson')
         path = os.path.join(labels_path, filename)
         if not geojson:

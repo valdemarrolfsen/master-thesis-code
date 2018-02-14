@@ -76,28 +76,28 @@ class Db(object):
 
     def get_geojson_from_bbox(self, min_x, max_y, max_x, min_y, table_name):
         query = """
-            SELECT st_asgeojson(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)))
-            FROM {table_name}
-            WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+            SELECT jsonb_build_object(
+                'type',     'FeatureCollection',
+                'features', jsonb_agg(feature)
+            )
+            FROM (
+              SELECT jsonb_build_object(
+                'type',       'Feature',
+                'id',         gid,
+                'geometry',   ST_AsGeoJSON(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)))::jsonb,
+                'properties', to_jsonb(row) - 'gid' - 'geom'
+              ) AS feature
+              FROM (SELECT * FROM {table_name}) as row WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))) features;
         """.format(
             min_x=min_x,
             min_y=min_y,
             max_x=max_x,
             max_y=max_y,
-            table_name=table_name
-        )
+            table_name=table_name)
 
         if not self.cursor:
             raise ValueError("No cursor detected! Is the current generator connected to a database?")
 
         self.cursor.execute(query)
         records = self.cursor.fetchall()
-        collection = {
-            "type": "FeatureCollection",
-            "features": []
-        }
-        for rec in records:
-            j = json.loads(rec[0])
-            feat = {"type": "Feature", "geometry": {}, 'geometry': j}
-            collection['features'].append(feat)
-        return collection
+        return records
