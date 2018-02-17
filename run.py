@@ -97,7 +97,7 @@ def work(q, db, table_name, color_attribute, total_files=0):
         except Empty:
             break
 
-        utils.print_process(q.qsize(), total_files)
+        utils.print_process(total_files - q.qsize(), total_files)
         min_x, min_y, max_x, max_y = utils.get_bounding_box_from_tiff(file)
         raster_records = db.get_tif_from_bbox(
             min_x,
