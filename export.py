@@ -5,7 +5,7 @@ from functools import reduce
 from queue import Queue, Empty
 
 
-def generate_set(input_path, output_path, size=200, layover=0.1, input_size=1000):
+def generate_set(input_path, output_path, size=200, layover=0.1, input_size=1000, thread_count=10):
     """
     Generates a training set by loading all examples into memory, and resizing them.
 
@@ -37,7 +37,8 @@ def generate_set(input_path, output_path, size=200, layover=0.1, input_size=1000
     for i in range(path_length):
         q.put(i)
 
-    for i in range(10):
+    # Starts n threads
+    for i in range(thread_count):
         # Create a new database connection for each thread.
         t = threading.Thread(
             target=work,
@@ -59,6 +60,8 @@ def generate_set(input_path, output_path, size=200, layover=0.1, input_size=1000
         t.start()
 
     q.join()
+    
+    # Empty the console after progress print
     print("")
 
 
