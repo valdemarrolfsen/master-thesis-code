@@ -111,6 +111,21 @@ def factors(n):
 
 
 def work(q, example_paths, label_paths, total_files, export_path_example, export_path_label, size, layover, input_size):
+    """
+    The worker that produces the masks for a single pair of examples and labels
+
+    :param q:
+    :param example_paths:
+    :param label_paths:
+    :param total_files:
+    :param export_path_example:
+    :param export_path_label:
+    :param size:
+    :param layover:
+    :param input_size:
+    :return:
+    """
+
     while not q.empty():
         try:
             i = q.get(False)
@@ -120,9 +135,11 @@ def work(q, example_paths, label_paths, total_files, export_path_example, export
         # Show progress
         utils.print_process(total_files - q.qsize(), total_files)
 
+        # We assume that related examples and labels have the same index in the path lists
         example_path = example_paths[i]
         label_path = label_paths[i]
 
+        # Creates masks for the image pairs
         mask_image(example_path, export_path_example, size, layover, input_size)
         mask_image(label_path, export_path_label, size, layover, input_size)
 
