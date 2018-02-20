@@ -1,3 +1,4 @@
+import argparse
 import utils
 import cv2
 import threading
@@ -5,7 +6,7 @@ from functools import reduce
 from queue import Queue, Empty
 
 
-def generate_set(input_path, output_path, size=200, layover=0.1, input_size=1000, thread_count=10):
+def generate_set(input_path, output_path, size=200, layover=0.1, input_size=1000, thread_count=8):
     """
     Generates a training set by loading all examples into memory, and resizing them.
 
@@ -150,4 +151,12 @@ def work(q, example_paths, label_paths, total_files, export_path_example, export
 
 
 if __name__ == "__main__":
-    generate_set('data/output', 'data/export')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', type=str, default='data/output')
+    parser.add_argument('--output', type=str, default='data/export')
+    parser.add_argument('--size', type=int, default=200)
+    parser.add_argument('--layover', type=float, default=0.1)
+    parser.add_argument('--threads', type=int, default=8)
+    args = parser.parse_args()
+    print('Using args: ', args)
+    generate_set(args.input, args.output, args.size, args.layover, thread_count=args.threads)
