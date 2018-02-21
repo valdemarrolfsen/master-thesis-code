@@ -1,58 +1,60 @@
+import errno
 import json
 import os
-import numpy as np
-import errno
-import random
-from collections import defaultdict
+
+from keras.preprocessing.image import ImageDataGenerator
 from osgeo import gdal
-from scipy.misc import imresize, imread
-from scipy.ndimage import zoom
 
 
-def data_generator_s31(datadir='', nb_classes=None, batch_size=None, input_size=None, separator='_', test_nmb=50):
-    if not os.path.exists(datadir):
-        print("ERROR!The folder is not exist")
-    # listdir = os.listdir(datadir)
-    data = defaultdict(dict)
-    image_dir = os.path.join(datadir, "imgs")
-    image_paths = os.listdir(image_dir)
-    for image_path in image_paths:
-        nmb = image_path.split(separator)[0]
-        data[nmb]['image'] = image_path
-    anno_dir = os.path.join(datadir, "maps_bordered")
-    anno_paths = os.listdir(anno_dir)
-    for anno_path in anno_paths:
-        nmb = anno_path.split(separator)[0]
-        data[nmb]['anno'] = anno_path
-    values = data.values()
-    random.shuffle(values)
-    return generate(values[test_nmb:], nb_classes, batch_size, input_size, image_dir, anno_dir), \
-           generate(values[:test_nmb], nb_classes, batch_size, input_size, image_dir, anno_dir)
+def create_generator(datadir=''):
+    image_dir = os.path.join(datadir, "examples")
+    label_dir = os.path.join(datadir, "labels")
 
+    datagen_args = dict(
+        # set input mean to 0 over the dataset
+        featurewise_center=False,
+        # set each sample mean to 0
+        samplewise_center=False,
+        # divide inputs by std of dataset
+        featurewise_std_normalization=False,
+        # divide each input by its std
+        samplewise_std_normalization=False,
+        # apply ZCA whitening
+        zca_whitening=False,
+        # randomly rotate images in the range (deg 0 to 180)
+        rotation_range=0,
+        # randomly shift images horizontally
+        width_shift_range=0,
+        # randomly shift images vertically
+        height_shift_range=0,
+        # randomly flip images
+        horizontal_flip=False,
+        # randomly flip images
+        vertical_flip=False)
 
-def update_inputs(batch_size=None, input_size=None, num_classes=None):
-    return np.zeros([batch_size, input_size[0], input_size[1], 3]), \
-           np.zeros([batch_size, input_size[0], input_size[1], num_classes])
+    image_datagen = ImageDataGenerator(**datagen_args)
+    label_datagen = ImageDataGenerator(**datagen_args)
 
+    # Compute quantities required for featurewise normalization
+    # (std, mean, and principal components if ZCA whitening is applied).
+    # Use the same seed for both generators so they return corresponding images
+    seed = 1
 
-def generate(values, nb_classes, batch_size, input_size, image_dir, anno_dir):
-    while 1:
-        random.shuffle(values)
-        images, labels = update_inputs(batch_size=batch_size,
-                                       input_size=input_size, num_classes=nb_classes)
-        for i, d in enumerate(values):
-            img = imresize(imread(os.path.join(image_dir, d['image']), mode='RGB'), input_size)
-            y = imread(os.path.join(anno_dir, d['anno']), mode='L')
-            h, w = input_size
-            y = zoom(y, (1. * h / y.shape[0], 1. * w / y.shape[1]), order=1, prefilter=False)
-            y = (np.arange(nb_classes) == y[:, :, None]).astype('float32')
-            assert y.shape[2] == nb_classes
-            images[i % batch_size] = img
-            labels[i % batch_size] = y
-            if (i + 1) % batch_size == 0:
-                yield images, labels
-                images, labels = update_inputs(batch_size=batch_size,
-                                               input_size=input_size, num_classes=nb_classes)
+    # image_datagen.fit(images, augment=True, seed=seed)
+    # label_datagen.fit(masks, augment=True, seed=seed)
+
+    image_generator = image_datagen.flow_from_directory(
+        image_dir,
+        class_mode=None,
+        seed=seed)
+
+    label_generator = label_datagen.flow_from_directory(
+        label_dir,
+        class_mode=None,
+        seed=seed)
+
+    generator = zip(image_generator, label_generator)
+    return generator
 
 
 def get_bounding_box_from_tiff(path):
