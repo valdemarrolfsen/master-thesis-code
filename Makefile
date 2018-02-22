@@ -3,7 +3,7 @@ help:
 
 DATA?="${HOME}/Data"
 GPU?=0
-DOCKER_FILE=Dockerfile
+DOCKER_FILE=docker/Dockerfile
 DOCKER=GPU=$(GPU) nvidia-docker
 BACKEND=tensorflow
 PYTHON_VERSION?=3.6
