@@ -41,8 +41,6 @@ RUN conda install -y python=${python_version} && \
 
 ENV PYTHONPATH='/src/:$PYTHONPATH'
 
-RUN chown keras ~/.local/share/jupyter -R
-
 WORKDIR /src
 
 EXPOSE 8888
