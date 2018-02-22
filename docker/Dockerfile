@@ -41,6 +41,8 @@ RUN conda install -y python=${python_version} && \
 
 ADD theanorc /home/keras/.theanorc
 
+ADD . /home/keras/master-thesis-code
+
 ENV PYTHONPATH='/src/:$PYTHONPATH'
 
 WORKDIR /src
