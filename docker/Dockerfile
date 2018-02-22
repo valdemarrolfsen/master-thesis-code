@@ -43,7 +43,7 @@ ENV PYTHONPATH='/src/:$PYTHONPATH'
 
 WORKDIR /src
 
-RUN chown keras /src/workspace -R
+RUN chown keras workspace -R
 
 EXPOSE 8888
 
