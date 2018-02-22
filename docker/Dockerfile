@@ -43,7 +43,7 @@ ADD . /home/keras/master-thesis-code
 
 ENV PYTHONPATH='/src/:$PYTHONPATH'
 
-WORKDIR /src
+WORKDIR /home/keras
 
 EXPOSE 8888
 
