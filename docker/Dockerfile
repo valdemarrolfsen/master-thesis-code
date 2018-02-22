@@ -5,7 +5,7 @@ FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel
 ENV CONDA_DIR /opt/conda
 ENV PATH $CONDA_DIR/bin:$PATH
 
-RUN sudo add-apt-repository ppa:ubuntugis/ppa
+RUN add-apt-repository ppa:ubuntugis/ppa
 RUN mkdir -p $CONDA_DIR && \
     echo export PATH=$CONDA_DIR/bin:'$PATH' > /etc/profile.d/conda.sh && \
     apt-get update && \
