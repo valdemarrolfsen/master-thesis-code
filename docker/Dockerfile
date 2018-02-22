@@ -43,6 +43,8 @@ ENV PYTHONPATH='/src/:$PYTHONPATH'
 
 WORKDIR /src
 
+RUN chown keras /src/workspace -R
+
 EXPOSE 8888
 
 CMD jupyter notebook --port=8888 --ip=0.0.0.0
