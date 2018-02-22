@@ -39,7 +39,7 @@ RUN conda install -y python=${python_version} && \
     pip install git+git://github.com/keras-team/keras.git && \
     conda clean -yt
 
-ADD . /home/keras/master-thesis-code
+COPY .. /home/keras/master-thesis-code
 
 ENV PYTHONPATH='/src/:$PYTHONPATH'
 
