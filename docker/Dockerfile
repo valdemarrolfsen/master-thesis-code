@@ -21,7 +21,7 @@ RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     mkdir -p $CONDA_DIR && \
     chown keras $CONDA_DIR -R && \
     mkdir -p /src && \
-    chown -R keras /src
+    chown keras /src -R
 
 USER keras
 
