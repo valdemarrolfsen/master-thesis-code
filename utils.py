@@ -45,11 +45,13 @@ def create_generator(datadir=''):
 
     image_generator = image_datagen.flow_from_directory(
         image_dir,
+        target_size=(713, 713),
         class_mode=None,
         seed=seed)
 
     label_generator = label_datagen.flow_from_directory(
         label_dir,
+        target_size=(713, 713),
         class_mode=None,
         seed=seed)
 
@@ -70,6 +72,9 @@ def get_bounding_box_from_tiff(path):
     ds = gdal.Open(path)
     width = ds.RasterXSize
     height = ds.RasterYSize
+    if height != width:
+        print('not square image ', path)
+        return -1, -1, -1, -1
     gt = ds.GetGeoTransform()
 
     # Calculate the corners of the bounding box
@@ -119,7 +124,7 @@ def get_file_paths(path):
 
 
 def print_process(i, tot):
-    print("Processing files {}%: 8{}D".format(int((i / tot) * 100), '=' * int(i / 2)), end="\r", flush=True)
+    print("Processing files {}%: 8{}D".format(int((i / tot) * 100), '=' * int((i / tot) * 100)), end="\r", flush=True)
 
 
 def save_blank_raster(path, xsize, ysize):

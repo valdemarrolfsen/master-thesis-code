@@ -6,7 +6,7 @@ import os
 import utils
 from db import Db
 import argparse
-import shutil
+from shutil import copyfile
 
 file_path = None
 output_path = None
@@ -99,6 +99,8 @@ def work(q, db, table_name, color_attribute, total_files=0):
 
         utils.print_process(total_files - q.qsize(), total_files)
         min_x, min_y, max_x, max_y = utils.get_bounding_box_from_tiff(file)
+        if min_x == -1:
+            continue
         raster_records = db.get_tif_from_bbox(
             min_x,
             min_y,
@@ -109,6 +111,8 @@ def work(q, db, table_name, color_attribute, total_files=0):
         )
         # Save the file to an unique id and add the correct file ending
         filename = "{}.{}".format(i, file_type)
+
+        copyfile(file, os.path.join(examples_path, filename))
 
         path = os.path.join(labels_path, filename)
         width, height = utils.get_raster_size(file)
@@ -125,9 +129,6 @@ def work(q, db, table_name, color_attribute, total_files=0):
             utils.save_blank_raster(path, width, height)
         else:
             utils.save_file(rast, path)
-
-        # Save the original image to examples with the same name
-        shutil.copy(file, os.path.join(examples_path, filename))
 
         # Get the geojson for the geometries
         geojson_record = db.get_geojson_from_bbox(
