@@ -2,7 +2,7 @@ import os
 from keras.preprocessing.image import ImageDataGenerator
 
 
-def create_generator(datadir='', input_size=713):
+def create_generator(datadir='', input_size=(713, 713)):
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
@@ -41,13 +41,13 @@ def create_generator(datadir='', input_size=713):
 
     image_generator = image_datagen.flow_from_directory(
         image_dir,
-        target_size=(input_size, input_size),
+        target_size=input_size,
         class_mode=None,
         seed=seed)
 
     label_generator = label_datagen.flow_from_directory(
         label_dir,
-        target_size=(input_size, input_size),
+        target_size=input_size,
         class_mode=None,
         seed=seed)
 
