@@ -12,7 +12,7 @@ def train_psp(datadir, logdir, input_size, nb_classes, resnet_layers, batchsize,
         model = layers.build_pspnet(nb_classes=nb_classes,
                                     resnet_layers=resnet_layers,
                                     input_shape=input_size)
-    train_generator = create_generator(datadir)
+    train_generator = create_generator(datadir, input_size)
     model.fit_generator(
         generator=train_generator,
         epochs=100, verbose=True, steps_per_epoch=50,
