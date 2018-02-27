@@ -104,7 +104,7 @@ def train(model, args):
     """
 
     # Begin: Training with data augmentation ---------------------------------------------------------------------#
-    train_generator = create_generator('data/export/200x200/')
+    train_generator = create_generator('data/output')
 
     # Training with data augmentation. If shift_fraction=0., also no augmentation.
     model.fit_generator(generator=train_generator,

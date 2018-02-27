@@ -7,6 +7,7 @@ def create_generator(datadir='', input_size=(713, 713), batch_size=32):
     label_dir = os.path.join(datadir, "labels")
 
     datagen_args = dict(
+        data_format='channels_last',
         # set input mean to 0 over the dataset
         featurewise_center=False,
         # set each sample mean to 0

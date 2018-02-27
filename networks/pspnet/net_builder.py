@@ -253,8 +253,6 @@ def build_pspnet(nb_classes, resnet_layers, input_shape):
     x = Dropout(0.1)(x)
 
     x = Conv2D(nb_classes, (1, 1), strides=(1, 1), name="conv6")(x)
-    # x = Lambda(Interp, arguments={'shape': (
-    #    input_shape[0], input_shape[1])})(x)
     x = Interpolation([input_shape[0], input_shape[1]])(x)
     x = Activation('softmax')(x)
 
