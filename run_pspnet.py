@@ -24,7 +24,7 @@ def define_args():
                         default=713
                         )
     parser.add_argument('--classes',
-                        type=float,
+                        type=int,
                         help='Number of classes in the dataset (default 2)',
                         default=2
                         )
