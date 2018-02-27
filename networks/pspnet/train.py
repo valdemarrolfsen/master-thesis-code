@@ -5,7 +5,7 @@ from keras_utils.generators import create_generator
 from networks.pspnet import net_builder as layers
 
 
-def train_psp(datadir, logdir, input_size, nb_classes, resnet_layers, batch_size, weights, initial_epoch, sep):
+def train_psp(datadir, logdir, input_size, nb_classes, resnet_layers, batch_size, weights, initial_epoch, steps_per_epoch):
     if weights is not None:
         model = load_model(weights)
     else:
@@ -15,7 +15,7 @@ def train_psp(datadir, logdir, input_size, nb_classes, resnet_layers, batch_size
     train_generator = create_generator(datadir, input_size, batch_size)
     model.fit_generator(
         generator=train_generator,
-        epochs=100, verbose=True, steps_per_epoch=50,
+        epochs=100, verbose=True, steps_per_epoch=steps_per_epoch,
         callbacks=callbacks(logdir), initial_epoch=initial_epoch)
 
 

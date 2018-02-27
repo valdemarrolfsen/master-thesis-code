@@ -9,30 +9,36 @@ def define_args():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir',
-        type=str,
-        help='Directory for retrieving the input data (default data/output)',
-        default='data/output'
-    )
+                        type=str,
+                        help='Directory for retrieving the input data (default data/output)',
+                        default='data/output'
+                        )
     parser.add_argument('--logs_dir',
-        type=str,
-        help='Directory for storing processing logs (default logs/)',
-        default='logs/'
-    )
+                        type=str,
+                        help='Directory for storing processing logs (default logs/)',
+                        default='logs/'
+                        )
     parser.add_argument('--input-size',
-        type=int,
-        help='Input size for the images used (default 713)',
-        default=713
-    )
+                        type=int,
+                        help='Input size for the images used (default 713)',
+                        default=713
+                        )
     parser.add_argument('--classes',
-        type=float,
-        help='Number of classes in the dataset (default 2)',
-        default=2
-    )
+                        type=float,
+                        help='Number of classes in the dataset (default 2)',
+                        default=2
+                        )
     parser.add_argument('--weights',
-        type=int,
-        help='Directory for storing weights (default: weights/)',
-        default='weights/'
-    )
+                        type=int,
+                        help='Directory for storing weights (default: weights/)',
+                        default='weights/'
+                        )
+
+    parser.add_argument('--steps_per_epoch',
+                        type=int,
+                        help='Steps per epoch',
+                        default=50
+                        )
 
     args = parser.parse_args()
     print('Using args: ', args)
@@ -41,7 +47,6 @@ def define_args():
 
 
 if __name__ == '__main__':
-
     # Defining arguments
     args = define_args()
 
@@ -54,5 +59,5 @@ if __name__ == '__main__':
         args.batch_size,
         args.weights,
         0,
-        ').'
+        args.steps_per_epoch
     )
