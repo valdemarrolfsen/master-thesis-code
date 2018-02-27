@@ -29,9 +29,9 @@ def define_args():
                         default=2
                         )
     parser.add_argument('--weights',
-                        type=int,
-                        help='Directory for storing weights (default: weights/)',
-                        default='weights/'
+                        type=str,
+                        help='Weights to load',
+                        default=None
                         )
 
     parser.add_argument('--steps_per_epoch',
