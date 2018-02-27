@@ -54,7 +54,7 @@ def set_up_hyperparams(network):
         "logdir": input("2. Indicate where the program should store logs: (logs/) ") or "logs/",
         "input_size": int(input("3. Choose an input size: (713) ") or "713"),
         "classes": int(input("4. Set the number of classes: (3) ") or "3"),
-        "batch_size": int(input("5. Number of batches: (2) ") or "2"),
+        "batch_size": int(input("5. Batch size: (2) ") or "2"),
         "weights": input("6. Stored weights: (None) ") or None
     }
 
