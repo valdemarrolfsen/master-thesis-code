@@ -34,6 +34,12 @@ def define_args():
                         default=None
                         )
 
+    parser.add_argument('--batch-size',
+                        type=int,
+                        help='Batch size',
+                        default=2
+                        )
+
     parser.add_argument('--steps-per-epoch',
                         type=int,
                         help='Steps per epoch',
