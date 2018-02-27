@@ -1,7 +1,5 @@
-import os
-import time
 import keras.backend as K
-from keras.callbacks import Callback, TensorBoard, ReduceLROnPlateau, ModelCheckpoint
+from keras.callbacks import Callback, ReduceLROnPlateau, ModelCheckpoint
 
 
 class LrReducer(Callback):
