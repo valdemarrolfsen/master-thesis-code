@@ -1,5 +1,5 @@
 import numpy as np
-from keras import layers, models, optimizers
+from keras import layers, models, optimizers, callbacks
 from keras import backend as K
 from keras.utils import to_categorical
 from PIL import Image
@@ -104,11 +104,11 @@ def train(model, args):
     """
 
     # Begin: Training with data augmentation ---------------------------------------------------------------------#
-    train_generator = create_generator('../data/output/')
+    train_generator = create_generator('data/export/200x200/')
 
     # Training with data augmentation. If shift_fraction=0., also no augmentation.
     model.fit_generator(generator=train_generator,
-                        steps_per_epoch=int(y_train.shape[0] / args.batch_size),
+                        steps_per_epoch=int(200 / args.batch_size),
                         epochs=args.epochs,
                         callbacks=[log, tb, checkpoint, lr_decay])
 
