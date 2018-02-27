@@ -8,8 +8,7 @@ import matplotlib.pyplot as plt
 from networks.capsnet.capsnet_utils import combine_images
 from networks.capsnet.capsulelayers import CapsuleLayer, PrimaryCap, Length, Mask
 
-from preprocessing.utils import create_generator
-
+from keras_utils.generators import create_generator
 K.set_image_data_format('channels_last')
 
 
