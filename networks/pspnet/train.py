@@ -1,11 +1,8 @@
-import argparse
-import os
-
 from keras.models import load_model
 from keras_utils.callbacks import callbacks
+from keras_utils.generators import create_generator
 
 from networks.pspnet import net_builder as layers
-from preprocessing.utils import create_generator
 
 
 def train_psp(datadir, logdir, input_size, nb_classes, resnet_layers, batchsize, weights, initial_epoch, sep):
