@@ -8,12 +8,12 @@ def define_args():
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_dir',
+    parser.add_argument('--data-dir',
                         type=str,
                         help='Directory for retrieving the input data (default data/output)',
                         default='data/output'
                         )
-    parser.add_argument('--logs_dir',
+    parser.add_argument('--logs-dir',
                         type=str,
                         help='Directory for storing processing logs (default logs/)',
                         default='logs/'
@@ -34,7 +34,7 @@ def define_args():
                         default=None
                         )
 
-    parser.add_argument('--steps_per_epoch',
+    parser.add_argument('--steps-per-epoch',
                         type=int,
                         help='Steps per epoch',
                         default=50
@@ -51,8 +51,8 @@ if __name__ == '__main__':
     args = define_args()
 
     train_psp(
-        args.datadir,
-        args.logdir,
+        args.data_dir,
+        args.logs_dir,
         (args.input_size, args.input_size),
         args.classes,
         50,
