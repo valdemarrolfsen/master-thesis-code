@@ -3,6 +3,10 @@ from keras import layers, models, optimizers, callbacks
 from keras import backend as K
 from keras.utils import to_categorical
 from PIL import Image
+
+import matplotlib as mpl
+mpl.use('TkAgg')
+
 import matplotlib.pyplot as plt
 
 from networks.capsnet.capsnet_utils import combine_images
