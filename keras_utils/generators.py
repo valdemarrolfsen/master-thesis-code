@@ -1,5 +1,6 @@
 import os
 from keras.preprocessing.image import ImageDataGenerator
+from keras.utils import to_categorical
 
 
 def create_generator(datadir='', input_size=(713, 713), batch_size=32):
@@ -53,6 +54,8 @@ def create_generator(datadir='', input_size=(713, 713), batch_size=32):
         target_size=input_size,
         class_mode=None,
         seed=seed)
+
+    label_generator = to_categorical(label_generator)
 
     generator = zip(image_generator, label_generator)
     return generator
