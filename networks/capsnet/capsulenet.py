@@ -3,6 +3,10 @@ from keras import layers, models, optimizers, callbacks
 from keras import backend as K
 from keras.utils import to_categorical
 from PIL import Image
+
+import matplotlib as mpl
+mpl.use('TkAgg')
+
 import matplotlib.pyplot as plt
 
 from networks.capsnet.capsnet_utils import combine_images
@@ -104,7 +108,7 @@ def train(model, args):
     """
 
     # Begin: Training with data augmentation ---------------------------------------------------------------------#
-    train_generator = create_generator('data/export/200x200/')
+    train_generator = create_generator('data/output')
 
     # Training with data augmentation. If shift_fraction=0., also no augmentation.
     model.fit_generator(generator=train_generator,
