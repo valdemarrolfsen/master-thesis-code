@@ -53,12 +53,11 @@ def create_generator(datadir, input_size, batch_size, nb_classes):
         label_dir,
         batch_size=batch_size,
         target_size=input_size,
-        class_mode='categorical',
+        class_mode=None,
         color_mode='grayscale',
         seed=seed)
 
     generator = zip(image_generator, label_generator)
-    return generator
     return custom_gen(generator, input_size, batch_size, nb_classes)
 
 
