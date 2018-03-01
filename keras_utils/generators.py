@@ -36,6 +36,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=True):
         datagen_args['rescale'] = 1. / 255
 
     image_datagen = ImageDataGenerator(**datagen_args)
+    datagen_args['rescale'] = None
     label_datagen = ImageDataGenerator(**datagen_args)
 
     # Compute quantities required for featurewise normalization
@@ -69,4 +70,7 @@ def custom_gen(generator, input_size, batch_size, nb_classes):
         output = np.ndarray((batch_size, input_size[0], input_size[1], nb_classes))
         for i in range(mask.shape[0]):
             output[i] = to_categorical(mask[i], num_classes=nb_classes)
+            print(output[i].shape)
+            print(output[i])
+
         yield img, output
