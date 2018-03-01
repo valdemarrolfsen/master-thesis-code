@@ -1,6 +1,7 @@
 import threading
 from queue import Queue, Empty
 
+import numpy as np
 import os
 
 import utils
@@ -49,11 +50,12 @@ def setup():
     thread_count = args['threads']
     color_attribute = args['color']
     table_name = args['table']
-    labels_path = os.path.join(output_path, "labels/")
-    examples_path = os.path.join(output_path, "examples/")
 
-    utils.make_path(labels_path)
-    utils.make_path(examples_path)
+    paths = ['train', 'test', 'val']
+    sub_paths = ['examples', 'labels']
+    for path in paths:
+        for s in sub_paths:
+            utils.make_path(os.path.join(output_path, "{}/{}/".format(path, s)))
 
 
 def run():
@@ -65,7 +67,7 @@ def run():
     total_files = len(tiff_files)
     print('Using table {}'.format(table_name))
     print('Found {} files'.format(total_files))
-
+    np.random.shuffle(tiff_files)
     q = Queue()
     for i, file in enumerate(tiff_files):
         q.put((file, i))
@@ -91,6 +93,9 @@ def work(q, db, table_name, color_attribute, total_files=0):
     global examples_path
     global labels_path
 
+    train_portion = 0.7
+    val_portion = 0.2
+
     while not q.empty():
         try:
             file, i = q.get(False)
@@ -110,7 +115,20 @@ def work(q, db, table_name, color_attribute, total_files=0):
             color_attribute
         )
         # Save the file to an unique id and add the correct file ending
+        # are we adding to train, val or test?
+        prog = (total_files - q.qsize()) / total_files
+
         filename = "{}.{}".format(i, file_type)
+
+        if prog < train_portion:
+            s = 'train'
+        elif prog < train_portion + val_portion:
+            s = 'val'
+        else:
+            s = 'test'
+
+        examples_path = os.path.join(output_path, "{}/examples/".format(s))
+        labels_path = os.path.join(output_path, "{}/labels/".format(s))
 
         copyfile(file, os.path.join(examples_path, filename))
 

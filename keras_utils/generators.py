@@ -4,7 +4,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
 
 
-def create_generator(datadir = '', input_size=(713, 713), batch_size=32):
+def create_generator(datadir, input_size, batch_size, nb_classes):
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
@@ -29,13 +29,16 @@ def create_generator(datadir = '', input_size=(713, 713), batch_size=32):
         # randomly flip images
         horizontal_flip=False,
         # randomly flip images
-        vertical_flip=False)
+        vertical_flip=False,
+        # Scale down the values
+        rescale=1. / 255)
 
     image_datagen = ImageDataGenerator(**datagen_args)
     label_datagen = ImageDataGenerator(**datagen_args)
 
     # Compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied).
+
     # Use the same seed for both generators so they return corresponding images
     seed = 1
 
@@ -55,14 +58,14 @@ def create_generator(datadir = '', input_size=(713, 713), batch_size=32):
         seed=seed)
 
     generator = zip(image_generator, label_generator)
-    return custom_gen(generator)
+    return custom_gen(generator, input_size, batch_size, nb_classes)
 
 
-def custom_gen(generator):
+def custom_gen(generator, input_size, batch_size, nb_classes):
     for img, mask in generator:
-        output = np.ndarray((2, 473, 473, 256))
-
+        output = np.ndarray((batch_size, input_size[0], input_size[1], nb_classes))
         for i in range(mask.shape[0]):
-            output[i] = to_categorical(mask[i], num_classes=256)
-
+            one_hot = to_categorical(mask[i], num_classes=nb_classes)
+            print(img[1])
+            output[i] = one_hot
         yield img, output

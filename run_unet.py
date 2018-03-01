@@ -11,13 +11,9 @@ def define_args():
     parser.add_argument('--data-dir',
                         type=str,
                         help='Directory for retrieving the input data (default data/output)',
-                        default='data/output'
+                        default='data/output',
                         )
-    parser.add_argument('--logs-dir',
-                        type=str,
-                        help='Directory for storing processing logs (default logs/)',
-                        default='logs/'
-                        )
+
     parser.add_argument('--input-size',
                         type=int,
                         help='Input size for the images used (default 713)',

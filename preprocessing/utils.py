@@ -18,7 +18,6 @@ def get_bounding_box_from_tiff(path):
     width = ds.RasterXSize
     height = ds.RasterYSize
     if height != width:
-        print('not square image ', path)
         return -1, -1, -1, -1
     gt = ds.GetGeoTransform()
 
