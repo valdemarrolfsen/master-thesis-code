@@ -65,7 +65,5 @@ def custom_gen(generator, input_size, batch_size, nb_classes):
     for img, mask in generator:
         output = np.ndarray((batch_size, input_size[0], input_size[1], nb_classes))
         for i in range(mask.shape[0]):
-            one_hot = to_categorical(mask[i], num_classes=nb_classes)
-            print(img[1])
-            output[i] = one_hot
+            output[i] = to_categorical(mask[i], num_classes=nb_classes)
         yield img, output
