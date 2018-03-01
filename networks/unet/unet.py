@@ -77,5 +77,6 @@ def build_unet(nb_classes, input_width=473, input_height=473, nChannels=1):
     conv9 = layers.ZeroPadding2D(padding=((ch[0], ch[1]), (cw[0], cw[1])))(conv9)
     conv10 = layers.Conv2D(nb_classes, (1, 1))(conv9)
     model = Model(inputs=inputs, outputs=conv10)
-    model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=Adam(lr=1e-4), loss='categorical_crossentropy', metrics=['accuracy'])
+    # model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
