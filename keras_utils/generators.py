@@ -4,7 +4,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
 
 
-def create_generator(datadir, input_size, batch_size, nb_classes):
+def create_generator(datadir, input_size, batch_size, nb_classes, rescale=True):
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
@@ -29,9 +29,11 @@ def create_generator(datadir, input_size, batch_size, nb_classes):
         # randomly flip images
         horizontal_flip=False,
         # randomly flip images
-        vertical_flip=False,
+        vertical_flip=False)
+
+    if rescale:
         # Scale down the values
-        rescale=1. / 255)
+        datagen_args['rescale'] = 1. / 255
 
     image_datagen = ImageDataGenerator(**datagen_args)
     label_datagen = ImageDataGenerator(**datagen_args)
