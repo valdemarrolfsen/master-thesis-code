@@ -14,6 +14,12 @@ def define_args():
                         default='data/output',
                         )
 
+    parser.add_argument('--logs-dir',
+                        type=str,
+                        help='Directory for logs',
+                        default='logs',
+                        )
+
     parser.add_argument('--input-size',
                         type=int,
                         help='Input size for the images used (default 713)',
