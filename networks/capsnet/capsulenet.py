@@ -1,7 +1,6 @@
 import numpy as np
 from keras import layers, models, optimizers, callbacks
 from keras import backend as K
-from keras.utils import to_categorical
 from PIL import Image
 
 import matplotlib as mpl
@@ -18,7 +17,6 @@ K.set_image_data_format('channels_last')
 
 def CapsNet(input_shape, n_class, routings):
     """
-    A Capsule Network on MNIST.
     :param input_shape: data shape, 3d, [width, height, channels]
     :param n_class: number of classes
     :param routings: number of routing iterations
@@ -120,9 +118,6 @@ def train(model, args):
 
     model.save_weights(args.save_dir + '/trained_model.h5')
     print('Trained model saved to \'%s/trained_model.h5\'' % args.save_dir)
-
-    from utils import plot_log
-    plot_log(args.save_dir + '/log.csv', show=True)
 
     return model
 
