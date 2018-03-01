@@ -5,8 +5,8 @@ from keras_utils.generators import create_generator
 from networks.unet.unet import build_unet
 import tensorflow as tf
 import numpy as np
-np.random.seed(1)
-tf.set_random_seed(1)
+np.random.seed(2)
+tf.set_random_seed(2)
 
 
 def train_unet(data_dir, logdir, input_size, nb_classes, batch_size, initial_epoch, steps_per_epoch):
