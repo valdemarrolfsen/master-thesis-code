@@ -70,10 +70,5 @@ def custom_gen(generator, input_size, batch_size, nb_classes):
         mask[mask > 1] = 1
         output = np.ndarray((batch_size, input_size[0], input_size[1], nb_classes))
         for i in range(mask.shape[0]):
-            print(mask[i].shape)
-            print(np.unique(mask[i]))
             output[i] = to_categorical(mask[i], num_classes=nb_classes)
-            print(output[i].shape)
-            print(output[i])
-
         yield img, output
