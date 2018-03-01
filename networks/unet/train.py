@@ -12,7 +12,7 @@ def train_unet(data_dir, logdir, input_size, nb_classes, batch_size, initial_epo
     model.fit_generator(
         generator=train_generator,
         validation_data=val_generator,
-        validation_steps=1,
+        validation_steps=2,
         epochs=100, verbose=True, steps_per_epoch=steps_per_epoch,
         callbacks=callbacks(logdir), initial_epoch=initial_epoch)
 
