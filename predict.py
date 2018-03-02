@@ -45,4 +45,4 @@ for i, prob in enumerate(probs):
 
     for c in range(n_classes):
         result[result == c] = int(c/n_classes*255)
-        cv2.imwrite("{}/test{}.tif".format(i, args.output_path), result)
+        cv2.imwrite("{}/test{}.tif".format(args.output_path, i), result)
