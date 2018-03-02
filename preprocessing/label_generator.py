@@ -30,6 +30,7 @@ def setup():
     global color_attribute
     global table_name
     global class_name
+    global include_empty
 
     # Set ut the argument parser
     ap = argparse.ArgumentParser()
