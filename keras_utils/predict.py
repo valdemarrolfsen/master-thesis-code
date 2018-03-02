@@ -33,17 +33,12 @@ model_choices = {
 
 model_choice = model_choices[model_name]
 
-m = model_choice(n_classes, input_height=input_size, input_width=input_size, nChannels=3)
+model = model_choice(n_classes, input_height=input_size, input_width=input_size, nChannels=3)
 
-m.load_weights(args.save_weights_path + "." + str(epoch_number))
+model.load_weights(args.save_weights_path)
 
-m.compile(
-    loss='categorical_crossentropy',
-    optimizer='adadelta',
-    metrics=['accuracy'])
-
-output_height = m.outputHeight
-output_width = m.outputWidth
+output_height = model.outputHeight
+output_width = model.outputWidth
 
 generator = create_generator(images_path, (input_size, input_size), batch_size=batch_size)
 images, masks = next(generator)
@@ -52,7 +47,7 @@ images, masks = next(generator)
 colors = [(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)) for _ in range(n_classes)]
 
 for i, img in enumerate(images):
-    pr = m.predict(np.array([img]))[0]
+    pr = model.predict(np.array([img]))[0]
     pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
     seg_img = np.zeros((output_height, output_width, 3))
 
@@ -60,6 +55,5 @@ for i, img in enumerate(images):
         seg_img[:, :, 0] += ((pr[:, :] == c) * (colors[c][0])).astype('uint8')
         seg_img[:, :, 1] += ((pr[:, :] == c) * (colors[c][1])).astype('uint8')
         seg_img[:, :, 2] += ((pr[:, :] == c) * (colors[c][2])).astype('uint8')
-    seg_img = cv2.resize(seg_img, (input_size, input_size))
 
     cv2.imwrite("test{}.tif".format(i), seg_img)
