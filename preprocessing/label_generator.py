@@ -17,6 +17,7 @@ labels_path = None
 color_attribute = None
 table_name = None
 class_name = None
+include_empty = None
 file_type = 'tif'
 
 
@@ -36,6 +37,7 @@ def setup():
     ap.add_argument('-o', '--output', type=str, required=True, help='path for output file')
     ap.add_argument('-c', '--color', type=str, required=True, help='color value or color attribute in table')
     ap.add_argument('-n', '--table', type=str, required=True, help='table name')
+    ap.add_argument('--include-empty', type=bool, default=False, help='Include empty raster images')
     ap.add_argument('--class-name', type=str, required=True,
                     help='The name of the class you are generating labels for')
     ap.add_argument(
@@ -54,6 +56,7 @@ def setup():
     color_attribute = args.color
     table_name = args.table
     class_name = args.class_name
+    include_empty = args.include_empty
 
     paths = ['train', 'test', 'val']
     sub_paths = ['examples', 'labels']
@@ -98,6 +101,7 @@ def work(q, db, table_name, color_attribute, total_files=0):
     global labels_path
     global class_name
     global output_path
+    global include_empty
 
     train_portion = 0.7
     val_portion = 0.2
@@ -142,7 +146,8 @@ def work(q, db, table_name, color_attribute, total_files=0):
         width, height = utils.get_raster_size(file)
 
         if not raster_records:
-            utils.save_blank_raster(path, width, height)
+            if include_empty:
+                utils.save_blank_raster(path, width, height)
             q.task_done()
             continue
 
