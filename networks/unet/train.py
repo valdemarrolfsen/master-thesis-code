@@ -17,6 +17,6 @@ def train_unet(data_dir, logdir, input_size, nb_classes, batch_size, initial_epo
         generator=train_generator,
         validation_data=val_generator,
         validation_steps=900,
-        epochs=100, verbose=True, steps_per_epoch=steps_per_epoch,
+        epochs=100, verbose=True,
         callbacks=callbacks(logdir), initial_epoch=initial_epoch)
 
