@@ -35,7 +35,7 @@ model = model_choice(n_classes, input_height=input_size, input_width=input_size,
 
 model.load_weights(args.weights_path)
 
-generator = create_generator(images_path, (input_size, input_size), batch_size, n_classes)
+generator, _ = create_generator(images_path, (input_size, input_size), batch_size, n_classes)
 images, masks = next(generator)
 probs = model.predict(images, verbose=1)
 
