@@ -1,5 +1,6 @@
 from keras import layers, Model
-from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concatenate, Flatten, Dense, BatchNormalization
+from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concatenate, Flatten, Dense, \
+    BatchNormalization, Activation
 from keras.optimizers import Adam
 
 
@@ -76,7 +77,8 @@ def build_unet(nb_classes, input_width=473, input_height=473, nChannels=1):
     ch, cw = get_crop_shape(inputs, conv9)
     conv9 = layers.ZeroPadding2D(padding=((ch[0], ch[1]), (cw[0], cw[1])))(conv9)
     conv10 = layers.Conv2D(nb_classes, (1, 1))(conv9)
-    model = Model(inputs=inputs, outputs=conv10)
+    act = Activation('softmax')(conv10)
+    model = Model(inputs=inputs, outputs=act)
     model.compile(optimizer=Adam(lr=1e-4, amsgrad=True), loss='categorical_crossentropy', metrics=['accuracy'])
     # model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
