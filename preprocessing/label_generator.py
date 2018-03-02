@@ -16,6 +16,7 @@ examples_path = None
 labels_path = None
 color_attribute = None
 table_name = None
+class_name = None
 file_type = 'tif'
 
 
@@ -27,13 +28,16 @@ def setup():
     global labels_path
     global color_attribute
     global table_name
+    global class_name
 
     # Set ut the argument parser
     ap = argparse.ArgumentParser()
-    ap.add_argument('-i', '--input', required=True, help='path to input file')
-    ap.add_argument('-o', '--output', required=True, help='path for output file')
-    ap.add_argument('-c', '--color', required=True, help='color value or color attribute in table')
-    ap.add_argument('-n', '--table', required=True, help='table name')
+    ap.add_argument('-i', '--input', type=str, required=True, help='path to input file')
+    ap.add_argument('-o', '--output', type=str, required=True, help='path for output file')
+    ap.add_argument('-c', '--color', type=str, required=True, help='color value or color attribute in table')
+    ap.add_argument('-n', '--table', type=str, required=True, help='table name')
+    ap.add_argument('--class-name', type=str, required=True,
+                    help='The name of the class you are generating labels for')
     ap.add_argument(
         '-t',
         '--threads',
@@ -42,20 +46,20 @@ def setup():
         help='the number of threads (defaults to 10)'
     )
 
-    args = vars(ap.parse_args())
-
+    args = ap.parse_args()
     # Get the file path
-    file_path = args['input']
-    output_path = args['output']
-    thread_count = args['threads']
-    color_attribute = args['color']
-    table_name = args['table']
+    file_path = args.input
+    output_path = args.output
+    thread_count = args.threads
+    color_attribute = args.color
+    table_name = args.table
+    class_name = args.class_name
 
     paths = ['train', 'test', 'val']
     sub_paths = ['examples', 'labels']
     for path in paths:
         for s in sub_paths:
-            utils.make_path(os.path.join(output_path, "{}/{}/".format(path, s)))
+            utils.make_path(os.path.join(output_path, "{}/{}/{}/".format(path, s, class_name)))
 
 
 def run():
@@ -92,6 +96,8 @@ def work(q, db, table_name, color_attribute, total_files=0):
     global file_type
     global examples_path
     global labels_path
+    global class_name
+    global output_path
 
     train_portion = 0.7
     val_portion = 0.2
@@ -127,8 +133,8 @@ def work(q, db, table_name, color_attribute, total_files=0):
         else:
             s = 'test'
 
-        examples_path = os.path.join(output_path, "{}/examples/".format(s))
-        labels_path = os.path.join(output_path, "{}/labels/".format(s))
+        examples_path = os.path.join(output_path, "{}/examples/{}/".format(s, class_name))
+        labels_path = os.path.join(output_path, "{}/labels/{}/".format(s, class_name))
 
         copyfile(file, os.path.join(examples_path, filename))
 
