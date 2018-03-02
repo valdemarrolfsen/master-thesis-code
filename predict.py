@@ -41,6 +41,7 @@ probs = model.predict(images, verbose=1)
 
 for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
+    print(np.unique(result))
     img = images[i]
     img = (img*255).astype('uint8')
 
