@@ -156,7 +156,10 @@ def work(q, db, table_name, color_attribute, total_files=0):
 
         # Sometimes the raster is empty. We therefore have to save it as an empty raster
         if rast is None:
-            utils.save_blank_raster(path, width, height)
+            if include_empty:
+                utils.save_blank_raster(path, width, height)
+            else:
+                continue
         else:
             utils.save_file(rast, path)
 
