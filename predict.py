@@ -1,7 +1,6 @@
 import argparse
 import cv2
 import numpy as np
-import random
 
 from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
@@ -42,7 +41,11 @@ probs = model.predict(images, verbose=1)
 
 for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
+    img = images[i]
+    img = (img*255).astype('uint8')
 
     for c in range(n_classes):
         result[result == c] = int(c/n_classes*255)
-        cv2.imwrite("{}/test{}.tif".format(args.output_path, i), result)
+
+    cv2.imwrite("{}/pred-{}.tif".format(args.output_path, i), result)
+    cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
