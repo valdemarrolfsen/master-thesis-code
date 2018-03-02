@@ -61,7 +61,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=True):
         seed=seed)
 
     generator = zip(image_generator, label_generator)
-    return custom_gen(generator, input_size, batch_size, nb_classes)
+    return custom_gen(generator, input_size, batch_size, nb_classes), image_datagen.samples
 
 
 def custom_gen(generator, input_size, batch_size, nb_classes):
