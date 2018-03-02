@@ -1,3 +1,4 @@
+import json
 import threading
 from queue import Queue, Empty
 
@@ -141,14 +142,10 @@ def work(q, db, table_name, color_attribute, total_files=0):
         examples_path = os.path.join(output_path, "{}/examples/{}/".format(s, class_name))
         labels_path = os.path.join(output_path, "{}/labels/{}/".format(s, class_name))
 
-        copyfile(file, os.path.join(examples_path, filename))
-
         path = os.path.join(labels_path, filename)
         width, height = utils.get_raster_size(file)
 
         if not raster_records:
-            if include_empty:
-                utils.save_blank_raster(path, width, height)
             q.task_done()
             continue
 
@@ -156,12 +153,8 @@ def work(q, db, table_name, color_attribute, total_files=0):
 
         # Sometimes the raster is empty. We therefore have to save it as an empty raster
         if rast is None:
-            if include_empty:
-                utils.save_blank_raster(path, width, height)
-            else:
-                continue
-        else:
-            utils.save_file(rast, path)
+            q.task_done()
+            continue
 
         # Get the geojson for the geometries
         geojson_record = db.get_geojson_from_bbox(
@@ -172,13 +165,17 @@ def work(q, db, table_name, color_attribute, total_files=0):
             table_name,
         )
         geojson = geojson_record[0][0]
-        filename = "{}.{}".format(i, 'geojson')
-        path = os.path.join(labels_path, filename)
-        if not geojson:
-            # Save empty json file
-            utils.save_json('{}', path)
-            continue
-        utils.save_json(geojson, path)
+        json_filename = "{}.{}".format(i, 'geojson')
+        json_path = os.path.join(labels_path, json_filename)
+        if geojson['features'] is None:
+            if not include_empty:
+                q.task_done()
+                total_files -= 1
+                continue
+
+        copyfile(file, os.path.join(examples_path, filename))
+        utils.save_file(rast, path)
+        utils.save_json(geojson, json_path)
         q.task_done()
 
 
