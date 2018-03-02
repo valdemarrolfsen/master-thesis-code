@@ -58,5 +58,4 @@ if __name__ == '__main__':
                (args.input_size, args.input_size),
                args.classes,
                args.batch_size,
-               0,
-               args.steps_per_epoch)
+               0)
