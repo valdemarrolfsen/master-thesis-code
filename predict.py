@@ -23,7 +23,6 @@ n_classes = args.classes
 model_name = args.model_name
 images_path = args.test_images
 input_size = args.input_size
-epoch_number = args.epoch_number
 batch_size = args.batch_size
 
 model_choices = {
@@ -37,9 +36,6 @@ model = model_choice(n_classes, input_height=input_size, input_width=input_size,
 
 model.load_weights(args.save_weights_path)
 
-output_height = model.outputHeight
-output_width = model.outputWidth
-
 generator = create_generator(images_path, (input_size, input_size), batch_size=batch_size)
 images, masks = next(generator)
 
@@ -48,8 +44,8 @@ colors = [(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255
 
 for i, img in enumerate(images):
     pr = model.predict(np.array([img]))[0]
-    pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
-    seg_img = np.zeros((output_height, output_width, 3))
+    pr = pr.reshape((input_size, input_size, n_classes)).argmax(axis=2)
+    seg_img = np.zeros((input_size, input_size, 3))
 
     for c in range(n_classes):
         seg_img[:, :, 0] += ((pr[:, :] == c) * (colors[c][0])).astype('uint8')
