@@ -36,7 +36,7 @@ def CapsNet(input_shape, n_class, routings):
                              name='digitcaps')(primarycaps)
 
     # Layer 4: This is an auxiliary layer to replace each capsule with its length. Just to match the true label's shape.
-    # If using tensorflow, this will not be necessary. :)
+    # If using tensorflow, this will not be necessary.
     out_caps = Length(name='capsnet')(digitcaps)
 
     # Decoder network.
