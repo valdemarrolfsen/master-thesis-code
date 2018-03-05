@@ -73,6 +73,6 @@ def custom_gen(generator, input_size, batch_size, nb_classes):
         for i in range(mask.shape[0]):
             output[i] = to_categorical(mask[i], num_classes=nb_classes)
 
-        output[:, :, :, 1] *= 10
+        output[:, :, :, 1] *= 3
 
         yield img, output
