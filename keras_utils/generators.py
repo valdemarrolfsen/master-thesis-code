@@ -69,10 +69,6 @@ def custom_gen(generator, input_size, batch_size, nb_classes):
         img, mask = next(generator)
         mask[mask > nb_classes-1] = 0
         output = np.ndarray((batch_size, input_size[0], input_size[1], nb_classes))
-
         for i in range(mask.shape[0]):
             output[i] = to_categorical(mask[i], num_classes=nb_classes)
-
-        output[:, :, :, 1] *= 3
-
         yield img, output
