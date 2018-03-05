@@ -31,7 +31,7 @@ model_choices = {
 
 model_choice = model_choices[model_name]
 
-model = model_choice(n_classes, input_height=input_size, input_width=input_size, nChannels=3)
+model = model_choice(n_classes, input_size)
 
 model.load_weights(args.weights_path)
 

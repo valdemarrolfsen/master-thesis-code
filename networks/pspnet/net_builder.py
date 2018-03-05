@@ -237,7 +237,7 @@ def build_pyramid_pooling_module(res, input_shape):
     return res
 
 
-def build_pspnet(nb_classes, resnet_layers, input_shape):
+def build_pspnet(nb_classes, input_shape, resnet_layers=50):
     """Build PSPNet."""
     print("Building a PSPNet based on ResNet %i expecting inputs of shape %s predicting %i classes" % (
         resnet_layers, input_shape, nb_classes))

@@ -23,10 +23,10 @@ def get_crop_shape(target, refer):
     return (ch1, ch2), (cw1, cw2)
 
 
-def build_unet(nb_classes, input_width=473, input_height=473, nChannels=1):
+def build_unet(nb_classes, input_shape):
 
     concat_axis = 3
-    inputs = layers.Input((input_height, input_width, nChannels))
+    inputs = layers.Input((input_shape[0], input_shape[1], 3))
 
     conv1 = Conv2D(32, (3, 3), padding="same", name="conv1_1", activation="relu", data_format="channels_last")(inputs)
     conv1 = Conv2D(32, (3, 3), padding="same", activation="relu", data_format="channels_last")(conv1)
