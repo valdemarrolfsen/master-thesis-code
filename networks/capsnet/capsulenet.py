@@ -80,16 +80,15 @@ def train(model, args):
     """
     Training a CapsuleNet
     :param model: the CapsuleNet model
-    :param data: a tuple containing training and testing data, like `((x_train, y_train), (x_test, y_test))`
     :param args: arguments
     :return: The trained model
     """
 
     # callbacks
-    log = callbacks.CSVLogger(args.save_dir + '/log.csv')
-    tb = callbacks.TensorBoard(log_dir=args.save_dir + '/tensorboard-logs',
+    log = callbacks.CSVLogger(args.output_dir + '/log.csv')
+    tb = callbacks.TensorBoard(log_dir=args.output_dir + '/tensorboard-logs',
                                batch_size=args.batch_size, histogram_freq=int(args.debug))
-    checkpoint = callbacks.ModelCheckpoint(args.save_dir + '/weights-{epoch:02d}.h5', monitor='val_capsnet_acc',
+    checkpoint = callbacks.ModelCheckpoint(args.output_dir + '/weights-{epoch:02d}.h5', monitor='val_capsnet_acc',
                                            save_best_only=True, save_weights_only=True, verbose=1)
     lr_decay = callbacks.LearningRateScheduler(schedule=lambda epoch: args.lr * (args.lr_decay ** epoch))
 
@@ -99,14 +98,8 @@ def train(model, args):
                   loss_weights=[1., args.lam_recon],
                   metrics={'capsnet': 'accuracy'})
 
-    """
-    # Training without data augmentation:
-    model.fit([x_train, y_train], [y_train, x_train], batch_size=args.batch_size, epochs=args.epochs,
-              validation_data=[[x_test, y_test], [y_test, x_test]], callbacks=[log, tb, checkpoint, lr_decay])
-    """
-
     # Begin: Training with data augmentation ---------------------------------------------------------------------#
-    train_generator = create_generator('data/output')
+    train_generator = create_generator(args.data_dir, (400, 400), args.batch_size, 2)
 
     # Training with data augmentation. If shift_fraction=0., also no augmentation.
     model.fit_generator(generator=train_generator,
