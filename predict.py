@@ -37,7 +37,10 @@ model.load_weights(args.weights_path)
 
 generator, _ = create_generator(images_path, (input_size, input_size), batch_size, n_classes)
 images, masks = next(generator)
+
+print(images)
 probs = model.predict(images, verbose=1)
+print(probs)
 
 for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)

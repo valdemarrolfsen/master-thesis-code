@@ -2,6 +2,17 @@ from keras import layers, Model
 from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concatenate, Flatten, Dense, \
     BatchNormalization, Activation
 from keras.optimizers import Adam
+from keras.losses import categorical_crossentropy
+import keras.backend as K
+
+
+def weighted_categorical_crossentropy_fcn_loss(y_true, y_pred):
+    # y_true is a matrix of weight-hot vectors (like 1-hot, but they have weights instead of 1s)
+    y_true_mask = K.clip(y_true, 0.0, 1.0)  # [0 0 W 0] -> [0 0 1 0] where W >= 1.
+    cce = categorical_crossentropy(y_pred, y_true_mask)  # one dim less (each 1hot vector -> float number)
+    y_true_weights_maxed = K.max(y_true, axis=-1)  # [0 120 0 0] -> 120 - get weight for each weight-hot vector
+    wcce = cce * y_true_weights_maxed
+    return K.sum(wcce)
 
 
 def get_crop_shape(target, refer):
@@ -79,6 +90,9 @@ def build_unet(nb_classes, input_shape):
     conv10 = layers.Conv2D(nb_classes, (1, 1))(conv9)
     act = Activation('softmax')(conv10)
     model = Model(inputs=inputs, outputs=act)
-    model.compile(optimizer=Adam(lr=1e-4, amsgrad=True), loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(
+        optimizer=Adam(lr=1e-4, amsgrad=True),
+        loss=weighted_categorical_crossentropy_fcn_loss,
+        metrics=['accuracy'])
     # model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
