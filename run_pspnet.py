@@ -28,22 +28,11 @@ def define_args():
                         help='Number of classes in the dataset (default 2)',
                         default=2
                         )
-    parser.add_argument('--weights',
-                        type=str,
-                        help='Weights to load',
-                        default=None
-                        )
 
     parser.add_argument('--batch-size',
                         type=int,
                         help='Batch size',
                         default=2
-                        )
-
-    parser.add_argument('--steps-per-epoch',
-                        type=int,
-                        help='Steps per epoch',
-                        default=50
                         )
 
     args = parser.parse_args()
@@ -63,7 +52,5 @@ if __name__ == '__main__':
         args.classes,
         50,
         args.batch_size,
-        args.weights,
-        0,
-        args.steps_per_epoch
+        0
     )
