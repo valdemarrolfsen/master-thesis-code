@@ -1,8 +1,29 @@
 from keras import models, Input, Model
 from keras.layers import BatchNormalization, Activation, Conv2D, Dropout, MaxPooling2D, Conv2DTranspose, Reshape, \
-    Permute, concatenate
+    Permute, concatenate, Cropping2D
 from keras.optimizers import RMSprop
 from keras.regularizers import l2
+
+
+def get_crop_shape(target, refer):
+    # width, the 3rd dimension
+    print(target.get_shape())
+    print(refer.get_shape())
+    cw = (target.get_shape()[2] - refer.get_shape()[2]).value
+    assert (cw >= 0)
+    if cw % 2 != 0:
+        cw1, cw2 = int(cw / 2), int(cw / 2) + 1
+    else:
+        cw1, cw2 = int(cw / 2), int(cw / 2)
+    # height, the 2nd dimension
+    ch = (target.get_shape()[1] - refer.get_shape()[1]).value
+    assert (ch >= 0)
+    if ch % 2 != 0:
+        ch1, ch2 = int(ch / 2), int(ch / 2) + 1
+    else:
+        ch1, ch2 = int(ch / 2), int(ch / 2)
+
+    return (ch1, ch2), (cw1, cw2)
 
 
 def dense_block(layers_count, filters, previous_layer, model_layers, level):
