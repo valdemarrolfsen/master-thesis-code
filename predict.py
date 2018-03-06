@@ -17,13 +17,13 @@ parser.add_argument("--model-name", type=str, default="")
 parser.add_argument("--classes", type=int)
 
 class_color_map = {
-    0: [44, 62, 80],  # Empty
+    0: [170, 170, 170],  # Empty
     1: [204, 142, 53],  # Buildings
-    2: [165, 177, 194],  # Roads
-    3: [52, 172, 224],  # Water
-    4: [38, 222, 129],  # Grass
-    5: [0, 148, 50],  # Forest
-    6: [60, 99, 130],  # Developed
+    2: [179, 88, 6],  # Roads
+    3: [116, 173, 209],  # Water
+    4: [166, 219, 160],  # Grass
+    5: [27, 120, 55],  # Forest
+    6: [252, 255, 254],  # Developed
 }
 
 args = parser.parse_args()
