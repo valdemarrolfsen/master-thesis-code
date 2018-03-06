@@ -99,7 +99,7 @@ def fix_raster(src_filename):
     srcband = src_ds.GetRasterBand(1)
     maskband = srcband.GetMaskBand()
 
-    drv = gdal.GetDriverByName(format)
+    drv = gdal.GetDriverByName('GTiff')
     dst_ds = drv.Create("fix_{}".format(src_filename), src_ds.RasterXSize, src_ds.RasterYSize, 1,
                         srcband.DataType)
     wkt = src_ds.GetProjection()
