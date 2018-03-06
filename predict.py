@@ -19,10 +19,11 @@ parser.add_argument("--classes", type=int)
 class_color_map = {
     0: [44, 62, 80],  # Empty
     1: [204, 142, 53],  # Buildings
-    2: [52, 172, 224],  # Water
-    3: [38, 222, 129],  # Grass
-    4: [0, 148, 50],  # Forest
-    5: [165, 177, 194]  # Roads
+    2: [165, 177, 194],  # Roads
+    3: [52, 172, 224],  # Water
+    4: [38, 222, 129],  # Grass
+    5: [0, 148, 50],  # Forest
+    6: [60, 99, 130],  # Developed
 }
 
 args = parser.parse_args()
@@ -54,9 +55,12 @@ for i, prob in enumerate(probs):
     print(np.unique(result))
     img = images[i]
     img = (img*255).astype('uint8')
+    seg_img = np.zeros((input_size, input_size, 3))
 
     for c in range(n_classes):
-        result[result == c] = int(c/n_classes*255)
+        seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+        seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+        seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
 
-    cv2.imwrite("{}/pred-{}.tif".format(args.output_path, i), result)
+    cv2.imwrite("{}/pred-{}.tif".format(args.output_path, i), seg_img)
     cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
