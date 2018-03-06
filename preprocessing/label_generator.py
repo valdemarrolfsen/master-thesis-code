@@ -1,4 +1,3 @@
-import json
 import threading
 from queue import Queue, Empty
 
