@@ -89,11 +89,11 @@ def mask2poly(predicted_mask, x_scaler, y_scaler):
     return shapely.wkt.dumps(polygons)
 
 
-def fix_raster(raster_path):
+def fix_raster(path, name):
     gdal_siev = "gdal_sieve.py -st {0} {1} {2} ".format(
         5,
-        raster_path,
-        "fix_{}".format(raster_path)
+        "{}/{}".format(path, name),
+        "{}/fix_{}".format(path, name)
     )
 
     os.system(gdal_siev)
@@ -155,9 +155,9 @@ for i, prob in enumerate(probs):
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
         seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
-    mask_name = "{}/pred-{}.tif".format(args.output_path, i)
+    mask_name = "pred-{}.tif".format(i)
 
-    cv2.imwrite(mask_name, seg_img)
+    cv2.imwrite("{}/{}".format(args.output_path, mask_name), seg_img)
     cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
 
-    fix_raster(mask_name)
+    fix_raster(args.output_path, mask_name)
