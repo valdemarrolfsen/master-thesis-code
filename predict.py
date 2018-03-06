@@ -1,5 +1,6 @@
 import argparse
 import cv2
+import os
 import numpy as np
 
 import shapely.wkt
@@ -11,7 +12,6 @@ from collections import defaultdict
 from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
 from keras_utils.generators import create_generator
-from osgeo import gdal, ogr
 
 
 def simplify_contours(contours, epsilon):
@@ -89,25 +89,14 @@ def mask2poly(predicted_mask, x_scaler, y_scaler):
     return shapely.wkt.dumps(polygons)
 
 
-def fix_raster(src_filename):
-    threshold = 2
-    connectedness = 4
+def fix_raster(raster_path):
+    gdal_siev = "gdal_sieve.py -st {0} {1} {2} ".format(
+        5,
+        raster_path,
+        "fix_{}".format(raster_path)
+    )
 
-    gdal.AllRegister()
-
-    src_ds = gdal.Open(src_filename, gdal.GA_ReadOnly)
-    srcband = src_ds.GetRasterBand(1)
-    maskband = srcband.GetMaskBand()
-
-    drv = gdal.GetDriverByName('GTiff')
-    dst_ds = drv.Create("fix_{}".format(src_filename), src_ds.RasterXSize, src_ds.RasterYSize, 1,
-                        srcband.DataType)
-
-    dstband = dst_ds.GetRasterBand(1)
-
-    gdal.SieveFilter(srcband, maskband, dstband,
-                              threshold, connectedness,
-                              callback=gdal.TermProgress)
+    os.system(gdal_siev)
 
 
 parser = argparse.ArgumentParser()
