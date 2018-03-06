@@ -160,4 +160,4 @@ for i, prob in enumerate(probs):
     cv2.imwrite("{}/{}".format(args.output_path, mask_name), seg_img)
     cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
 
-    fix_raster(args.output_path, mask_name)
+    # fix_raster(args.output_path, mask_name)
