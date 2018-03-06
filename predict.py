@@ -174,8 +174,11 @@ for i, prob in enumerate(probs):
     seg_img = np.zeros((input_size, input_size, 3))
 
     poly_collection = mask2poly(result, 1, 1)
+
+    print(poly_collection)
+
     save_to_shp(poly_collection, i)
-    
+
     for c in range(n_classes):
         seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
