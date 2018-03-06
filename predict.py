@@ -5,6 +5,7 @@ import numpy as np
 
 import shapely.wkt
 import shapely.affinity
+from osgeo import ogr
 from shapely.geometry import MultiPolygon, Polygon
 
 from collections import defaultdict
@@ -86,7 +87,7 @@ def mask2poly(predicted_mask, x_scaler, y_scaler):
 
     polygons = shapely.affinity.scale(polygons, xfact=1.0 / x_scaler, yfact=1.0 / y_scaler, origin=(0, 0, 0))
 
-    return shapely.wkt.dumps(polygons)
+    return polygons
 
 
 def fix_raster(path, name):
@@ -97,6 +98,28 @@ def fix_raster(path, name):
     )
 
     os.system(gdal_siev)
+
+
+def save_to_shp(collection, i):
+    driver = ogr.GetDriverByName('Esri Shapefile')
+    ds = driver.CreateDataSource('shape_{}.shp'.format(i))
+    layer = ds.CreateLayer('', None, ogr.wkbPolygon)
+    # Add one attribute
+    layer.CreateField(ogr.FieldDefn('id', ogr.OFTInteger))
+    defn = layer.GetLayerDefn()
+
+    # Create a new feature (attribute and geometry)
+    feat = ogr.Feature(defn)
+
+    # Make a geometry, from Shapely object
+    geom = ogr.CreateGeometryFromWkb(collection.wkb)
+    feat.SetGeometry(geom)
+
+    layer.CreateFeature(feat)
+    feat = geom = None  # destroy these
+
+    # Save and close everything
+    ds = layer = feat = geom = None
 
 
 parser = argparse.ArgumentParser()
@@ -150,6 +173,9 @@ for i, prob in enumerate(probs):
     img = (img*255).astype('uint8')
     seg_img = np.zeros((input_size, input_size, 3))
 
+    poly_collection = mask2poly(result, 1, 1)
+    save_to_shp(poly_collection, i)
+    
     for c in range(n_classes):
         seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
@@ -159,5 +185,3 @@ for i, prob in enumerate(probs):
 
     cv2.imwrite("{}/{}".format(args.output_path, mask_name), seg_img)
     cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
-
-    # fix_raster(args.output_path, mask_name)
