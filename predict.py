@@ -11,6 +11,7 @@ from collections import defaultdict
 from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
 from keras_utils.generators import create_generator
+from osgeo import gdal, ogr
 
 
 def simplify_contours(contours, epsilon):
@@ -88,6 +89,14 @@ def mask2poly(predicted_mask, x_scaler, y_scaler):
     return shapely.wkt.dumps(polygons)
 
 
+def fix_raster(raster):
+    threshold = 2
+    connectedness = 4
+    return gdal.SieveFilter(raster, raster, raster,
+                              threshold, connectedness,
+                              callback=gdal.TermProgress)
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--weights-path", type=str)
 parser.add_argument("--epoch-number", type=int, default=5)
@@ -143,6 +152,8 @@ for i, prob in enumerate(probs):
         seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
         seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+
+    seg_img = fix_raster(seg_img)
 
     cv2.imwrite("{}/pred-{}.tif".format(args.output_path, i), seg_img)
     cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
