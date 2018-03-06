@@ -11,7 +11,7 @@ def run(args):
     width = dset.RasterXSize
     height = dset.RasterYSize
     print(width, 'x', height)
-    tilesize = 1000
+    tilesize = args.tile_size
     q = Queue()
     for i in range(0, width, tilesize):
         for j in range(0, height, tilesize):
@@ -44,6 +44,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_file', type=str, default='')
     parser.add_argument('--output_dir', type=str, default='')
+    parser.add_argument('--tile-size', type=int, default=512)
     parser.add_argument('--threads', type=int, default=8)
     args = parser.parse_args()
 
