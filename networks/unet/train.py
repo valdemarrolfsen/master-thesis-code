@@ -22,7 +22,7 @@ def train_unet(data_dir, logdir, input_size, nb_classes, batch_size, initial_epo
         validation_data=val_generator,
         validation_steps=val_samples,
         steps_per_epoch=steps_per_epoch,
-        epochs=1000, verbose=2,
+        epochs=1000, verbose=1,
         callbacks=callbacks(logdir),
         initial_epoch=initial_epoch)
 
