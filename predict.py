@@ -57,7 +57,7 @@ def fix_invalid_polygons(all_polygons):
 
 def mask2polygons_layer(mask, epsilon=1.0, min_area=10.0):
     # first, find contours with cv2: it's much faster than shapely
-    contours, hierarchy = cv2.findContours(mask.astype(np.uint8), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
+    contours, hierarchy = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
 
     # create approximate contours to have reasonable submission size
     if epsilon != 0:
