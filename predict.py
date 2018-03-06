@@ -89,10 +89,27 @@ def mask2poly(predicted_mask, x_scaler, y_scaler):
     return shapely.wkt.dumps(polygons)
 
 
-def fix_raster(raster):
+def fix_raster(src_filename):
     threshold = 2
     connectedness = 4
-    return gdal.SieveFilter(raster, raster, raster,
+
+    gdal.AllRegister()
+
+    src_ds = gdal.Open(src_filename, gdal.GA_ReadOnly)
+    srcband = src_ds.GetRasterBand(1)
+    maskband = srcband.GetMaskBand()
+
+    drv = gdal.GetDriverByName(format)
+    dst_ds = drv.Create("fix_{}".format(src_filename), src_ds.RasterXSize, src_ds.RasterYSize, 1,
+                        srcband.DataType)
+    wkt = src_ds.GetProjection()
+    if wkt != '':
+        dst_ds.SetProjection(wkt)
+    dst_ds.SetGeoTransform(src_ds.GetGeoTransform())
+
+    dstband = dst_ds.GetRasterBand(1)
+
+    gdal.SieveFilter(srcband, maskband, dstband,
                               threshold, connectedness,
                               callback=gdal.TermProgress)
 
@@ -153,7 +170,9 @@ for i, prob in enumerate(probs):
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
         seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
-    seg_img = fix_raster(seg_img)
+    mask_name = "{}/pred-{}.tif".format(args.output_path, i)
 
-    cv2.imwrite("{}/pred-{}.tif".format(args.output_path, i), seg_img)
+    cv2.imwrite(mask_name, seg_img)
     cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
+
+    fix_raster(mask_name)
