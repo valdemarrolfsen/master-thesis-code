@@ -174,7 +174,7 @@ for i, prob in enumerate(probs):
     seg_img = np.zeros((input_size, input_size, 3))
 
     poly_collection = mask2poly(result, 1, 1)
-    poly_collection = poly_collection.simplify(0.5, preserve_topology=False)
+    poly_collection = poly_collection.simplify(0.05, preserve_topology=False)
 
     save_to_shp(poly_collection, i)
 
