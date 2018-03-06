@@ -1,5 +1,5 @@
 import os
-
+import math
 from keras_utils.callbacks import callbacks
 from keras_utils.generators import create_generator
 from networks.unet.unet import build_unet
@@ -14,11 +14,18 @@ def train_unet(data_dir, logdir, input_size, nb_classes, batch_size, initial_epo
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, nb_classes)
 
+    steps_per_epoch = math.floor(num_samples/batch_size)
+    print('Using {} steps per epoch'.format(steps_per_epoch))
+
     model.fit_generator(
         generator=train_generator,
         validation_data=val_generator,
         validation_steps=val_samples,
-        steps_per_epoch=num_samples//batch_size,
-        epochs=100, verbose=True,
-        callbacks=callbacks(logdir), initial_epoch=initial_epoch)
+        steps_per_epoch=steps_per_epoch,
+        epochs=1000, verbose=2,
+        callbacks=callbacks(logdir),
+        initial_epoch=initial_epoch,
+        use_multiprocessing=True,
+        workers=8
+    )
 

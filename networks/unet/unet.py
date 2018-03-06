@@ -1,7 +1,6 @@
 from keras import layers, Model
-from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concatenate, Flatten, Dense, \
-    BatchNormalization, Activation, ELU
-from keras.optimizers import Adam, Nadam
+from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concatenate, ELU
+from keras.optimizers import Nadam
 
 
 def get_crop_shape(target, refer):
