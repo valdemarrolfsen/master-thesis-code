@@ -142,6 +142,8 @@ for i, prob in enumerate(probs):
     # Converting to polygons
     result = mask2poly(result, 1, 1)
 
+    print(result)
+
     for c in range(n_classes):
         seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
