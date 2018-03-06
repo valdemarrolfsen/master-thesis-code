@@ -139,18 +139,10 @@ for i, prob in enumerate(probs):
     img = (img*255).astype('uint8')
     seg_img = np.zeros((input_size, input_size, 3))
 
-    # Converting to polygons
-    result = mask2poly(result, 1, 1)
-
-    print(result)
-
     for c in range(n_classes):
         seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
         seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
-
-    # Converting to polygons
-    seg_img = mask2poly(seg_img, 1, 1)
 
     cv2.imwrite("{}/pred-{}.tif".format(args.output_path, i), seg_img)
     cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
