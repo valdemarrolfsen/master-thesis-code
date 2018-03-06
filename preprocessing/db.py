@@ -32,17 +32,38 @@ class Db(object):
         self.cursor.execute("SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';")
         self.cursor.execute("SET postgis.enable_outdb_rasters TO True;")
 
-    def get_tif_from_bbox(self, min_x, max_y, max_x, min_y, table_name, color_attribute='255'):
+    def get_tif_from_bbox(self, min_x, max_y, max_x, min_y, color_attribute='255'):
         x_res = 1000
         y_res = 1000
         x_scale = (max_x - min_x) / x_res
         y_scale = (max_y - min_y) / y_res
         query = """
-        WITH mygeoms AS (
+        WITH area AS (
           SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
             ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
             '8BUI', {color_attribute}::INTEGER, 0) as rast
-          FROM {table_name}
+          FROM ar5_flate
+          WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+        ),
+        roads AS (
+          SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
+            ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
+            '8BUI', {color_attribute}::INTEGER, 0) as rast
+          FROM veg_flate
+          WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+        ),
+        buildings AS (
+          SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
+            ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
+            '8BUI', {color_attribute}::INTEGER, 0) as rast
+          FROM bygning_flate
+          WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+        ),
+        water AS (
+          SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
+            ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
+            '8BUI', {color_attribute}::INTEGER, 0) as rast
+          FROM vann_flate
           WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
         ),
         empty as (
@@ -52,7 +73,12 @@ class Db(object):
                 '8BUI', 0, 0) as rast
         )
         SELECT ST_AsGDALRaster(st_union(foo.rast, 'sum'),'GTiff')
-        FROM (SELECT rast FROM mygeoms UNION SELECT rast FROM empty) foo
+        FROM (
+          SELECT rast FROM area
+          UNION SELECT rast from roads
+          UNION SELECT rast from buildings
+          UNION SELECT rast from water
+          UNION SELECT rast FROM empty) foo
         """.format(
             min_x=min_x,
             min_y=min_y,
@@ -62,7 +88,6 @@ class Db(object):
             y_res=y_res,
             x_scale=x_scale,
             y_scale=y_scale,
-            table_name=table_name,
             color_attribute=color_attribute
         )
 

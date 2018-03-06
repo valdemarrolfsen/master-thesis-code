@@ -122,7 +122,6 @@ def work(q, db, table_name, color_attribute, total_files=0):
             min_y,
             max_x,
             max_y,
-            table_name,
             color_attribute
         )
         # Save the file to an unique id and add the correct file ending
@@ -156,25 +155,25 @@ def work(q, db, table_name, color_attribute, total_files=0):
             continue
 
         # Get the geojson for the geometries
-        geojson_record = db.get_geojson_from_bbox(
-            min_x,
-            min_y,
-            max_x,
-            max_y,
-            table_name,
-        )
-        geojson = geojson_record[0][0]
-        json_filename = "{}.{}".format(i, 'geojson')
-        json_path = os.path.join(labels_path, json_filename)
-        if geojson['features'] is None:
-            if not include_empty:
-                q.task_done()
-                total_files -= 1
-                continue
+        # geojson_record = db.get_geojson_from_bbox(
+        #     min_x,
+        #     min_y,
+        #     max_x,
+        #     max_y,
+        #     table_name,
+        # )
+        # geojson = geojson_record[0][0]
+        # json_filename = "{}.{}".format(i, 'geojson')
+        # json_path = os.path.join(labels_path, json_filename)
+        # if geojson['features'] is None:
+        #     if not include_empty:
+        #         q.task_done()
+        #         total_files -= 1
+        #         continue
 
         copyfile(file, os.path.join(examples_path, filename))
         utils.save_file(rast, path)
-        utils.save_json(geojson, json_path)
+        # utils.save_json(geojson, json_path)
         q.task_done()
 
 
