@@ -24,8 +24,5 @@ def train_unet(data_dir, logdir, input_size, nb_classes, batch_size, initial_epo
         steps_per_epoch=steps_per_epoch,
         epochs=1000, verbose=2,
         callbacks=callbacks(logdir),
-        initial_epoch=initial_epoch,
-        use_multiprocessing=True,
-        workers=8
-    )
+        initial_epoch=initial_epoch)
 
