@@ -132,14 +132,15 @@ parser.add_argument("--batch-size", type=int, default=713)
 parser.add_argument("--model-name", type=str, default="")
 parser.add_argument("--classes", type=int)
 
+
 class_color_map = {
-    0: [170, 170, 170],  # Empty
-    1: [204, 142, 53],  # Buildings
-    2: [254, 241, 179],  # Roads
-    3: [116, 173, 209],  # Water
+    0: [0, 0, 0],  # Empty
+    1: [243, 243, 243],  # Developed
+    2: [116, 173, 209],  # Water
+    3: [27, 120, 55],  # Forest
     4: [193, 235, 176],  # Grass
-    5: [27, 120, 55],  # Forest
-    6: [243, 243, 243],  # Developed
+    5: [254, 241, 179],  # Roads
+    6: [170, 170, 170]  # Buildings
 }
 
 args = parser.parse_args()
