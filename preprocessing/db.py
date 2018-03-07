@@ -72,7 +72,7 @@ class Db(object):
                   ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
                 '8BUI', 0, 0) as rast
         )
-        SELECT ST_AsGDALRaster(st_union(foo.rast, 'sum'),'GTiff')
+        SELECT ST_AsGDALRaster(st_union(foo.rast, 'max  '),'GTiff')
         FROM (
           SELECT rast FROM area
           UNION SELECT rast from roads
