@@ -1,7 +1,17 @@
+import cv2
 import os
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
+
+
+def load_images_from_folder(folder):
+    images = []
+    for filename in os.listdir(folder):
+        img = cv2.imread(os.path.join(folder,filename))
+        if img is not None:
+            images.append(img)
+    return images
 
 
 def create_generator(datadir, input_size, batch_size, nb_classes, rescale=True):
@@ -15,7 +25,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=True):
         # set each sample mean to 0
         samplewise_center=False,
         # divide inputs by std of dataset
-        featurewise_std_normalization=False,
+        featurewise_std_normalization=True,
         # divide each input by its std
         samplewise_std_normalization=False,
         # apply ZCA whitening
@@ -36,11 +46,16 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=True):
         datagen_args['rescale'] = 1. / 255
 
     image_datagen = ImageDataGenerator(**datagen_args)
+
+    # We do not want to augment the labels other than skew and shift
     datagen_args['rescale'] = None
+    datagen_args['featurewise_std_normalization'] = False
     label_datagen = ImageDataGenerator(**datagen_args)
 
     # Compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied).
+    imgs = load_images_from_folder(image_dir)
+    image_datagen.fit(imgs)
 
     # Use the same seed for both generators so they return corresponding images
     seed = 1
