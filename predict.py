@@ -173,6 +173,7 @@ for i, prob in enumerate(probs):
     img = images[i]
     img = (img*255).astype('uint8')
     seg_img = np.zeros((input_size, input_size, 3))
+    seg_mask = np.zeros((input_size, input_size, 3))
 
     poly_collection = mask2poly(result, 1, 1)
     poly_collection = poly_collection.simplify(0.05, preserve_topology=False)
@@ -184,7 +185,12 @@ for i, prob in enumerate(probs):
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
         seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
+        seg_mask[:, :, 0] += ((masks[i][:, :] == c) * (class_color_map[c][2])).astype('uint8')
+        seg_mask[:, :, 1] += ((masks[i][:, :] == c) * (class_color_map[c][1])).astype('uint8')
+        seg_mask[:, :, 2] += ((masks[i][:, :] == c) * (class_color_map[c][0])).astype('uint8')
+
     mask_name = "pred-{}.tif".format(i)
 
     cv2.imwrite("{}/{}".format(args.output_path, mask_name), seg_img)
+    cv2.imwrite("{}/mask-{}".format(args.output_path, i), seg_mask)
     cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
