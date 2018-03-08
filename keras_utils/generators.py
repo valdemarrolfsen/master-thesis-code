@@ -25,7 +25,7 @@ def load_images_from_folder(folder, num_samples=5000):
     return images
 
 
-def create_generator(datadir, input_size, batch_size, nb_classes, rescale=True):
+def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False):
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
