@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       bzip2 \
       g++ \
       git \
+
       graphviz \
       libgl1-mesa-glx \
       libhdf5-dev \
@@ -55,7 +56,7 @@ RUN conda install -y python=${python_version} && \
       pygpu \
       pyyaml \
       scikit-learn \
-      cv2 \
+      opencv-python \ 
       six \
       theano && \
     git clone git://github.com/keras-team/keras.git /src && pip install -e /src[tests] && \
