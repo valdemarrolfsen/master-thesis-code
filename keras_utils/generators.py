@@ -5,7 +5,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
 
 
-def load_images_from_folder(folder):
+def load_images_from_folder(folder, num_samples=5000):
     images = []
     for filename in os.listdir(folder):
         fold = os.path.join(folder, filename)
@@ -13,7 +13,9 @@ def load_images_from_folder(folder):
             folder = fold
             break
 
-    for filename in os.listdir(folder):
+    for i, filename in enumerate(os.listdir(folder)):
+        if i > num_samples:
+            break
         imgpath = os.path.join(folder, filename)
         if not os.path.isfile(imgpath):
             continue
