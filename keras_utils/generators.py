@@ -8,7 +8,10 @@ from keras.utils import to_categorical
 def load_images_from_folder(folder):
     images = []
     for filename in os.listdir(folder):
-        img = cv2.imread(os.path.join(folder,filename))
+        if not os.path.isfile(filename):
+            continue
+
+        img = cv2.imread(os.path.join(folder, filename))
         if img is not None:
             images.append(img)
     return images
