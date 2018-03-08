@@ -94,6 +94,10 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False)
 def custom_gen(generator, input_size, batch_size, nb_classes):
     while True:
         img, mask = next(generator)
+
+        if len(img) != batch_size:
+            continue
+
         mask[mask > nb_classes-1] = 0
         output = np.ndarray((batch_size, input_size[0], input_size[1], nb_classes))
         for i in range(mask.shape[0]):
