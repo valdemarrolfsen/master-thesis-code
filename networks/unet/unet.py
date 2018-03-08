@@ -1,6 +1,6 @@
 from keras import layers, Model
 from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concatenate, ELU
-from keras.optimizers import Nadam
+from keras.optimizers import Nadam, Adam
 
 
 def get_crop_shape(target, refer):
@@ -94,7 +94,7 @@ def build_unet(nb_classes, input_shape):
 
     ch, cw = get_crop_shape(inputs, conv9)
     conv9 = layers.ZeroPadding2D(padding=((ch[0], ch[1]), (cw[0], cw[1])))(conv9)
-    conv10 = layers.Conv2D(nb_classes, (1, 1), activation='sigmoid')(conv9)
+    conv10 = layers.Conv2D(nb_classes, (1, 1), activation='softmax')(conv9)
     model = Model(inputs=inputs, outputs=conv10)
-    model.compile(optimizer=Nadam(lr=1e-3), loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=Adam(lr=1e-3), loss='categorical_crossentropy', metrics=['accuracy'])
     return model
