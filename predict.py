@@ -192,5 +192,5 @@ for i, prob in enumerate(probs):
     mask_name = "pred-{}.tif".format(i)
 
     cv2.imwrite("{}/{}".format(args.output_path, mask_name), seg_img)
-    cv2.imwrite("{}/mask-{}".format(args.output_path, i), seg_mask)
+    cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), seg_mask)
     cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
