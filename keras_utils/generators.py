@@ -32,7 +32,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False)
     datagen_args = dict(
         data_format='channels_last',
         # set input mean to 0 over the dataset
-        featurewise_center=False,
+        featurewise_center=True,
         # set each sample mean to 0
         samplewise_center=False,
         # divide inputs by std of dataset
@@ -61,6 +61,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False)
     # We do not want to augment the labels other than skew and shift
     datagen_args['rescale'] = None
     datagen_args['featurewise_std_normalization'] = False
+    datagen_args['featurewise_center'] = False
     label_datagen = ImageDataGenerator(**datagen_args)
 
     # Compute quantities required for featurewise normalization

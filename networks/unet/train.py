@@ -17,7 +17,7 @@ def train_unet(data_dir, logdir, input_size, nb_classes, batch_size, initial_epo
     model.fit_generator(
         generator=train_generator,
         validation_data=val_generator,
-        validation_steps=val_samples,
+        validation_steps=val_samples//batch_size,
         steps_per_epoch=num_samples//batch_size,
         epochs=100, verbose=True,
         callbacks=callbacks(logdir), initial_epoch=initial_epoch)
