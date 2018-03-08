@@ -8,10 +8,16 @@ from keras.utils import to_categorical
 def load_images_from_folder(folder):
     images = []
     for filename in os.listdir(folder):
-        if not os.path.isfile(filename):
-            continue
+        fold = os.path.join(folder, filename)
+        if os.path.isdir(fold):
+            folder = fold
+            break
 
-        img = cv2.imread(os.path.join(folder, filename))
+    for filename in os.listdir(folder):
+        imgpath = os.path.join(folder, filename)
+        if not os.path.isfile(imgpath):
+            continue
+        img = cv2.imread(imgpath)
         if img is not None:
             images.append(img)
     return images
@@ -58,6 +64,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=True):
     # Compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied).
     imgs = load_images_from_folder(image_dir)
+    print(imgs)
     image_datagen.fit(imgs)
 
     # Use the same seed for both generators so they return corresponding images
