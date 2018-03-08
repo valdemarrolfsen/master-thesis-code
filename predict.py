@@ -169,7 +169,7 @@ probs = model.predict(images, verbose=1)
 
 for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
-    print(np.unique(result))
+    mask_result = np.argmax(masks[i], axis=2)
     img = images[i]
     img = (img*255).astype('uint8')
     seg_img = np.zeros((input_size, input_size, 3))
@@ -185,9 +185,9 @@ for i, prob in enumerate(probs):
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
         seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
-        seg_mask[:, :, 0] += ((masks[i][:, :] == c) * (class_color_map[c][2])).astype('uint8')
-        seg_mask[:, :, 1] += ((masks[i][:, :] == c) * (class_color_map[c][1])).astype('uint8')
-        seg_mask[:, :, 2] += ((masks[i][:, :] == c) * (class_color_map[c][0])).astype('uint8')
+        seg_mask[:, :, 0] += ((mask_result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+        seg_mask[:, :, 1] += ((mask_result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+        seg_mask[:, :, 2] += ((mask_result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
     mask_name = "pred-{}.tif".format(i)
 
