@@ -1,6 +1,6 @@
 from keras import layers, Model
 from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concatenate, Flatten, Dense, \
-    BatchNormalization, Activation, Dropout
+    BatchNormalization, Activation
 from keras.optimizers import Adam
 
 
@@ -24,6 +24,7 @@ def get_crop_shape(target, refer):
 
 
 def build_unet(nb_classes, input_shape):
+
     concat_axis = 3
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
 
@@ -44,41 +45,29 @@ def build_unet(nb_classes, input_shape):
 
     conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last")(pool4)
     conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last")(conv5)
-    pool5 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv5)
 
-    convbott = Conv2D(1024, (3, 3), padding="same", activation="relu", data_format="channels_last")(pool5)
-    convbott = Conv2D(1024, (3, 3), padding="same", activation="relu", data_format="channels_last")(convbott)
-    convbott = Dropout(0.5)(convbott)
-    up_convbott = UpSampling2D(size=(2, 2), data_format="channels_last")(convbott)
-
-    ch, cw = get_crop_shape(conv5, up_convbott)
-    crop_conv5 = Cropping2D(cropping=(ch, cw), data_format="channels_last")(conv5)
-    upbott = concatenate([up_convbott, crop_conv5], axis=concat_axis)
-    convbott1 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last")(upbott)
-    convbott1 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last")(convbott1)
-    up_convbott1 = UpSampling2D(size=(2, 2), data_format="channels_last")(convbott1)
-
-    ch, cw = get_crop_shape(conv4, up_convbott1)
+    up_conv5 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv5)
+    ch, cw = get_crop_shape(conv4, up_conv5)
     crop_conv4 = Cropping2D(cropping=(ch, cw), data_format="channels_last")(conv4)
-    up6 = concatenate([up_convbott1, crop_conv4], axis=concat_axis)
+    up6 = concatenate([up_conv5, crop_conv4], axis=concat_axis)
     conv6 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last")(up6)
     conv6 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last")(conv6)
-    up_conv6 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv6)
 
+    up_conv6 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv6)
     ch, cw = get_crop_shape(conv3, up_conv6)
     crop_conv3 = Cropping2D(cropping=(ch, cw), data_format="channels_last")(conv3)
     up7 = concatenate([up_conv6, crop_conv3], axis=concat_axis)
     conv7 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last")(up7)
     conv7 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last")(conv7)
-    up_conv7 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv7)
 
+    up_conv7 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv7)
     ch, cw = get_crop_shape(conv2, up_conv7)
     crop_conv2 = Cropping2D(cropping=(ch, cw), data_format="channels_last")(conv2)
     up8 = concatenate([up_conv7, crop_conv2], axis=concat_axis)
     conv8 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last")(up8)
     conv8 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last")(conv8)
-    up_conv8 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv8)
 
+    up_conv8 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv8)
     ch, cw = get_crop_shape(conv1, up_conv8)
     crop_conv1 = Cropping2D(cropping=(ch, cw), data_format="channels_last")(conv1)
     up9 = concatenate([up_conv8, crop_conv1], axis=concat_axis)
@@ -91,7 +80,7 @@ def build_unet(nb_classes, input_shape):
     act = Activation('softmax')(conv10)
     model = Model(inputs=inputs, outputs=act)
     model.compile(
-        optimizer=Adam(lr=1e-4),
+        optimizer=Adam(lr=1e-4, amsgrad=True),
         loss='categorical_crossentropy',
         metrics=['accuracy'])
     # model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
