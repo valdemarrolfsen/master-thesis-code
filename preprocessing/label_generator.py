@@ -1,4 +1,5 @@
 import threading
+import uuid
 from queue import Queue, Empty
 
 import gdal
@@ -99,7 +100,8 @@ def run():
 
 def is_raster_square(rast):
     # Use a virtual memory file, which is named like this
-    vsipath = '/vsimem/from_postgis'
+    i = uuid.uuid4()
+    vsipath = '/vsimem/from_postgis' + str(i)
     gdal.FileFromMemBuffer(vsipath, bytes(rast))
     ds = gdal.Open(vsipath)
     cols = ds.RasterXSize
@@ -169,7 +171,6 @@ def work(q, db, table_name, color_attribute, total_files=0):
 
         # Sometimes the raster is empty. We therefore have to save it as an empty raster
         if rast is None:
-
             q.task_done()
             continue
 
