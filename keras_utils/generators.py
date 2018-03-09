@@ -48,9 +48,9 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False)
         # randomly shift images vertically
         height_shift_range=0,
         # randomly flip images
-        horizontal_flip=True,
+        horizontal_flip=False,
         # randomly flip images
-        vertical_flip=True)
+        vertical_flip=False)
 
     if rescale:
         # Scale down the values
