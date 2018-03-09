@@ -130,7 +130,7 @@ def get_real_image(path, name):
 
     image_path = os.path.join(path, name)
 
-    print(images_path)
+    print(image_path)
 
     return cv2.imread(image_path)
 
