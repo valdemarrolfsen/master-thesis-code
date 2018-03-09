@@ -125,6 +125,9 @@ def save_to_shp(collection, i):
 
 def get_real_image(path, name):
     image_path = os.path.join(path, name)
+
+    print(images_path)
+
     return cv2.imread(image_path)
 
 
@@ -184,8 +187,6 @@ for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
     mask_result = np.argmax(masks[i], axis=2)
     img = get_real_image(images_path, file_names[i])
-
-    print(img)
 
     seg_img = np.zeros((input_size, input_size, 3))
     seg_mask = np.zeros((input_size, input_size, 3))
