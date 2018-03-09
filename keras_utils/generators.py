@@ -66,7 +66,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
 
     # Compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied).
-    imgs = load_images_from_folder(image_dir, num_samples=1)
+    imgs = load_images_from_folder(image_dir, num_samples=1000)
     image_datagen.fit(imgs)
 
     # Use the same seed for both generators so they return corresponding images
