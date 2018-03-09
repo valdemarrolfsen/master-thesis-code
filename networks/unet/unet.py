@@ -30,7 +30,9 @@ def build_unet(nb_classes, input_shape):
 
     conv1 = Conv2D(32, (3, 3), padding="same", name="conv1_1", activation="relu", data_format="channels_last", kernel_initializer='he_uniform')(inputs)
     conv1 = Conv2D(32, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv1)
+    conv1 = BatchNormalization(axis=-1)(conv1)
     pool1 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv1)
+
     conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(pool1)
     conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv2)
     conv2 = BatchNormalization(axis=-1)(conv2)
@@ -62,7 +64,6 @@ def build_unet(nb_classes, input_shape):
     upbott = concatenate([up_convbott, crop_conv5], axis=concat_axis)
     convbott1 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(upbott)
     convbott1 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(convbott1)
-    convbott1 = BatchNormalization(axis=-1)(convbott1)
     up_convbott1 = UpSampling2D(size=(2, 2), data_format="channels_last")(convbott1)
 
     ch, cw = get_crop_shape(conv4, up_convbott1)
