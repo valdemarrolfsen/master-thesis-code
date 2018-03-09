@@ -25,7 +25,7 @@ def load_images_from_folder(folder, num_samples=5000):
     return images
 
 
-def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False):
+def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, with_file_names=False):
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
@@ -88,10 +88,10 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False)
         seed=seed)
 
     generator = zip(image_generator, label_generator)
-    return custom_gen(generator, input_size, batch_size, nb_classes), image_generator.samples
+    return custom_gen(generator, input_size, batch_size, nb_classes, with_file_names), image_generator.samples
 
 
-def custom_gen(generator, input_size, batch_size, nb_classes):
+def custom_gen(generator, input_size, batch_size, nb_classes, with_file_names):
     while True:
         img, mask = next(generator)
 
@@ -102,4 +102,10 @@ def custom_gen(generator, input_size, batch_size, nb_classes):
         output = np.ndarray((batch_size, input_size[0], input_size[1], nb_classes))
         for i in range(mask.shape[0]):
             output[i] = to_categorical(mask[i], num_classes=nb_classes)
-        yield img, output
+
+        if with_file_names:
+            idx = (generator.batch_index - 1) * generator.batch_size
+            file_names = generator.filenames[idx: idx + generator.batch_size]
+            yield img, output, file_names
+        else:
+            yield img, output

@@ -169,6 +169,10 @@ for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
     mask_result = np.argmax(masks[i], axis=2)
     img = images[i]
+
+    img = img * generator.std
+    img = img + generator.mean
+
     seg_img = np.zeros((input_size, input_size, 3))
     seg_mask = np.zeros((input_size, input_size, 3))
 
