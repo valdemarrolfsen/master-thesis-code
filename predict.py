@@ -124,15 +124,15 @@ def save_to_shp(collection, i):
 
 
 def get_real_image(path, name):
-
-    print(path)
-    print(name)
-
     image_path = os.path.join(path, name)
 
-    print(image_path)
+    img = cv2.imread(image_path)
 
-    return cv2.imread(image_path)
+    print(img.shape)
+    print(img)
+
+
+    return img
 
 
 parser = argparse.ArgumentParser()
