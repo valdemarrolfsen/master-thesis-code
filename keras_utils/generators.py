@@ -89,21 +89,21 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
 
     generator = zip(image_generator, label_generator)
 
-    file_names = None
+    file_name_generator = None
 
     if with_file_names:
-        file_names = image_generator.filenames
+        file_name_generator = image_generator
 
     return custom_gen(
         generator,
         input_size,
         batch_size,
         nb_classes,
-        file_names
+        file_name_generator
     ), image_generator.samples
 
 
-def custom_gen(generator, input_size, batch_size, nb_classes, file_names):
+def custom_gen(generator, input_size, batch_size, nb_classes, file_name_generator):
     while True:
         img, mask = next(generator)
 
@@ -115,9 +115,9 @@ def custom_gen(generator, input_size, batch_size, nb_classes, file_names):
         for i in range(mask.shape[0]):
             output[i] = to_categorical(mask[i], num_classes=nb_classes)
 
-        if file_names:
-            idx = (generator.batch_index - 1) * generator.batch_size
-            file_names = file_names[idx: idx + generator.batch_size]
+        if file_name_generator:
+            idx = (file_name_generator.batch_index - 1) * file_name_generator.batch_size
+            file_names = file_name_generator.filenames[idx: idx + file_name_generator.batch_size]
             yield img, output, file_names
         else:
             yield img, output
