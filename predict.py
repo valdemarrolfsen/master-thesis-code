@@ -178,6 +178,8 @@ generator, _ = create_generator(
 images, masks, file_names = next(generator)
 probs = model.predict(images, verbose=1)
 
+print(file_names)
+
 for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
     mask_result = np.argmax(masks[i], axis=2)
@@ -186,10 +188,10 @@ for i, prob in enumerate(probs):
     seg_img = np.zeros((input_size, input_size, 3))
     seg_mask = np.zeros((input_size, input_size, 3))
 
-    poly_collection = mask2poly(result, 1, 1)
-    poly_collection = poly_collection.simplify(0.05, preserve_topology=False)
+    # poly_collection = mask2poly(result, 1, 1)
+    # poly_collection = poly_collection.simplify(0.05, preserve_topology=False)
 
-    save_to_shp(poly_collection, i)
+    # save_to_shp(poly_collection, i)
 
     for c in range(n_classes):
         seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
