@@ -80,7 +80,7 @@ def build_unet(nb_classes, input_shape):
     act = Activation('softmax')(conv10)
     model = Model(inputs=inputs, outputs=act)
     model.compile(
-        optimizer=Adam(lr=1e-4, amsgrad=True),
+        optimizer=Adam(lr=1e-4),
         loss='categorical_crossentropy',
         metrics=['accuracy'])
     # model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
