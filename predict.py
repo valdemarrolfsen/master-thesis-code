@@ -161,11 +161,18 @@ model = model_choice(n_classes, (input_size, input_size))
 
 model.load_weights(args.weights_path)
 
-generator, _ = create_generator(images_path, (input_size, input_size), batch_size, n_classes)
-images, masks = next(generator)
+generator, _ = create_generator(
+    images_path,
+    (input_size, input_size),
+    batch_size,
+    n_classes,
+    rescale=False,
+    with_file_names=True
+)
 
-images = images * (generator.std + K.epsilon())
-images = images + generator.mean
+images, masks, filenames = next(generator)
+
+print(filenames)
 
 probs = model.predict(images, verbose=1)
 
