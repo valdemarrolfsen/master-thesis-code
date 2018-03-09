@@ -45,6 +45,13 @@ class Db(object):
           FROM ar5_flate
           WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
         ),
+        areatype AS (
+          SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
+            ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
+            '8BUI', {color_attribute}::INTEGER, 0) as rast
+          FROM arealbruk_flate
+          WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+        ),
         roads AS (
           SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
             ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
@@ -59,6 +66,13 @@ class Db(object):
           FROM bygning_flate
           WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
         ),
+        structures AS (
+          SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
+            ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
+            '8BUI', {color_attribute}::INTEGER, 0) as rast
+          FROM bygnanlegg_flate
+          WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+        ),
         water AS (
           SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
             ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
@@ -66,11 +80,13 @@ class Db(object):
           FROM vann_flate
           WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
         )
-        SELECT ST_AsGDALRaster(st_union(foo.rast, 'max  '),'GTiff')
+        SELECT ST_AsGDALRaster(st_union(foo.rast, 'max'),'GTiff')
         FROM (
           SELECT rast FROM area
+          UNION SELECT rast from areatype
           UNION SELECT rast from roads
           UNION SELECT rast from buildings
+          UNION SELECT rast from structures
           UNION SELECT rast from water) foo
         """.format(
             min_x=min_x,
