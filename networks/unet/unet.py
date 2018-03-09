@@ -27,33 +27,38 @@ def build_unet(nb_classes, input_shape):
 
     concat_axis = 3
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
-
     conv1 = Conv2D(32, (3, 3), padding="same", name="conv1_1", activation="relu", data_format="channels_last", kernel_initializer='he_uniform')(inputs)
+    conv1 = BatchNormalization(axis=-1)(conv1)
     conv1 = Conv2D(32, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv1)
     conv1 = BatchNormalization(axis=-1)(conv1)
     pool1 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv1)
 
     conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(pool1)
+    conv2 = BatchNormalization(axis=-1)(conv2)
     conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv2)
     conv2 = BatchNormalization(axis=-1)(conv2)
     pool2 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv2)
 
     conv3 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(pool2)
+    conv3 = BatchNormalization(axis=-1)(conv3)
     conv3 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv3)
     conv3 = BatchNormalization(axis=-1)(conv3)
     pool3 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv3)
 
     conv4 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(pool3)
+    conv4 = BatchNormalization(axis=-1)(conv4)
     conv4 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv4)
     conv4 = BatchNormalization(axis=-1)(conv4)
     pool4 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv4)
 
     conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(pool4)
+    conv5 = BatchNormalization(axis=-1)(conv5)
     conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv5)
     conv5 = BatchNormalization(axis=-1)(conv5)
     pool5 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv5)
 
     convbott = Conv2D(1024, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(pool5)
+    convbott = BatchNormalization(axis=-1)(convbott)
     convbott = Conv2D(1024, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(convbott)
     convbott = Dropout(0.5)(convbott)
     convbott = BatchNormalization(axis=-1)(convbott)
