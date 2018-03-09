@@ -123,6 +123,11 @@ def save_to_shp(collection, i):
     ds = layer = feat = geom = None
 
 
+def get_real_image(path, name):
+    image_path = os.path.join(path, name)
+    return cv2.imread(image_path)
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--weights-path", type=str)
 parser.add_argument("--epoch-number", type=int, default=5)
@@ -170,16 +175,13 @@ generator, _ = create_generator(
     with_file_names=True
 )
 
-images, masks, filenames = next(generator)
-
-print(filenames)
-
+images, masks, file_names = next(generator)
 probs = model.predict(images, verbose=1)
 
 for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
     mask_result = np.argmax(masks[i], axis=2)
-    img = images[i]
+    img = get_real_image(images_path, file_names[i])
 
     seg_img = np.zeros((input_size, input_size, 3))
     seg_mask = np.zeros((input_size, input_size, 3))
