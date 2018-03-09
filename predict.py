@@ -124,14 +124,8 @@ def save_to_shp(collection, i):
 
 
 def get_real_image(path, name):
-    image_path = os.path.join(path, name)
-
+    image_path = os.path.join(path, 'examples', name)
     img = cv2.imread(image_path)
-
-    print(img.shape)
-    print(img)
-
-
     return img
 
 
