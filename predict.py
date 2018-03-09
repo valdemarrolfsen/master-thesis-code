@@ -135,12 +135,10 @@ parser.add_argument("--classes", type=int)
 
 class_color_map = {
     0: [0, 0, 0],  # Empty
-    1: [243, 243, 243],  # Developed
+    1: [254, 241, 179],  # Roads
     2: [116, 173, 209],  # Water
-    3: [27, 120, 55],  # Forest
-    4: [193, 235, 176],  # Grass
-    5: [254, 241, 179],  # Roads
-    6: [170, 170, 170]  # Buildings
+    3: [193, 235, 176],  # Grass
+    4: [170, 170, 170]  # Buildings
 }
 
 args = parser.parse_args()
