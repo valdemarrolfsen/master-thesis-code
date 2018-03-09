@@ -124,6 +124,10 @@ def save_to_shp(collection, i):
 
 
 def get_real_image(path, name):
+
+    print(path)
+    print(name)
+
     image_path = os.path.join(path, name)
 
     print(images_path)
@@ -180,8 +184,6 @@ generator, _ = create_generator(
 
 images, masks, file_names = next(generator)
 probs = model.predict(images, verbose=1)
-
-print(file_names)
 
 for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
