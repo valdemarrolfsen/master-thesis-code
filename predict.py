@@ -185,6 +185,8 @@ for i, prob in enumerate(probs):
     mask_result = np.argmax(masks[i], axis=2)
     img = get_real_image(images_path, file_names[i])
 
+    print(img)
+
     seg_img = np.zeros((input_size, input_size, 3))
     seg_mask = np.zeros((input_size, input_size, 3))
 
