@@ -134,7 +134,7 @@ parser.add_argument("--classes", type=int)
 
 
 class_color_map = {
-    0: [0, 0, 0],  # Empty
+    0: [237, 237, 237],  # Empty
     1: [254, 241, 179],  # Roads
     2: [116, 173, 209],  # Water
     3: [193, 235, 176],  # Grass
@@ -169,7 +169,6 @@ for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
     mask_result = np.argmax(masks[i], axis=2)
     img = images[i]
-    img = (img*255).astype('uint8')
     seg_img = np.zeros((input_size, input_size, 3))
     seg_mask = np.zeros((input_size, input_size, 3))
 
