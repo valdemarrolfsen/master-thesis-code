@@ -1,6 +1,7 @@
 import threading
 from queue import Queue, Empty
 
+import gdal
 import numpy as np
 import os
 
@@ -96,6 +97,24 @@ def run():
     print("")
 
 
+def is_raster_square(rast):
+    # Use a virtual memory file, which is named like this
+    vsipath = '/vsimem/from_postgis'
+    gdal.FileFromMemBuffer(vsipath, bytes(rast))
+    ds = gdal.Open(vsipath)
+    cols = ds.RasterXSize
+    rows = ds.RasterYSize
+    # We accept the rasters that come out 1 px wrong
+    min_thresh = rows - 1
+    max_thresh = rows + 1
+    if cols < min_thresh or cols > max_thresh:
+        return False
+    # Close and clean up virtual memory file
+    ds = None
+    gdal.Unlink(vsipath)
+    return True
+
+
 def work(q, db, table_name, color_attribute, total_files=0):
     global file_type
     global examples_path
@@ -141,7 +160,6 @@ def work(q, db, table_name, color_attribute, total_files=0):
         labels_path = os.path.join(output_path, "{}/labels/{}/".format(s, class_name))
 
         path = os.path.join(labels_path, filename)
-        width, height = utils.get_raster_size(file)
 
         if not raster_records:
             q.task_done()
@@ -151,9 +169,13 @@ def work(q, db, table_name, color_attribute, total_files=0):
 
         # Sometimes the raster is empty. We therefore have to save it as an empty raster
         if rast is None:
+
             q.task_done()
             continue
 
+        if not is_raster_square(rast):
+            q.task_done()
+            continue
         # Get the geojson for the geometries
         # geojson_record = db.get_geojson_from_bbox(
         #     min_x,
