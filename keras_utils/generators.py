@@ -116,7 +116,7 @@ def custom_gen(generator, input_size, batch_size, nb_classes, file_name_generato
             output[i] = to_categorical(mask[i], num_classes=nb_classes)
 
         if file_name_generator:
-            idx = (file_name_generator.batch_index - 1) * file_name_generator.batch_size
+            idx = file_name_generator.batch_index * file_name_generator.batch_size
             file_names = file_name_generator.filenames[idx: idx + file_name_generator.batch_size]
             yield img, output, file_names
         else:
