@@ -68,7 +68,7 @@ def run():
 
     for i, input_img in enumerate(images):
 
-        predictions_smooth = predict_img_with_smooth_windowing(
+        pred = predict_img_with_smooth_windowing(
             input_img,
             window_size=window_size,
             subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
@@ -80,19 +80,20 @@ def run():
             )
         )
 
-        for j, prob in enumerate(predictions_smooth):
-            result = np.argmax(prob, axis=2)
+        print(pred.shape)
 
-            seg_img = np.zeros((input_size, input_size, 3))
+        result = np.argmax(pred, axis=2)
 
-            for c in range(n_classes):
-                seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
-                seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
-                seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+        seg_img = np.zeros((input_size, input_size, 3))
 
-            mask_name = "pred-{}-{}.tif".format(i, j)
+        for c in range(n_classes):
+            seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+            seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+            seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
-            cv2.imwrite("{}/{}".format(args.output_path, mask_name), seg_img)
+        mask_name = "pred-{}-{}.tif".format(i, j)
+
+        cv2.imwrite("{}/{}".format(args.output_path, mask_name), seg_img)
 
 
 if __name__ == '__main__':
