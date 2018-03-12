@@ -14,6 +14,9 @@ def image_to_neural_input(image_batch, image_datagen):
     x = image_batch
     y = np.zeros(x.shape[0])
 
+    print(x.shape)
+    print(y.shape)
+
     generator = image_datagen.flow(
         x=x,
         y=y,
