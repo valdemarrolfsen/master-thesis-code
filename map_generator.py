@@ -84,7 +84,7 @@ def run():
 
         result = np.argmax(pred, axis=2)
 
-        seg_img = np.zeros((input_size, input_size, 3))
+        seg_img = np.zeros((pred.shape[0], pred.shape[1], 3))
 
         for c in range(n_classes):
             seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
