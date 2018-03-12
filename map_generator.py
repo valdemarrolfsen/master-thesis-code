@@ -11,12 +11,12 @@ from networks.unet.unet import build_unet
 def image_to_neural_input(image_batch, image_datagen):
 
     print(image_batch.shape)
-    
+
     generator = image_datagen.flow(
-        image_batch
+        image_batch,
     )
 
-    return next(generator)
+    return generator
 
 
 def run():
@@ -54,7 +54,7 @@ def run():
     # Set up the generators
     image_datagen, _ = set_up_generators(sample_path, rescale=False)
 
-    window_size = batch_size
+    window_size = 160
 
     images = load_images_from_folder(images_path, num_samples=10000000)
 
