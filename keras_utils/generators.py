@@ -25,10 +25,7 @@ def load_images_from_folder(folder, num_samples=5000):
     return images
 
 
-def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, with_file_names=False):
-    image_dir = os.path.join(datadir, "examples")
-    label_dir = os.path.join(datadir, "labels")
-
+def set_up_generators(image_dir, rescale):
     datagen_args = dict(
         data_format='channels_last',
         # set input mean to 0 over the dataset
@@ -68,6 +65,16 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     # (std, mean, and principal components if ZCA whitening is applied).
     imgs = load_images_from_folder(image_dir, num_samples=1000)
     image_datagen.fit(imgs)
+
+    return image_datagen, label_datagen
+
+
+def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, with_file_names=False):
+    image_dir = os.path.join(datadir, "examples")
+    label_dir = os.path.join(datadir, "labels")
+
+    # Set up the generators
+    image_datagen, label_datagen = set_up_generators(image_dir, rescale)
 
     # Use the same seed for both generators so they return corresponding images
     seed = 1
