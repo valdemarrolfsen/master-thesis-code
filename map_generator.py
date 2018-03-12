@@ -1,6 +1,7 @@
 import argparse
 import cv2
 import os
+import numpy as np
 
 from keras_utils.generators import set_up_generators, load_images_from_folder
 from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing
@@ -30,6 +31,14 @@ def run():
     parser.add_argument("--input-size", type=int, default=713)
     parser.add_argument("--model-name", type=str, default="")
     parser.add_argument("--classes", type=int)
+
+    class_color_map = {
+        0: [237, 237, 237],  # Empty
+        1: [254, 241, 179],  # Roads
+        2: [116, 173, 209],  # Water
+        3: [193, 235, 176],  # Grass
+        4: [170, 170, 170]  # Buildings
+    }
 
     args = parser.parse_args()
 
@@ -71,9 +80,19 @@ def run():
             )
         )
 
-        print(predictions_smooth)
+        for j, prob in enumerate(predictions_smooth):
+            result = np.argmax(prob, axis=2)
 
-        cv2.imwrite("{}/pred-{}.tif".format(args.output_path, i), predictions_smooth)
+            seg_img = np.zeros((input_size, input_size, 3))
+
+            for c in range(n_classes):
+                seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+                seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+                seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+
+            mask_name = "pred-{}-{}.tif".format(i, j)
+
+            cv2.imwrite("{}/{}".format(args.output_path, mask_name), seg_img)
 
 
 if __name__ == '__main__':
