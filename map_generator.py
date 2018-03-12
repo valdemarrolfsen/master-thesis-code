@@ -3,7 +3,7 @@ import cv2
 import os
 import numpy as np
 
-from keras_utils.generators import set_up_generators, load_images_from_folder
+from keras_utils.generators import set_up_generators
 from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing
 from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
@@ -12,6 +12,7 @@ from networks.unet.unet import build_unet
 def image_to_neural_input(image_batch, image_datagen):
 
     generator = image_datagen.flow(
+        image_batch,
         image_batch,
         batch_size=image_batch.shape[0],
         shuffle=False
