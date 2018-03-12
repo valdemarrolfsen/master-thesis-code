@@ -4,7 +4,6 @@ import os
 import numpy as np
 
 from keras_utils.generators import set_up_generators, load_images_from_folder
-from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing
 from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
 
@@ -63,7 +62,9 @@ def run():
     # Set up the generators
     image_datagen, _ = set_up_generators(sample_path, rescale=False)
 
-    images = load_images_from_folder(images_path, num_samples=10000000)
+    images = load_images_from_folder(images_path, num_samples=10000)
+    images = np.array(images)
+    
     preprocessed_imgs = image_to_neural_input(images, image_datagen)
     probs = model.predict(preprocessed_imgs, verbose=1)
 
