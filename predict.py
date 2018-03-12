@@ -13,7 +13,6 @@ from collections import defaultdict
 from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
 from keras_utils.generators import create_generator
-from keras import backend as K
 
 
 def simplify_contours(contours, epsilon):
