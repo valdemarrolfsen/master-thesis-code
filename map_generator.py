@@ -49,7 +49,7 @@ def run():
 
     model.load_weights(args.weights_path)
 
-    image_dir = os.path.join(images_path, 'examples')
+    image_dir = images_path
 
     # Set up the generators
     image_datagen, _ = set_up_generators(image_dir, rescale=False)
