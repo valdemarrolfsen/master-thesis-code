@@ -92,8 +92,9 @@ def run():
             seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
         mask_name = "pred-{}.tif".format(i)
-
-        cv2.imwrite("{}/{}".format(args.output_path, mask_name), seg_img)
+        save_path = "{}/{}".format(args.output_path, mask_name)
+        print(save_path)
+        cv2.imwrite(save_path, seg_img)
 
 
 if __name__ == '__main__':
