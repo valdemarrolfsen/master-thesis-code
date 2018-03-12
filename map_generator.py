@@ -2,6 +2,7 @@ import argparse
 import cv2
 import os
 import numpy as np
+from keras.preprocessing.image import ImageDataGenerator
 
 from keras_utils.generators import set_up_generators
 from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing
@@ -9,17 +10,35 @@ from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
 
 
-def image_to_neural_input(image_batch, image_datagen):
+def image_to_neural_input(image_batch):
+    datagen_args = dict(
+        data_format='channels_last',
+        # set input mean to 0 over the dataset
+        featurewise_center=True,
+        # set each sample mean to 0
+        samplewise_center=False,
+        # divide inputs by std of dataset
+        featurewise_std_normalization=True,
+        # divide each input by its std
+        samplewise_std_normalization=False,
+        # apply ZCA whitening
+        zca_whitening=False,
+        # randomly rotate images in the range (deg 0 to 180)
+        rotation_range=0,
+        # randomly shift images horizontally
+        width_shift_range=0,
+        # randomly shift images vertically
+        height_shift_range=0,
+        # randomly flip images
+        horizontal_flip=False,
+        # randomly flip images
+        vertical_flip=False)
 
-    x = image_batch
-    y = np.zeros(x.shape[0])
-
-    print(x.shape)
-    print(y.shape)
+    image_datagen = ImageDataGenerator(**datagen_args)
+    image_datagen.fit(image_batch)
 
     generator = image_datagen.flow(
-        x=x,
-        y=y,
+        x=image_batch,
         batch_size=image_batch.shape[0],
         shuffle=False
     )
@@ -54,7 +73,6 @@ def run():
     model_name = args.model_name
     images_path = args.test_images
     input_size = args.input_size
-    sample_path = os.path.join(args.sample_path, "examples")
 
     model_choices = {
         'pspnet': build_pspnet,
@@ -62,15 +80,8 @@ def run():
     }
 
     model_choice = model_choices[model_name]
-
     model = model_choice(n_classes, (input_size, input_size))
-
     model.load_weights(args.weights_path)
-
-    # Set up the generators
-    image_datagen, _ = set_up_generators(sample_path, rescale=False)
-
-    window_size = input_size
 
     images = [cv2.imread(images_path)]
 
@@ -78,12 +89,12 @@ def run():
 
         pred = predict_img_with_smooth_windowing(
             input_img,
-            window_size=window_size,
+            window_size=input_size,
             subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
             nb_classes=n_classes,
             pred_func=(
                 lambda img_batch_subdiv: model.predict(
-                    image_to_neural_input(img_batch_subdiv, image_datagen), verbose=True
+                    image_to_neural_input(img_batch_subdiv), verbose=True
                 )
             )
         )
