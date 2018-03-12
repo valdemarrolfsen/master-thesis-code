@@ -72,11 +72,17 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     # Use the same seed for both generators so they return corresponding images
     seed = 1
 
+    shuffle = True
+
+    if with_file_names:
+        shuffle = False
+
     image_generator = image_datagen.flow_from_directory(
         image_dir,
         batch_size=batch_size,
         target_size=input_size,
         class_mode=None,
+        shuffle=shuffle,
         seed=seed)
 
     label_generator = label_datagen.flow_from_directory(
@@ -84,6 +90,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
         batch_size=batch_size,
         target_size=input_size,
         class_mode=None,
+        shuffle=shuffle,
         color_mode='grayscale',
         seed=seed)
 
@@ -116,7 +123,7 @@ def custom_gen(generator, input_size, batch_size, nb_classes, file_name_generato
             output[i] = to_categorical(mask[i], num_classes=nb_classes)
 
         if file_name_generator:
-            idx = file_name_generator.batch_index * file_name_generator.batch_size
+            idx = (file_name_generator.batch_index - 1) * file_name_generator.batch_size
             file_names = file_name_generator.filenames[idx: idx + file_name_generator.batch_size]
             yield img, output, file_names
         else:
