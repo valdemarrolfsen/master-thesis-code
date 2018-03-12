@@ -63,28 +63,13 @@ def run():
     # Set up the generators
     image_datagen, _ = set_up_generators(sample_path, rescale=False)
 
-    window_size = input_size
-
     images = load_images_from_folder(images_path, num_samples=10000000)
+    preprocessed_imgs = image_to_neural_input(images, image_datagen)
+    probs = model.predict(preprocessed_imgs, verbose=1)
 
-    for i, input_img in enumerate(images):
-
-        pred = predict_img_with_smooth_windowing(
-            input_img,
-            window_size=window_size,
-            subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
-            nb_classes=n_classes,
-            pred_func=(
-                lambda img_batch_subdiv: model.predict(
-                    image_to_neural_input(img_batch_subdiv, image_datagen), verbose=True
-                )
-            )
-        )
-
-        print(pred.shape)
+    for i, pred in enumerate(probs):
 
         result = np.argmax(pred, axis=2)
-
         seg_img = np.zeros((pred.shape[0], pred.shape[1], 3))
 
         for c in range(n_classes):
@@ -93,10 +78,8 @@ def run():
             seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
         mask_name = "pred-{}.tif".format(i)
-        img_name = "img-{}.tif".format(i)
 
         cv2.imwrite("{}/{}".format(args.output_path, mask_name), seg_img)
-        cv2.imwrite("{}/{}".format(args.output_path, img_name), input_img)
 
 
 if __name__ == '__main__':
