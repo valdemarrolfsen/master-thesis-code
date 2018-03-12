@@ -10,8 +10,6 @@ from networks.unet.unet import build_unet
 
 def image_to_neural_input(image_batch, image_datagen):
 
-    print(image_batch.shape)
-
     generator = image_datagen.flow(
         image_batch,
         batch_size=image_batch.shape[0]
@@ -67,7 +65,9 @@ def run():
             subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
             nb_classes=n_classes,
             pred_func=(
-                lambda img_batch_subdiv: model.predict(image_to_neural_input(img_batch_subdiv, image_datagen))
+                lambda img_batch_subdiv: model.predict(
+                    image_to_neural_input(img_batch_subdiv, image_datagen), verbose=True
+                )
             )
         )
 
