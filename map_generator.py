@@ -8,12 +8,9 @@ from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
 
 
-def image_to_neural_input(image_batch, image_datagen, input_size):
+def image_to_neural_input(image_batch, image_datagen):
     generator = image_datagen.fit(
-        image_batch,
-        target_size=(input_size, input_size),
-        class_mode=None,
-        shuffle=False,
+        image_batch
     )
 
     return next(generator)
@@ -66,7 +63,7 @@ def run():
             subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
             nb_classes=n_classes,
             pred_func=(
-                lambda img_batch_subdiv: model.predict(image_to_neural_input(img_batch_subdiv, image_datagen, window_size))
+                lambda img_batch_subdiv: model.predict(image_to_neural_input(img_batch_subdiv, image_datagen))
             )
         )
 
