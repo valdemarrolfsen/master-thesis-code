@@ -24,6 +24,7 @@ def run():
     parser.add_argument("--weights-path", type=str)
     parser.add_argument("--epoch-number", type=int, default=5)
     parser.add_argument("--test-images", type=str, default="")
+    parser.add_argument("--sample-path", type=str, default="")
     parser.add_argument("--output-path", type=str, default="")
     parser.add_argument("--input-size", type=int, default=713)
     parser.add_argument("--batch-size", type=int, default=713)
@@ -36,6 +37,7 @@ def run():
     model_name = args.model_name
     images_path = args.test_images
     input_size = args.input_size
+    sample_path = os.path.join(args.sample_path, "examples")
     batch_size = args.batch_size
 
     model_choices = {
@@ -49,10 +51,8 @@ def run():
 
     model.load_weights(args.weights_path)
 
-    image_dir = images_path
-
     # Set up the generators
-    image_datagen, _ = set_up_generators(image_dir, rescale=False)
+    image_datagen, _ = set_up_generators(sample_path, rescale=False)
 
     window_size = batch_size
 
