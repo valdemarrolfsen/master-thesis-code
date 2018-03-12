@@ -13,7 +13,8 @@ def image_to_neural_input(image_batch, image_datagen):
 
     generator = image_datagen.flow(
         image_batch,
-        batch_size=image_batch.shape[0]
+        batch_size=image_batch.shape[0],
+        shuffle=False
     )
 
     images = next(generator)
