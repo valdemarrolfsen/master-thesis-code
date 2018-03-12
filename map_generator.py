@@ -1,10 +1,8 @@
 import argparse
 import cv2
-import os
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 
-from keras_utils.generators import set_up_generators
 from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing
 from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
@@ -40,7 +38,8 @@ def image_to_neural_input(image_batch):
     generator = image_datagen.flow(
         x=image_batch,
         batch_size=image_batch.shape[0],
-        shuffle=False
+        shuffle=False,
+        seed=1
     )
 
     images = next(generator)
