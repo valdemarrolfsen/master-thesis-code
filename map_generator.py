@@ -34,11 +34,11 @@ def run():
     parser.add_argument("--classes", type=int)
 
     class_color_map = {
-        0: [237, 237, 237],  # Empty
-        1: [254, 241, 179],  # Roads
-        2: [116, 173, 209],  # Water
-        3: [193, 235, 176],  # Grass
-        4: [170, 170, 170]  # Buildings
+        0: [237, 237, 237],     # Empty
+        1: [254, 241, 179],     # Roads
+        2: [116, 173, 209],     # Water
+        3: [193, 235, 176],     # Grass
+        4: [170, 170, 170]      # Buildings
     }
 
     args = parser.parse_args()
@@ -65,7 +65,7 @@ def run():
 
     window_size = input_size
 
-    images = load_images_from_folder(images_path, num_samples=10000000)
+    images = [cv2.imread(images_path)]
 
     for i, input_img in enumerate(images):
 
@@ -80,8 +80,6 @@ def run():
                 )
             )
         )
-
-        print(pred.shape)
 
         result = np.argmax(pred, axis=2)
 
