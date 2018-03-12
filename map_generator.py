@@ -14,9 +14,12 @@ def image_to_neural_input(image_batch, image_datagen):
 
     generator = image_datagen.flow(
         image_batch,
+        batch_size=image_batch.shape[0]
     )
 
-    return generator
+    images = next(generator)
+
+    return images
 
 
 def run():
@@ -27,7 +30,6 @@ def run():
     parser.add_argument("--sample-path", type=str, default="")
     parser.add_argument("--output-path", type=str, default="")
     parser.add_argument("--input-size", type=int, default=713)
-    parser.add_argument("--batch-size", type=int, default=713)
     parser.add_argument("--model-name", type=str, default="")
     parser.add_argument("--classes", type=int)
 
@@ -38,7 +40,6 @@ def run():
     images_path = args.test_images
     input_size = args.input_size
     sample_path = os.path.join(args.sample_path, "examples")
-    batch_size = args.batch_size
 
     model_choices = {
         'pspnet': build_pspnet,
@@ -54,7 +55,7 @@ def run():
     # Set up the generators
     image_datagen, _ = set_up_generators(sample_path, rescale=False)
 
-    window_size = 256
+    window_size = input_size
 
     images = load_images_from_folder(images_path, num_samples=10000000)
 
