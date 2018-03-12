@@ -54,7 +54,7 @@ def run():
     # Set up the generators
     image_datagen, _ = set_up_generators(sample_path, rescale=False)
 
-    window_size = 160
+    window_size = 256
 
     images = load_images_from_folder(images_path, num_samples=10000000)
 
