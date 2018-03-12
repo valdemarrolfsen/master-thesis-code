@@ -9,7 +9,10 @@ from networks.unet.unet import build_unet
 
 
 def image_to_neural_input(image_batch, image_datagen):
-    generator = image_datagen.fit(
+
+    print(image_batch.shape)
+    
+    generator = image_datagen.flow(
         image_batch
     )
 
