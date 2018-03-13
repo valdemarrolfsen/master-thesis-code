@@ -243,6 +243,7 @@ for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
     mask_result = np.argmax(masks[i], axis=2)
     img = get_real_image(images_path, file_names[i])
+    raster = get_real_image(images_path, file_names[i], use_gdal=True)
 
     seg_img = np.zeros((input_size, input_size, 3))
     seg_mask = np.zeros((input_size, input_size, 3))
@@ -264,7 +265,7 @@ for i, prob in enumerate(probs):
     cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
 
     # Get coordinates for corresponding image
-    ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(img)
+    ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(raster)
 
     # Geo reference newly created raster
     geo_reference_raster(
