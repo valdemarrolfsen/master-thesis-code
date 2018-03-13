@@ -124,7 +124,7 @@ def save_to_shp(collection, i):
     ds = layer = feat = geom = None
 
 
-def get_real_image(path, name):
+def get_real_image(path, name, use_gdal=False):
     """
     Returns a raster image with the geo frame intact
 
@@ -134,9 +134,11 @@ def get_real_image(path, name):
     """
 
     image_path = os.path.join(path, 'examples', name)
-    img = gdal.Open(image_path)
 
-    return img
+    if use_gdal:
+        return gdal.Open(image_path)
+
+    return cv2.imread(image_path)
 
 
 def get_geo_frame(raster):
