@@ -241,8 +241,8 @@ probs = model.predict(images, verbose=1)
 
 for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
-    mask_result = np.argmax(masks[i], axis=2)
-    img = get_real_image(images_path, file_names[i])
+    # mask_result = np.argmax(masks[i], axis=2)
+    # img = get_real_image(images_path, file_names[i])
     raster = get_real_image(images_path, file_names[i], use_gdal=True)
 
     seg_img = np.zeros((input_size, input_size, 3))
@@ -253,22 +253,25 @@ for i, prob in enumerate(probs):
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
         seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
-        seg_mask[:, :, 0] += ((mask_result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
-        seg_mask[:, :, 1] += ((mask_result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
-        seg_mask[:, :, 2] += ((mask_result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+        # seg_mask[:, :, 0] += ((mask_result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+        # seg_mask[:, :, 1] += ((mask_result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+        # seg_mask[:, :, 2] += ((mask_result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
     pred_name = "pred-{}.tif".format(i)
     pred_save_path = "{}/{}".format(args.output_path, pred_name)
 
     cv2.imwrite(pred_save_path, seg_img)
-    cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), seg_mask)
-    cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
+    # cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), seg_mask)
+    # cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
 
-    # Get coordinates for corresponding image
-    ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(raster)
+    try:
+        # Get coordinates for corresponding image
+        ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(raster)
 
-    # Geo reference newly created raster
-    geo_reference_raster(
-        pred_save_path,
-        [ulx, scalex, skewx, uly, skewy, scaley]
-    )
+        # Geo reference newly created raster
+        geo_reference_raster(
+            pred_save_path,
+            [ulx, scalex, skewx, uly, skewy, scaley]
+        )
+    except ValueError as e:
+        print("Was not able to reference image at path: {}".format(pred_save_path))
