@@ -8,7 +8,7 @@ from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
 
 
-def image_to_neural_input(image_batch):
+def get_generator(images):
     datagen_args = dict(
         data_format='channels_last',
         # set input mean to 0 over the dataset
@@ -33,17 +33,18 @@ def image_to_neural_input(image_batch):
         vertical_flip=False)
 
     image_datagen = ImageDataGenerator(**datagen_args)
-    image_datagen.fit(image_batch)
+    image_datagen.fit(images)
 
+    return image_datagen
+
+
+def image_to_neural_input(images, image_datagen):
     generator = image_datagen.flow(
-        x=image_batch,
-        batch_size=image_batch.shape[0],
+        x=images,
+        batch_size=images.shape[0],
         shuffle=False,
-        seed=1
     )
-
     images = next(generator)
-
     return images
 
 
@@ -59,11 +60,11 @@ def run():
     parser.add_argument("--classes", type=int)
 
     class_color_map = {
-        0: [237, 237, 237],     # Empty
-        1: [254, 241, 179],     # Roads
-        2: [116, 173, 209],     # Water
-        3: [193, 235, 176],     # Grass
-        4: [170, 170, 170]      # Buildings
+        0: [237, 237, 237],  # Empty
+        1: [254, 241, 179],  # Roads
+        2: [116, 173, 209],  # Water
+        3: [193, 235, 176],  # Grass
+        4: [170, 170, 170]  # Buildings
     }
 
     args = parser.parse_args()
@@ -83,6 +84,7 @@ def run():
     model.load_weights(args.weights_path)
 
     images = [cv2.imread(images_path)]
+    generator = get_generator(images)
 
     for i, input_img in enumerate(images):
 
@@ -93,7 +95,7 @@ def run():
             nb_classes=n_classes,
             pred_func=(
                 lambda img_batch_subdiv: model.predict(
-                    image_to_neural_input(img_batch_subdiv), verbose=True
+                    image_to_neural_input(img_batch_subdiv, generator), verbose=True
                 )
             )
         )
@@ -116,4 +118,3 @@ def run():
 
 if __name__ == '__main__':
     run()
-

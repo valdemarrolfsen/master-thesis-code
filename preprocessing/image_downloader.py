@@ -5,64 +5,43 @@ from skimage import io
 from osgeo import osr
 from osgeo import gdal
 
-maps_zoom_scales = {
-    20: 1128.497220,
-    19: 2256.994440,
-    18: 4513.988880,
-    17: 9027.977761,
-    16: 18055.955520,
-    15: 36111.911040,
-    14: 72223.822090,
-    13: 144447.644200,
-    12: 288895.288400,
-    11: 577790.576700,
-    10: 1155581.153000,
-    9: 2311162.307000,
-    8: 4622324.614000,
-    7: 9244649.227000,
-    6: 18489298.450000,
-    5: 36978596.910000,
-    4: 73957193.820000,
-    3: 147914387.600000,
-    2: 295828775.300000,
-    1: 591657550.500000
-}
-
 bounding_box = [
     63.4375248,  # ul_lat
     10.3443029,  # ul_lng
 
     63.4059196,  # dr_lat
-    10.4510333   # dr_lng
+    10.4510333  # dr_lng
 ]
 
 
 def eccentricity(a, b):
-    return math.sqrt(1 - (b / a)**2)
+    return math.sqrt(1 - (b / a) ** 2)
 
 
 def n_rad(a, b, lat):
     ec = eccentricity(a, b)
-    return a / (1 - (ec ** 2) * math.sin(lat)**2) ** (1 / 2)
+    return a / (1 - (ec ** 2) * math.sin(lat) ** 2) ** (1 / 2)
 
 
 def degree_to_meter(a, b, lat, lon, h):
     N = n_rad(a, b, lat)
 
-    x = (N + h) * math.cos(lat)*math.cos(lon)
-    y = (N + h) * math.cos(lat)*math.sin(lon)
+    x = (N + h) * math.cos(lat) * math.cos(lon)
+    y = (N + h) * math.cos(lat) * math.sin(lon)
     z = (N * (b / a) ** 2 + h) * math.sin(lat)
 
     return x, y, z
 
 
-def geo_reference_raster(raster_path, lat, lon, size):
+def georeference_raster(raster_path, lat, lon):
     """
 
-    :param raster_path:
-    :return:
+    :param lon: Longitude
+    :param lat: Latitude
+    :param scale: Image scale
+    :param raster_path: Path to raster image
+    :return: None
     """
-
     src_ds = gdal.Open(raster_path)
     format = "GTiff"
     driver = gdal.GetDriverByName(format)
@@ -75,17 +54,23 @@ def geo_reference_raster(raster_path, lat, lon, size):
     world_sr.SetWellKnownGeogCS('WGS84')
 
     # Get raster projection
-    epsg = 3857
+    epsg = 4326
     srs = osr.SpatialReference()
     srs.ImportFromEPSG(epsg)
     dest_wkt = srs.ExportToWkt()
 
-    coord_transform = osr.CoordinateTransformation(world_sr, srs)
-    newpoints = coord_transform.TransformPoints([[lat, lon]])
+    # coord_transform = osr.CoordinateTransformation(world_sr, srs)
+    # newpoints = coord_transform.TransformPoints([[lon, lat]])
+
+    min_y, min_x = point_from_pixels(lat, lon, 16, -200)
+    max_y, max_x = point_from_pixels(lat, lon, 16, 200)
+
+    x_scale = (max_x - min_x) / 400
+    y_scale = (max_y - min_y) / 400
 
     # Specify raster location through geotransform array
-    # (uperleftx, scalex, skewx, uperlefty, skewy, scaley)
-    gt = [newpoints[0][0], size, 0, newpoints[0][1], 0, -size]
+    # (x_min, pixel_size, 0, y_max, 0, -pixel_size)
+    gt = [min_x, x_scale, 0, max_y, 0, -y_scale]
 
     # Set location
     dst_ds.SetGeoTransform(gt)
@@ -98,6 +83,16 @@ def geo_reference_raster(raster_path, lat, lon, size):
     src_ds = None
 
 
+def get_google_maps_scale(lat, zoom):
+    """
+    Get the meters per pixel scale of the lat and zoom level
+    :param lat:
+    :param zoom:
+    :return: scale
+    """
+    return 156543.03392 * math.cos(lat * math.pi / 180) / math.pow(2, zoom)
+
+
 def slide_window(lat, lng, size, zoom):
     parallel_multiplier = math.cos(lat * math.pi / 180)
     degrees_per_pixelx = 360 / math.pow(2, zoom + 8)
@@ -106,6 +101,16 @@ def slide_window(lat, lng, size, zoom):
     point_lat = lat - degrees_per_pixely * size
     point_lng = lng + degrees_per_pixelx * size
 
+    return point_lat, point_lng
+
+
+def point_from_pixels(lat, lng, zoom, pixels):
+    parallel_multiplier = math.cos(lat * math.pi / 180)
+    degrees_per_pixelx = 360 / math.pow(2, zoom + 8)
+    degrees_per_pixely = 360 / math.pow(2, zoom + 8) * parallel_multiplier
+
+    point_lat = lat + degrees_per_pixely * pixels
+    point_lng = lng + degrees_per_pixelx * pixels
     return point_lat, point_lng
 
 
@@ -130,7 +135,7 @@ def run():
                 lng=lng,
                 zoom=zoom,
                 width=size,
-                height=size+40,  # So that we can crop out the google logo
+                height=size + 40,  # So that we can crop out the google logo
                 type=map_type,
                 key=api_key
             )
@@ -143,8 +148,7 @@ def run():
             cv2.imwrite(save_path, img)
 
             # temp_x, temp_y, _ = degree_to_meter(a, b, lat, lng, h)
-
-            geo_reference_raster(save_path, lat, lng, 1)
+            georeference_raster(save_path, lat, lng)
 
             _, lng = slide_window(lat, lng, size, zoom)
 
