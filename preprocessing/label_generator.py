@@ -198,24 +198,24 @@ def work(q, db, table_name, color_attribute, total_files=0):
             continue
 
         if not is_raster_square(rast):
+            print('not square')
             q.task_done()
             continue
-        # Get the geojson for the geometries
-        # geojson_record = db.get_geojson_from_bbox(
-        #     min_x,
-        #     min_y,
-        #     max_x,
-        #     max_y,
-        #     table_name,
-        # )
-        # geojson = geojson_record[0][0]
-        # json_filename = "{}.{}".format(i, 'geojson')
-        # json_path = os.path.join(labels_path, json_filename)
-        # if geojson['features'] is None:
-        #     if not include_empty:
-        #         q.task_done()
-        #         total_files -= 1
-        #         continue
+
+        if binary:
+            geojson_record = db.get_geojson_from_bbox(
+                min_x,
+                min_y,
+                max_x,
+                max_y,
+                table_name,
+            )
+            geojson = geojson_record[0][0]
+            if geojson['features'] is None:
+                if not include_empty:
+                    q.task_done()
+                    total_files -= 1
+                    continue
 
         copyfile(file, os.path.join(examples_path, filename))
         utils.save_file(rast, path)
