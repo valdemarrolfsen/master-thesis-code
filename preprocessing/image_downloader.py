@@ -37,25 +37,6 @@ bounding_box = [
 ]
 
 
-def eccentricity(a, b):
-    return math.sqrt(1 - (b / a)**2)
-
-
-def n_rad(a, b, lat):
-    ec = eccentricity(a, b)
-    return a / (1 - (ec ** 2) * math.sin(lat)**2) ** (1 / 2)
-
-
-def degree_to_meter(a, b, lat, lon, h):
-    N = n_rad(a, b, lat)
-
-    x = (N + h) * math.cos(lat)*math.cos(lon)
-    y = (N + h) * math.cos(lat)*math.sin(lon)
-    z = (N * (b / a) ** 2 + h) * math.sin(lat)
-
-    return x, y, z
-
-
 def geo_reference_raster(raster_path, lat, lon, size):
     """
 
@@ -141,8 +122,6 @@ def run():
             save_path = "tiles/tile_{}_{}.tif".format(i, j)
 
             cv2.imwrite(save_path, img)
-
-            # temp_x, temp_y, _ = degree_to_meter(a, b, lat, lng, h)
 
             geo_reference_raster(save_path, lat, lng, 1)
 
