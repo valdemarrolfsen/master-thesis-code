@@ -2,7 +2,7 @@ import threading
 import uuid
 from queue import Queue, Empty
 
-import gdal
+from osgeo import gdal
 import numpy as np
 import os
 
@@ -21,6 +21,8 @@ table_name = None
 class_name = None
 include_empty = None
 file_type = 'tif'
+res = None
+binary = False
 
 
 def setup():
@@ -33,6 +35,8 @@ def setup():
     global table_name
     global class_name
     global include_empty
+    global res
+    global binary
 
     # Set ut the argument parser
     ap = argparse.ArgumentParser()
@@ -41,6 +45,8 @@ def setup():
     ap.add_argument('-c', '--color', type=str, required=True, help='color value or color attribute in table')
     ap.add_argument('-n', '--table', type=str, required=True, help='table name')
     ap.add_argument('--include-empty', type=bool, default=False, help='Include empty raster images')
+    ap.add_argument('--binary', type=bool, default=False, help='Binary segmentation problem')
+    ap.add_argument('--res', type=int, default=1000, help='Image resolution')
     ap.add_argument('--class-name', type=str, required=True,
                     help='The name of the class you are generating labels for')
     ap.add_argument(
@@ -60,6 +66,8 @@ def setup():
     table_name = args.table
     class_name = args.class_name
     include_empty = args.include_empty
+    res = args.res
+    binary = args.binary
 
     paths = ['train', 'test', 'val']
     sub_paths = ['examples', 'labels']
@@ -124,6 +132,8 @@ def work(q, db, table_name, color_attribute, total_files=0):
     global class_name
     global output_path
     global include_empty
+    global res
+    global binary
 
     train_portion = 0.7
     val_portion = 0.2
@@ -138,13 +148,26 @@ def work(q, db, table_name, color_attribute, total_files=0):
         min_x, min_y, max_x, max_y = utils.get_bounding_box_from_tiff(file)
         if min_x == -1:
             continue
-        raster_records = db.get_tif_from_bbox(
-            min_x,
-            min_y,
-            max_x,
-            max_y,
-            color_attribute
-        )
+
+        if binary:
+            raster_records = db.get_binary_tiff(
+                min_x,
+                min_y,
+                max_x,
+                max_y,
+                res,
+                table_name,
+                color_attribute
+            )
+        else:
+            raster_records = db.get_tif_from_bbox(
+                min_x,
+                min_y,
+                max_x,
+                max_y,
+                res,
+                color_attribute
+            )
         # Save the file to an unique id and add the correct file ending
         # are we adding to train, val or test?
         prog = (total_files - q.qsize()) / total_files
