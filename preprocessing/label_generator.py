@@ -125,6 +125,24 @@ def is_raster_square(rast):
     return True
 
 
+def is_raster_empty(rast):
+    # Use a virtual memory file, which is named like this
+    i = uuid.uuid4()
+    vsipath = '/vsimem/from_postgis' + str(i)
+    gdal.FileFromMemBuffer(vsipath, bytes(rast))
+    ds = gdal.Open(vsipath)
+    arr = np.array(ds.GetRasterBand(1).ReadAsArray())
+    unique = np.unique(arr)
+
+    if len(unique) < 2 and unique[0] == 0:
+        return True
+
+    # Close and clean up virtual memory file
+    ds = None
+    gdal.Unlink(vsipath)
+    return False
+
+
 def work(q, db, table_name, color_attribute, total_files=0):
     global file_type
     global examples_path
@@ -198,28 +216,15 @@ def work(q, db, table_name, color_attribute, total_files=0):
             continue
 
         if not is_raster_square(rast):
-            print('not square')
             q.task_done()
             continue
 
-        if binary:
-            geojson_record = db.get_geojson_from_bbox(
-                min_x,
-                min_y,
-                max_x,
-                max_y,
-                table_name,
-            )
-            geojson = geojson_record[0][0]
-            if geojson['features'] is None:
-                if not include_empty:
-                    q.task_done()
-                    total_files -= 1
-                    continue
+        if not include_empty and is_raster_empty(rast):
+            q.task_done()
+            continue
 
         copyfile(file, os.path.join(examples_path, filename))
         utils.save_file(rast, path)
-        # utils.save_json(geojson, json_path)
         q.task_done()
 
 
