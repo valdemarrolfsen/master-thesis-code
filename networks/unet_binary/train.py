@@ -21,5 +21,6 @@ def train_unet_binary(data_dir, logdir, weights_dir, input_size, batch_size, ini
         steps_per_epoch=num_samples//batch_size,
         epochs=10000, verbose=True,
         workers=8,
-        callbacks=callbacks(logdir, weightsdir=weights_dir), initial_epoch=initial_epoch)
+        callbacks=callbacks(logdir, weightsdir=weights_dir, monitor_val='jaccard_coef_int'),
+        initial_epoch=initial_epoch)
 
