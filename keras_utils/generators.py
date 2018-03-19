@@ -107,13 +107,14 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
 
     generator = zip(image_generator, label_generator)
 
+    # If we are doing binary predictions, we do not want to one-hot encode the labels.
+    if binary:
+        return generator, image_generator.samples
+
     file_name_generator = None
 
     if with_file_names:
         file_name_generator = image_generator
-
-    if binary:
-        return generator, image_generator.samples
 
     return custom_gen(
         generator,
@@ -131,7 +132,7 @@ def custom_gen(generator, input_size, batch_size, nb_classes, file_name_generato
         if len(img) != batch_size:
             continue
 
-        mask[mask > nb_classes-1] = 0
+        mask[mask > nb_classes - 1] = 0
         output = np.ndarray((batch_size, input_size[0], input_size[1], nb_classes))
         for i in range(mask.shape[0]):
             output[i] = to_categorical(mask[i], num_classes=nb_classes)

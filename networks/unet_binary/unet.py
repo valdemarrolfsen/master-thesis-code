@@ -52,7 +52,7 @@ def jaccard_coef_loss(y_true, y_pred):
     return -K.log(jaccard_coef(y_true, y_pred)) + binary_crossentropy(y_pred, y_true)
 
 
-def build_unet(nb_classes, input_shape):
+def build_unet_binary(input_shape):
     concat_axis = 3
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
     conv1 = Conv2D(32, (3, 3), padding="same", name="conv1_1", activation="relu", data_format="channels_last",

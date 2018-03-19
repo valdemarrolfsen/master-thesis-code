@@ -1,5 +1,5 @@
 import argparse
-from networks.unet_roads.train import train_unet
+from networks.unet_binary.train import train_unet_binary
 
 
 def define_args():
@@ -31,11 +31,6 @@ def define_args():
                         help='Input size for the images used (default 713)',
                         default=713
                         )
-    parser.add_argument('--classes',
-                        type=int,
-                        help='Number of classes in the dataset (default 2)',
-                        default=2
-                        )
 
     parser.add_argument('--batch-size',
                         type=int,
@@ -59,10 +54,9 @@ if __name__ == '__main__':
     # Defining arguments
     args = define_args()
 
-    train_unet(args.data_dir,
-               args.logs_dir,
-               args.weights_dir,
-               (args.input_size, args.input_size),
-               args.classes,
-               args.batch_size,
-               0)
+    train_unet_binary(args.data_dir,
+                      args.logs_dir,
+                      args.weights_dir,
+                      (args.input_size, args.input_size),
+                      args.batch_size,
+                      0)
