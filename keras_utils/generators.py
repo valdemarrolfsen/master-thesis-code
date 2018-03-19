@@ -73,7 +73,7 @@ def set_up_generators(image_dir, rescale):
     return image_datagen, label_datagen
 
 
-def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, with_file_names=False):
+def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, with_file_names=False, binary=False):
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
@@ -111,6 +111,9 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
 
     if with_file_names:
         file_name_generator = image_generator
+
+    if binary:
+        return generator, image_generator.samples
 
     return custom_gen(
         generator,

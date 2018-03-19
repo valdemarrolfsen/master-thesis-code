@@ -150,7 +150,7 @@ def build_unet(nb_classes, input_shape):
 
     ch, cw = get_crop_shape(inputs, conv9)
     conv9 = layers.ZeroPadding2D(padding=((ch[0], ch[1]), (cw[0], cw[1])))(conv9)
-    conv10 = layers.Conv2D(2, (1, 1))(conv9)
+    conv10 = layers.Conv2D(1, (1, 1))(conv9)
     act = Activation('sigmoid')(conv10)
     model = Model(inputs=inputs, outputs=act)
     model.compile(
