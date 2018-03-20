@@ -62,17 +62,15 @@ def run():
         # img = get_real_image(images_path, file_names[i])
         raster = get_real_image(images_path, file_names[i], use_gdal=True)
 
-        seg_img = np.zeros((input_size, input_size, 1))
-
-        for c in range(n_classes):
-            seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+        print(result.shape)
+        print(result)
 
         pred_name = "pred-{}.tif".format(i)
         pred_save_path = "{}/{}".format(args.output_path, pred_name)
 
-        cv2.imwrite(pred_save_path, seg_img)
+        cv2.imwrite(pred_save_path, result)
         # cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), seg_mask)
-        # cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
+        cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), raster)
 
         try:
             # Get coordinates for corresponding image
