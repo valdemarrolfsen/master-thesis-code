@@ -107,14 +107,13 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
 
     generator = zip(image_generator, label_generator)
 
-    # If we are doing binary predictions, we do not want to one-hot encode the labels.
-    if binary:
-        return generator, image_generator.samples
-
     file_name_generator = None
-
     if with_file_names:
         file_name_generator = image_generator
+
+    # If we are doing binary predictions, we do not want to one-hot encode the labels.
+    if binary:
+        return custom_binary_gen(generator, batch_size, file_name_generator), image_generator.samples
 
     return custom_gen(
         generator,
@@ -143,3 +142,19 @@ def custom_gen(generator, input_size, batch_size, nb_classes, file_name_generato
             yield img, output, file_names
         else:
             yield img, output
+
+
+def custom_binary_gen(generator, batch_size, file_name_generator):
+    while True:
+        img, mask = next(generator)
+
+        if len(img) != batch_size:
+            continue
+
+        mask[mask > 1] = 0
+        if file_name_generator:
+            idx = (file_name_generator.batch_index - 1) * file_name_generator.batch_size
+            file_names = file_name_generator.filenames[idx: idx + file_name_generator.batch_size]
+            yield img, mask, file_names
+        else:
+            yield img, mask
