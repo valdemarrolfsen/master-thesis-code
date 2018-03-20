@@ -45,9 +45,9 @@ def set_up_generators(image_dir, rescale):
         # randomly shift images vertically
         height_shift_range=0,
         # randomly flip images
-        horizontal_flip=False,
+        horizontal_flip=True,
         # randomly flip images
-        vertical_flip=False)
+        vertical_flip=True)
 
     if rescale:
         # Scale down the values

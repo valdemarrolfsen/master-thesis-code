@@ -176,7 +176,7 @@ def build_unet_binary(input_shape):
     act = Activation('sigmoid')(conv10)
     model = Model(inputs=inputs, outputs=act)
     model.compile(
-        optimizer=Nadam(),
+        optimizer=Adam(lr=1e-4),
         loss=jaccard_coef_loss,
         metrics=['binary_crossentropy', jaccard_coef_int])
 
