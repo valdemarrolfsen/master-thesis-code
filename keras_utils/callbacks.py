@@ -8,6 +8,6 @@ def callbacks(logdir, weightsdir, monitor_val='val_acc'):
     checkpoint = ModelCheckpoint(weightsdir, monitor=monitor_val, verbose=2,
                                  save_best_only=True, save_weights_only=False, mode='max')
     tensorboard_callback = TensorBoard(log_dir=logdir, write_graph=True, histogram_freq=0)
-    plateau_callback = ReduceLROnPlateau(monitor='loss', factor=0.99, verbose=1, patience=0, min_lr=0.00001)
+    plateau_callback = ReduceLROnPlateau(monitor=monitor_val, factor=0.99, verbose=1, patience=2, min_lr=0.00001)
     early_stopping = EarlyStopping(monitor=monitor_val, patience=10, verbose=1)
     return [checkpoint, plateau_callback, tensorboard_callback, early_stopping]
