@@ -2,7 +2,7 @@ from keras import layers, Model
 from keras.backend import binary_crossentropy
 from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concatenate, Flatten, Dense, \
     BatchNormalization, Activation, Dropout, ELU
-from keras.optimizers import Adam
+from keras.optimizers import Adam, Nadam
 from keras import backend as K
 
 
@@ -176,7 +176,7 @@ def build_unet_binary(input_shape):
     act = Activation('sigmoid')(conv10)
     model = Model(inputs=inputs, outputs=act)
     model.compile(
-        optimizer=Adam(lr=1e-4),
+        optimizer=Nadam(),
         loss=jaccard_coef_loss,
         metrics=['binary_crossentropy', jaccard_coef_int])
 
