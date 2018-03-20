@@ -57,20 +57,17 @@ def run():
     probs = model.predict(images, verbose=1)
 
     for i, prob in enumerate(probs):
-        result = np.argmax(prob, axis=2)
         # mask_result = np.argmax(masks[i], axis=2)
         # img = get_real_image(images_path, file_names[i])
         raster = get_real_image(images_path, file_names[i], use_gdal=True)
+        img = np.array(raster.GetRasterBand(1).ReadAsArray())
 
-        print(result.shape)
-        print(result)
-
+        prob = (prob[:, :, 0] * 255.).astype(np.uint8)
         pred_name = "pred-{}.tif".format(i)
         pred_save_path = "{}/{}".format(args.output_path, pred_name)
 
-        cv2.imwrite(pred_save_path, result)
-        # cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), seg_mask)
-        cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), raster)
+        cv2.imwrite(pred_save_path, prob)
+        cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
 
         try:
             # Get coordinates for corresponding image
