@@ -25,7 +25,7 @@ def load_images_from_folder(folder, num_samples=5000):
     return images
 
 
-def set_up_generators(image_dir, rescale):
+def set_up_generators(image_dir, rescale, flip):
     datagen_args = dict(
         data_format='channels_last',
         # set input mean to 0 over the dataset
@@ -48,6 +48,10 @@ def set_up_generators(image_dir, rescale):
         horizontal_flip=True,
         # randomly flip images
         vertical_flip=True)
+
+    if not flip:
+        datagen_args['horizontal_flip'] = False
+        datagen_args['vertical_flip'] = False
 
     if rescale:
         # Scale down the values
@@ -73,12 +77,12 @@ def set_up_generators(image_dir, rescale):
     return image_datagen, label_datagen
 
 
-def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, with_file_names=False, binary=False):
+def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, flip=True, with_file_names=False, binary=False):
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
     # Set up the generators
-    image_datagen, label_datagen = set_up_generators(image_dir, rescale)
+    image_datagen, label_datagen = set_up_generators(image_dir, rescale, flip)
 
     # Use the same seed for both generators so they return corresponding images
     seed = 1

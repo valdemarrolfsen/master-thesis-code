@@ -49,6 +49,7 @@ def run():
         batch_size,
         n_classes,
         rescale=False,
+        flip=False,
         with_file_names=True,
         binary=True
     )
