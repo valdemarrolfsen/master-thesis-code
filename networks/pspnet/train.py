@@ -11,8 +11,8 @@ def train_psp(data_dir, logdir, weights_dir, input_size, nb_classes, resnet_laye
                                 input_shape=input_size)
 
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, 1,
-                                                    binary=True, rescale=False)
-    val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, 1, binary=True,
+                                                    binary=False, rescale=False)
+    val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, 1, binary=False,
                                                   rescale=False)
     model.fit_generator(
         generator=train_generator,

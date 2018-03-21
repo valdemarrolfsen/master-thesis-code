@@ -252,15 +252,15 @@ def build_pspnet(nb_classes, input_shape, resnet_layers=50):
     x = Activation('relu')(x)
     x = Dropout(0.1)(x)
 
-    x = Conv2D(1, (1, 1), strides=(1, 1), name="conv6")(x)
+    x = Conv2D(nb_classes, (1, 1), strides=(1, 1), name="conv6")(x)
     x = Interpolation([input_shape[0], input_shape[1]])(x)
-    x = Activation('sigmoid')(x)
+    x = Activation('softmax')(x)
 
     model = Model(inputs=inp, outputs=x)
 
     # Solver
     sgd = SGD(lr=learning_rate, momentum=0.9, nesterov=True)
     model.compile(optimizer=sgd,
-                  loss='binary_crossentropy',
+                  loss='categorical_crossentropy',
                   metrics=['accuracy'])
     return model
