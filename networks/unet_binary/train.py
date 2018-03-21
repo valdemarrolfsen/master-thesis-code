@@ -2,7 +2,7 @@ import os
 
 from keras_utils.callbacks import callbacks
 from keras_utils.generators import create_generator
-from networks.unet_binary.unet import build_unet_binary
+from networks.unet_binary.unet import build_unet_binary, build_unet_binary_standard
 import tensorflow as tf
 import numpy as np
 np.random.seed(2)
@@ -10,7 +10,7 @@ tf.set_random_seed(2)
 
 
 def train_unet_binary(data_dir, logdir, weights_dir, input_size, batch_size, initial_epoch):
-    model = build_unet_binary(input_size)
+    model = build_unet_binary_standard(input_size)
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, 1, rescale=False, binary=True)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, 1, rescale=False, binary=True)
 

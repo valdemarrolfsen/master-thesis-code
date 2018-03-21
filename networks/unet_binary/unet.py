@@ -241,6 +241,6 @@ def build_unet_binary_standard(input_shape):
     model = Model(inputs=inputs, outputs=act)
     model.compile(
         optimizer=Adam(lr=1e-4),
-        loss=jaccard_coef_loss,
-        metrics=['binary_accuracy', jaccard_coef_int])
+        loss='binary_crossentropy',
+        metrics=['accuracy'])
     return model
