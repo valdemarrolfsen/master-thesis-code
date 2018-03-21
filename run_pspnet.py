@@ -18,6 +18,13 @@ def define_args():
                         help='Directory for storing processing logs (default logs/)',
                         default='logs/'
                         )
+
+    parser.add_argument('--weights-dir',
+                        type=str,
+                        help='Directory for weights',
+                        default='weights_train/',
+                        )
+
     parser.add_argument('--input-size',
                         type=int,
                         help='Input size for the images used (default 713)',
@@ -48,6 +55,7 @@ if __name__ == '__main__':
     train_psp(
         args.data_dir,
         args.logs_dir,
+        args.weights_dir,
         (args.input_size, args.input_size),
         args.classes,
         50,
