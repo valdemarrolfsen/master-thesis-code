@@ -129,6 +129,15 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
 
 
 def custom_gen(generator, input_size, batch_size, nb_classes, file_name_generator):
+    """
+    Generator that cleans data and returns one-hot encoded labels for multiclass prediction.
+    :param generator:
+    :param input_size:
+    :param batch_size:
+    :param nb_classes:
+    :param file_name_generator:
+    :return:
+    """
     while True:
         img, mask = next(generator)
 
@@ -149,6 +158,13 @@ def custom_gen(generator, input_size, batch_size, nb_classes, file_name_generato
 
 
 def custom_binary_gen(generator, batch_size, file_name_generator):
+    """
+    Generator that cleans data and returns binary labels.
+    :param generator:
+    :param batch_size:
+    :param file_name_generator:
+    :return:
+    """
     while True:
         img, mask = next(generator)
 

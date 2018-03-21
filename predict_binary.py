@@ -17,19 +17,8 @@ def run():
     parser.add_argument("--input-size", type=int, default=713)
     parser.add_argument("--batch-size", type=int, default=713)
     parser.add_argument("--model-name", type=str, default="")
-    parser.add_argument("--classes", type=int)
-
-    class_color_map = {
-        0: [237, 237, 237],  # Empty
-        1: [254, 241, 179],  # Roads
-        2: [116, 173, 209],  # Water
-        3: [193, 235, 176],  # Grass
-        4: [170, 170, 170]  # Buildings
-    }
-
     args = parser.parse_args()
 
-    n_classes = args.classes
     model_name = args.model_name
     images_path = args.test_images
     input_size = args.input_size
@@ -47,7 +36,7 @@ def run():
         images_path,
         (input_size, input_size),
         batch_size,
-        n_classes,
+        2,
         rescale=False,
         flip=False,
         with_file_names=True,
