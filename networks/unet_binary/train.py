@@ -14,11 +14,6 @@ tf.set_random_seed(2)
 
 def train_unet_binary(network, data_dir, logdir, weights_dir, weights_name, input_size, batch_size, initial_epoch):
     model = get_network(network, input_size)
-    model.compile(
-        optimizer=Adam(lr=1e-4),
-        loss=dice_coef_loss,
-        metrics=['accuracy', 'binary_crossentropy'])
-
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, 1,
                                                     rescale=False, binary=True)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, 1,

@@ -32,10 +32,6 @@ def run():
 
     model_choice = model_choices[model_name]
     model = model_choice((input_size, input_size))
-    model.compile(
-        optimizer=Adam(lr=1e-4),
-        loss=dice_coef_loss,
-        metrics=['accuracy', 'binary_crossentropy'])
     model.load_weights(args.weights_path)
 
     generator, _ = create_generator(
