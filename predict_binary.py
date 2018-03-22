@@ -6,6 +6,7 @@ from keras.optimizers import Adam
 
 from keras_utils.generators import create_generator
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
+from networks.densenet.densenet import build_densenet
 from networks.unet_binary.unet import build_unet_binary_deeper_elu, build_unet_binary_standard, dice_coef_loss
 
 
@@ -28,6 +29,7 @@ def run():
     model_choices = {
         'deeper-elu': build_unet_binary_deeper_elu,
         'standard': build_unet_binary_standard,
+        'densenet': build_densenet,
     }
 
     model_choice = model_choices[model_name]
