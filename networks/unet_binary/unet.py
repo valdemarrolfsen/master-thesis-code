@@ -202,11 +202,6 @@ def build_unet_binary_deeper_elu(input_shape):
     conv10 = layers.Conv2D(1, (1, 1))(conv9)
     act = Activation('sigmoid')(conv10)
     model = Model(inputs=inputs, outputs=act)
-    model.compile(
-        optimizer=Adam(lr=1e-4),
-        loss=jaccard_coef_loss,
-        metrics=['binary_accuracy', jaccard_coef_int])
-
     return model
 
 
@@ -283,8 +278,4 @@ def build_unet_binary_standard(input_shape):
     conv10 = layers.Conv2D(1, (1, 1))(conv9)
     act = Activation('sigmoid')(conv10)
     model = Model(inputs=inputs, outputs=act)
-    model.compile(
-        optimizer=Adam(lr=1e-4),
-        loss=jaccard_distance_loss,
-        metrics=['binary_accuracy', jaccard_distance])
     return model
