@@ -2,10 +2,11 @@ import argparse
 
 import cv2
 import numpy as np
+from keras.optimizers import Adam
 
 from keras_utils.generators import create_generator
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
-from networks.unet_binary.unet import build_unet_binary_deeper_elu, build_unet_binary_standard
+from networks.unet_binary.unet import build_unet_binary_deeper_elu, build_unet_binary_standard, dice_coef_loss
 
 
 def run():
@@ -31,6 +32,10 @@ def run():
 
     model_choice = model_choices[model_name]
     model = model_choice((input_size, input_size))
+    model.compile(
+        optimizer=Adam(lr=1e-4),
+        loss=dice_coef_loss,
+        metrics=['accuracy', 'binary_crossentropy'])
     model.load_weights(args.weights_path)
 
     generator, _ = create_generator(
