@@ -29,7 +29,7 @@ def build_densenet(classes, input_size):
 
     optimizer = Adam(lr=1e-3)
     model.compile(loss=loss, optimizer=optimizer, metrics=['acc'])
-    return
+    return model
 
 
 def densenetfcn(input_shape, nb_dense_block=3, growth_rate=16, nb_layers_per_block=4,
