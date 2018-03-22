@@ -12,17 +12,32 @@ from keras.layers import Reshape
 from keras.layers import UpSampling2D
 from keras.layers import concatenate
 from keras.models import Model
+from keras.optimizers import Adam
 from keras.regularizers import l2
 
 from networks.densenet.layers import SubPixelUpscaling
 
 
-def DenseNetFCN(input_shape, nb_dense_block=5, growth_rate=16, nb_layers_per_block=4,
+def build_densenet(classes, input_size):
+    activation = 'softmax'
+    loss = 'categorical_crossentropy'
+    if classes == 1:
+        activation = 'sigmoid'
+        loss = 'binary_crossentropy'
+
+    model = densenetfcn(input_size, classes=classes, activation=activation)
+
+    optimizer = Adam(lr=1e-3)
+    model.compile(loss=loss, optimizer=optimizer, metrics=['acc'])
+    return
+
+
+def densenetfcn(input_shape, nb_dense_block=5, growth_rate=16, nb_layers_per_block=4,
                 reduction=0.0, dropout_rate=0.0, weight_decay=1E-4, init_conv_filters=48,
                 include_top=True, weights=None, input_tensor=None, classes=1, activation='softmax',
                 upsampling_conv=128, upsampling_type='deconv', early_transition=False,
                 transition_pooling='max', initial_kernel_size=(3, 3)):
-    '''Instantiate the DenseNet FCN architecture.
+    """Instantiate the DenseNet FCN architecture.
         Note that when using TensorFlow,
         for best performance you should set
         `image_data_format='channels_last'` in your Keras config
@@ -71,7 +86,7 @@ def DenseNetFCN(input_shape, nb_dense_block=5, growth_rate=16, nb_layers_per_blo
                 application, this parameter makes it configurable.
         # Returns
             A Keras model instance.
-    '''
+    """
 
     if weights not in {None}:
         raise ValueError('The `weights` argument should be '
