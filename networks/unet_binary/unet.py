@@ -25,6 +25,20 @@ def get_crop_shape(target, refer):
     return (ch1, ch2), (cw1, cw2)
 
 
+def jaccard_distance(y_true, y_pred, smooth=100):
+    """
+    https://gist.github.com/wassname/f1452b748efcbeb4cb9b1d059dce6f96
+    """
+    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
+    sum_ = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1)
+    jac = (intersection + smooth) / (sum_ - intersection + smooth)
+    return jac
+
+
+def jaccard_distance_loss(y_true, y_pred, smooth=100):
+    return (1 - jaccard_distance(y_true, y_pred, smooth)) * smooth
+
+
 SMOOTH = 1e-12
 
 
@@ -52,6 +66,19 @@ def jaccard_coef_loss(y_true, y_pred):
     return -K.log(jaccard_coef(y_true, y_pred)) + binary_crossentropy(y_pred, y_true)
 
 
+smoothness = 1.0
+
+
+def dice_coefficient(y1, y2):
+    y1 = K.flatten(y1)
+    y2 = K.flatten(y2)
+    return (2. * K.sum(y1 * y2) + smoothness) / (K.sum(y1) + K.sum(y2) + smoothness)
+
+
+def dice_coefficient_loss(y1, y2):
+    return -dice_coefficient(y1, y2)
+
+
 def build_unet_binary_deeper_elu(input_shape):
     concat_axis = 3
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
@@ -59,7 +86,7 @@ def build_unet_binary_deeper_elu(input_shape):
                    kernel_initializer='he_uniform')(inputs)
     conv1 = BatchNormalization(axis=-1)(conv1)
     conv1 = ELU()(conv1)
-    conv1 = Conv2D(32, (3, 3), padding="same",  data_format="channels_last",
+    conv1 = Conv2D(32, (3, 3), padding="same", data_format="channels_last",
                    kernel_initializer='he_uniform')(conv1)
     conv1 = BatchNormalization(axis=-1)(conv1)
     conv1 = ELU()(conv1)
@@ -69,7 +96,7 @@ def build_unet_binary_deeper_elu(input_shape):
                    kernel_initializer='he_uniform')(pool1)
     conv2 = BatchNormalization(axis=-1)(conv2)
     conv2 = ELU()(conv2)
-    conv2 = Conv2D(64, (3, 3), padding="same",  data_format="channels_last",
+    conv2 = Conv2D(64, (3, 3), padding="same", data_format="channels_last",
                    kernel_initializer='he_uniform')(conv2)
     conv2 = BatchNormalization(axis=-1)(conv2)
     conv2 = ELU()(conv2)
@@ -119,10 +146,10 @@ def build_unet_binary_deeper_elu(input_shape):
     ch, cw = get_crop_shape(conv5, up_convbott)
     crop_conv5 = Cropping2D(cropping=(ch, cw), data_format="channels_last")(conv5)
     upbott = concatenate([up_convbott, crop_conv5], axis=concat_axis)
-    convbott1 = Conv2D(512, (3, 3), padding="same",  data_format="channels_last",
+    convbott1 = Conv2D(512, (3, 3), padding="same", data_format="channels_last",
                        kernel_initializer='he_uniform')(upbott)
     convbott1 = ELU()(convbott1)
-    convbott1 = Conv2D(512, (3, 3), padding="same",  data_format="channels_last",
+    convbott1 = Conv2D(512, (3, 3), padding="same", data_format="channels_last",
                        kernel_initializer='he_uniform')(convbott1)
     convbott1 = ELU()(convbott1)
     up_convbott1 = UpSampling2D(size=(2, 2), data_format="channels_last")(convbott1)
@@ -133,7 +160,7 @@ def build_unet_binary_deeper_elu(input_shape):
     conv6 = Conv2D(256, (3, 3), padding="same", data_format="channels_last",
                    kernel_initializer='he_uniform')(up6)
     conv6 = ELU()(conv6)
-    conv6 = Conv2D(256, (3, 3), padding="same",  data_format="channels_last",
+    conv6 = Conv2D(256, (3, 3), padding="same", data_format="channels_last",
                    kernel_initializer='he_uniform')(conv6)
     conv6 = ELU()(conv6)
     up_conv6 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv6)
@@ -177,62 +204,79 @@ def build_unet_binary_deeper_elu(input_shape):
     model = Model(inputs=inputs, outputs=act)
     model.compile(
         optimizer=Adam(lr=1e-4),
-        loss='binary_crossentropy',
-        metrics=['accuracy'])
+        loss=jaccard_coef_loss,
+        metrics=['binary_accuracy', jaccard_coef_int])
 
     return model
 
 
 def build_unet_binary_standard(input_shape):
-
     concat_axis = 3
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
 
-    conv1 = Conv2D(32, (3, 3), padding="same", name="conv1_1", activation="relu", data_format="channels_last", kernel_initializer='he_uniform')(inputs)
-    conv1 = Conv2D(32, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv1)
+    conv1 = Conv2D(32, (3, 3), padding="same", name="conv1_1", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(inputs)
+    conv1 = Conv2D(32, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(conv1)
     pool1 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv1)
-    conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(pool1)
-    conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv2)
+    conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(pool1)
+    conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(conv2)
     pool2 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv2)
 
-    conv3 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(pool2)
-    conv3 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv3)
+    conv3 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(pool2)
+    conv3 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(conv3)
     pool3 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv3)
 
-    conv4 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(pool3)
-    conv4 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv4)
+    conv4 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(pool3)
+    conv4 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(conv4)
     pool4 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv4)
 
-    conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(pool4)
-    conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv5)
+    conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(pool4)
+    conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(conv5)
 
     up_conv5 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv5)
     ch, cw = get_crop_shape(conv4, up_conv5)
     crop_conv4 = Cropping2D(cropping=(ch, cw), data_format="channels_last")(conv4)
     up6 = concatenate([up_conv5, crop_conv4], axis=concat_axis)
-    conv6 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(up6)
-    conv6 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv6)
+    conv6 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(up6)
+    conv6 = Conv2D(256, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(conv6)
 
     up_conv6 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv6)
     ch, cw = get_crop_shape(conv3, up_conv6)
     crop_conv3 = Cropping2D(cropping=(ch, cw), data_format="channels_last")(conv3)
     up7 = concatenate([up_conv6, crop_conv3], axis=concat_axis)
-    conv7 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(up7)
-    conv7 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv7)
+    conv7 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(up7)
+    conv7 = Conv2D(128, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(conv7)
 
     up_conv7 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv7)
     ch, cw = get_crop_shape(conv2, up_conv7)
     crop_conv2 = Cropping2D(cropping=(ch, cw), data_format="channels_last")(conv2)
     up8 = concatenate([up_conv7, crop_conv2], axis=concat_axis)
-    conv8 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(up8)
-    conv8 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv8)
+    conv8 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(up8)
+    conv8 = Conv2D(64, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(conv8)
 
     up_conv8 = UpSampling2D(size=(2, 2), data_format="channels_last")(conv8)
     ch, cw = get_crop_shape(conv1, up_conv8)
     crop_conv1 = Cropping2D(cropping=(ch, cw), data_format="channels_last")(conv1)
     up9 = concatenate([up_conv8, crop_conv1], axis=concat_axis)
-    conv9 = Conv2D(32, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(up9)
-    conv9 = Conv2D(32, (3, 3), padding="same", activation="relu", data_format="channels_last",  kernel_initializer='he_uniform')(conv9)
+    conv9 = Conv2D(32, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(up9)
+    conv9 = Conv2D(32, (3, 3), padding="same", activation="relu", data_format="channels_last",
+                   kernel_initializer='he_uniform')(conv9)
 
     ch, cw = get_crop_shape(inputs, conv9)
     conv9 = layers.ZeroPadding2D(padding=((ch[0], ch[1]), (cw[0], cw[1])))(conv9)
@@ -241,6 +285,6 @@ def build_unet_binary_standard(input_shape):
     model = Model(inputs=inputs, outputs=act)
     model.compile(
         optimizer=Adam(lr=1e-4),
-        loss=jaccard_coef_loss,
-        metrics=['binary_accuracy', jaccard_coef_int])
+        loss=jaccard_distance_loss,
+        metrics=['binary_accuracy', jaccard_distance])
     return model

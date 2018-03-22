@@ -34,6 +34,12 @@ def define_args():
                         default='weights_train/',
                         )
 
+    parser.add_argument('--weights-name',
+                        type=str,
+                        help='The name of the weight file',
+                        default='{epoch:02d}-{loss:.2f}'
+                        )
+
     parser.add_argument('--input-size',
                         type=int,
                         help='Size that the images should be converted to',
@@ -71,6 +77,7 @@ if __name__ == '__main__':
                       args.data_dir,
                       args.logs_dir,
                       args.weights_dir,
+                      args.weights_name,
                       (args.input_size, args.input_size),
                       args.batch_size,
                       0)

@@ -9,7 +9,7 @@ np.random.seed(2)
 tf.set_random_seed(2)
 
 
-def train_unet_binary(network, data_dir, logdir, weights_dir, input_size, batch_size, initial_epoch):
+def train_unet_binary(network, data_dir, logdir, weights_dir, weights_name, input_size, batch_size, initial_epoch):
     model = get_network(network, input_size)
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, 1, rescale=False, binary=True)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, 1, rescale=False, binary=True)
@@ -21,7 +21,7 @@ def train_unet_binary(network, data_dir, logdir, weights_dir, input_size, batch_
         steps_per_epoch=num_samples//batch_size,
         epochs=100, verbose=True,
         workers=8,
-        callbacks=callbacks(logdir, weightsdir=weights_dir, monitor_val='val_jaccard_coef_int'),
+        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_jaccard_distance'),
         initial_epoch=initial_epoch)
 
 
