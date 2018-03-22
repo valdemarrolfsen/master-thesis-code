@@ -16,7 +16,7 @@ def train_unet_binary(network, data_dir, logdir, weights_dir, weights_name, inpu
     model.compile(
         optimizer=Adam(lr=1e-4),
         loss=jaccard_distance_loss,
-        metrics=['binary_accuracy', jaccard_distance])
+        metrics=['binary_accuracy'])
 
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, 1, rescale=False, binary=True)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, 1, rescale=False, binary=True)
@@ -28,7 +28,7 @@ def train_unet_binary(network, data_dir, logdir, weights_dir, weights_name, inpu
         steps_per_epoch=num_samples//batch_size,
         epochs=100, verbose=True,
         workers=8,
-        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_jaccard_distance'),
+        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_binary_accuracy'),
         initial_epoch=initial_epoch)
 
 
