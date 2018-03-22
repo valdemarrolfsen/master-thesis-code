@@ -2,15 +2,15 @@ import os
 
 from keras_utils.callbacks import callbacks
 from keras_utils.generators import create_generator
-from networks.unet_binary.unet import build_unet_binary, build_unet_binary_standard
+from networks.unet_binary.unet import build_unet_binary_deeper_elu, build_unet_binary_standard
 import tensorflow as tf
 import numpy as np
 np.random.seed(2)
 tf.set_random_seed(2)
 
 
-def train_unet_binary(data_dir, logdir, weights_dir, input_size, batch_size, initial_epoch):
-    model = build_unet_binary_standard(input_size)
+def train_unet_binary(network, data_dir, logdir, weights_dir, input_size, batch_size, initial_epoch):
+    model = get_network(network, input_size)
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, 1, rescale=False, binary=True)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, 1, rescale=False, binary=True)
 
@@ -19,8 +19,15 @@ def train_unet_binary(data_dir, logdir, weights_dir, input_size, batch_size, ini
         validation_data=val_generator,
         validation_steps=val_samples//batch_size,
         steps_per_epoch=num_samples//batch_size,
-        epochs=25, verbose=True,
+        epochs=100, verbose=True,
         workers=8,
         callbacks=callbacks(logdir, weightsdir=weights_dir, monitor_val='val_acc'),
         initial_epoch=initial_epoch)
 
+
+def get_network(network, input_size):
+    networks = {
+        'standard': build_unet_binary_standard(input_size),
+        'deeper-elu': build_unet_binary_deeper_elu(input_size)
+    }
+    return networks[network]

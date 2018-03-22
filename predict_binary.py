@@ -5,7 +5,7 @@ import numpy as np
 
 from keras_utils.generators import create_generator
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
-from networks.unet_binary.unet import build_unet_binary
+from networks.unet_binary.unet import build_unet_binary_deeper_elu
 
 
 def run():
@@ -25,7 +25,7 @@ def run():
     batch_size = args.batch_size
 
     model_choices = {
-        'unet': build_unet_binary,
+        'unet': build_unet_binary_deeper_elu,
     }
 
     model_choice = model_choices[model_name]

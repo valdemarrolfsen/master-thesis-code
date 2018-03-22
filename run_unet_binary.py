@@ -1,5 +1,13 @@
 import argparse
+
+import sys
+
 from networks.unet_binary.train import train_unet_binary
+
+networks = [
+    'standard',
+    'deeper-elu'
+]
 
 
 def define_args():
@@ -28,20 +36,20 @@ def define_args():
 
     parser.add_argument('--input-size',
                         type=int,
-                        help='Input size for the images used (default 713)',
+                        help='Size that the images should be converted to',
                         default=713
+                        )
+
+    parser.add_argument('--network',
+                        type=str,
+                        help='What network is trained',
+                        default='standard'
                         )
 
     parser.add_argument('--batch-size',
                         type=int,
                         help='Batch size',
                         default=2
-                        )
-
-    parser.add_argument('--steps-per-epoch',
-                        type=int,
-                        help='Steps per epoch',
-                        default=50
                         )
 
     args = parser.parse_args()
@@ -54,7 +62,13 @@ if __name__ == '__main__':
     # Defining arguments
     args = define_args()
 
-    train_unet_binary(args.data_dir,
+    if args.network not in networks:
+        print('Unknown network {}'.format(args.network))
+        print('Choices are {}'.format(''.join(networks)))
+        sys.exit(0)
+
+    train_unet_binary(args.network,
+                      args.data_dir,
                       args.logs_dir,
                       args.weights_dir,
                       (args.input_size, args.input_size),
