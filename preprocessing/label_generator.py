@@ -190,7 +190,7 @@ def work(q, db, table_name, color_attribute, total_files=0):
         # are we adding to train, val or test?
         prog = (total_files - q.qsize()) / total_files
 
-        filename = "{}.{}".format(i, file_type)
+        filename = "{}-{}.{}".format(i, uuid.uuid4(), file_type)
 
         if prog < train_portion:
             s = 'train'
