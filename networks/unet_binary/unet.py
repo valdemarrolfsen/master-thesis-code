@@ -25,20 +25,6 @@ def get_crop_shape(target, refer):
     return (ch1, ch2), (cw1, cw2)
 
 
-def jaccard_distance(y_true, y_pred, smooth=100):
-    """
-    https://gist.github.com/wassname/f1452b748efcbeb4cb9b1d059dce6f96
-    """
-    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    sum_ = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1)
-    jac = (intersection + smooth) / (sum_ - intersection + smooth)
-    return jac
-
-
-def jaccard_distance_loss(y_true, y_pred, smooth=100):
-    return (1 - jaccard_distance(y_true, y_pred, smooth)) * smooth
-
-
 SMOOTH = 1e-12
 
 
