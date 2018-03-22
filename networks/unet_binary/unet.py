@@ -52,17 +52,18 @@ def jaccard_coef_loss(y_true, y_pred):
     return -K.log(jaccard_coef(y_true, y_pred)) + binary_crossentropy(y_pred, y_true)
 
 
-smoothness = 1.0
+def dice_coef(y_true, y_pred, smooth=1):
+    """
+    Dice = (2*|X & Y|)/ (|X|+ |Y|)
+         =  2*sum(|A*B|)/(sum(A^2)+sum(B^2))
+    ref: https://arxiv.org/pdf/1606.04797v1.pdf
+    """
+    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
+    return (2. * intersection + smooth) / (K.sum(K.square(y_true), -1) + K.sum(K.square(y_pred), -1) + smooth)
 
 
-def dice_coefficient(y1, y2):
-    y1 = K.flatten(y1)
-    y2 = K.flatten(y2)
-    return (2. * K.sum(y1 * y2) + smoothness) / (K.sum(y1) + K.sum(y2) + smoothness)
-
-
-def dice_coefficient_loss(y1, y2):
-    return -dice_coefficient(y1, y2)
+def dice_coef_loss(y_true, y_pred):
+    return 1 - dice_coef(y_true, y_pred)
 
 
 def build_unet_binary_deeper_elu(input_shape):
