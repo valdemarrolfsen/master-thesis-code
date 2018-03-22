@@ -18,7 +18,7 @@ from keras.regularizers import l2
 from networks.densenet.layers import SubPixelUpscaling
 
 
-def build_densenet(classes, input_size):
+def build_densenet(input_size, classes):
     activation = 'softmax'
     loss = 'categorical_crossentropy'
     if classes == 1:

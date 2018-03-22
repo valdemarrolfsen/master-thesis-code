@@ -33,7 +33,7 @@ def run():
     }
 
     model_choice = model_choices[model_name]
-    model = model_choice((input_size, input_size))
+    model = model_choice((input_size, input_size), 1)
     model.load_weights(args.weights_path)
 
     generator, _ = create_generator(

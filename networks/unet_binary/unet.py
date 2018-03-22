@@ -66,7 +66,7 @@ def dice_coef_loss(y_true, y_pred):
     return 1 - dice_coef(y_true, y_pred)
 
 
-def build_unet_binary_deeper_elu(input_shape):
+def build_unet_binary_deeper_elu(input_shape, classes=1):
     concat_axis = 3
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
     conv1 = Conv2D(32, (3, 3), padding="same", name="conv1_1", data_format="channels_last",
@@ -196,7 +196,7 @@ def build_unet_binary_deeper_elu(input_shape):
     return model
 
 
-def build_unet_binary_standard(input_shape):
+def build_unet_binary_standard(input_shape, classes=1):
     concat_axis = 3
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
 
