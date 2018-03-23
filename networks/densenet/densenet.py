@@ -28,7 +28,7 @@ def build_densenet(input_size, classes):
     model = densenetfcn((input_size[0], input_size[1], 3), classes=classes, activation=activation)
 
     optimizer = Adam(lr=1e-3)
-    model.compile(loss=loss, optimizer=optimizer, metrics=['acc', loss)
+    model.compile(loss=loss, optimizer=optimizer, metrics=['acc', loss])
     return model
 
 
