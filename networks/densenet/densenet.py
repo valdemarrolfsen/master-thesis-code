@@ -28,11 +28,11 @@ def build_densenet(input_size, classes):
     model = densenetfcn((input_size[0], input_size[1], 3), classes=classes, activation=activation)
 
     optimizer = Adam(lr=1e-3)
-    model.compile(loss=loss, optimizer=optimizer, metrics=['acc'])
+    model.compile(loss=loss, optimizer=optimizer, metrics=['acc', loss)
     return model
 
 
-def densenetfcn(input_shape, nb_dense_block=3, growth_rate=16, nb_layers_per_block=4,
+def densenetfcn(input_shape, nb_dense_block=5, growth_rate=16, nb_layers_per_block=4,
                 reduction=0.0, dropout_rate=0.0, weight_decay=1E-4, init_conv_filters=48,
                 include_top=True, weights=None, input_tensor=None, classes=1, activation='softmax',
                 upsampling_conv=128, upsampling_type='deconv', early_transition=False,
