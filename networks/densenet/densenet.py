@@ -25,7 +25,8 @@ def build_densenet(input_size, classes):
         activation = 'sigmoid'
         loss = 'binary_crossentropy'
 
-    model = densenetfcn((input_size[0], input_size[1], 3), classes=classes, activation=activation)
+    model = densenetfcn((input_size[0], input_size[1], 3), nb_layers_per_block=[4, 5, 7, 10, 12, 15], classes=classes,
+                        activation=activation)
 
     optimizer = Adam(lr=1e-3)
     model.compile(loss=loss, optimizer=optimizer, metrics=['acc', loss])
