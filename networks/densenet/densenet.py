@@ -18,17 +18,41 @@ from keras_utils.normalization import GroupNormalization
 from networks.densenet.layers import SubPixelUpscaling
 
 
-def build_densenet(input_size, classes):
+def get_kwargs(config):
+    configs = {
+        103: {
+            'growth_rate': 16,
+            'nb_layers_per_block': [4, 5, 7, 10, 12, 15]
+        },
+        67: {
+            'growth_rate': 16,
+            'nb_layers_per_block': 5
+        },
+        56: {
+            'growth_rate': 12,
+            'nb_layers_per_block': 4
+        }
+    }
+    return configs[config]
+
+
+def build_densenet(input_size, classes, config=67):
     activation = 'softmax'
     loss = 'categorical_crossentropy'
     if classes == 1:
         activation = 'sigmoid'
         loss = 'binary_crossentropy'
 
-    model = densenetfcn((input_size[0], input_size[1], 3), nb_layers_per_block=[4, 5, 7, 10, 12, 15],
+    configs = [56, 67, 103]
+    if config not in configs:
+        raise ValueError('Unknown config')
+
+    kwargs = get_kwargs(config)
+    model = densenetfcn((input_size[0], input_size[1], 3),
+                        nb_dense_block=5,
                         classes=classes,
-                        dropout_rate=0.2,
-                        activation=activation)
+                        activation=activation,
+                        **kwargs)
 
     optimizer = Adam(lr=1e-3)
     model.compile(loss=loss, optimizer=optimizer, metrics=['acc', loss])
@@ -91,6 +115,7 @@ def densenetfcn(input_shape, nb_dense_block=5, growth_rate=16, nb_layers_per_blo
             A Keras model instance.
     """
 
+    print('Using {} with {} per block', nb_dense_block, nb_layers_per_block)
     if weights not in {None}:
         raise ValueError('The `weights` argument should be '
                          '`None` (random initialization) as no '

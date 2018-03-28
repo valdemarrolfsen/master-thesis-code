@@ -6,7 +6,7 @@ from networks.densenet.densenet import build_densenet
 
 
 def train_densenet(data_dir, logdir, weights_dir, weights_name, input_size, classes, batch_size, initial_epoch):
-    model = build_densenet(input_size, classes)
+    model = build_densenet(input_size, classes, config=67)
     binary = classes == 1
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, classes, rescale=False, binary=binary)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, classes, rescale=False, binary=binary)
