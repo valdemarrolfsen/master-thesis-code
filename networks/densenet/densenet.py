@@ -2,7 +2,6 @@ import keras.backend as K
 from keras.engine.topology import get_source_inputs
 from keras.layers import Activation
 from keras.layers import AveragePooling2D
-from keras.layers import BatchNormalization
 from keras.layers import Conv2D
 from keras.layers import Conv2DTranspose
 from keras.layers import Dropout
@@ -15,6 +14,7 @@ from keras.models import Model
 from keras.optimizers import Adam
 from keras.regularizers import l2
 
+from keras_utils.normalization import GroupNormalization
 from networks.densenet.layers import SubPixelUpscaling
 
 
@@ -25,7 +25,9 @@ def build_densenet(input_size, classes):
         activation = 'sigmoid'
         loss = 'binary_crossentropy'
 
-    model = densenetfcn((input_size[0], input_size[1], 3), nb_layers_per_block=[4, 5, 7, 10, 12, 15], classes=classes,
+    model = densenetfcn((input_size[0], input_size[1], 3), nb_layers_per_block=[4, 5, 7, 10, 12, 15],
+                        classes=classes,
+                        dropout_rate=0.2,
                         activation=activation)
 
     optimizer = Adam(lr=1e-3)
@@ -194,7 +196,7 @@ def __conv_block(ip, nb_filter, bottleneck=False, dropout_rate=None, weight_deca
     with K.name_scope('ConvBlock'):
         concat_axis = 1 if K.image_data_format() == 'channels_first' else -1
 
-        x = BatchNormalization(axis=concat_axis, epsilon=1.1e-5, name=name_or_none(block_prefix, '_bn'))(ip)
+        x = GroupNormalization(axis=concat_axis, epsilon=1.1e-5, name=name_or_none(block_prefix, '_bn'))(ip)
         x = Activation('relu')(x)
 
         if bottleneck:
@@ -202,7 +204,7 @@ def __conv_block(ip, nb_filter, bottleneck=False, dropout_rate=None, weight_deca
 
             x = Conv2D(inter_channel, (1, 1), kernel_initializer='he_normal', padding='same', use_bias=False,
                        kernel_regularizer=l2(weight_decay), name=name_or_none(block_prefix, '_bottleneck_conv2D'))(x)
-            x = BatchNormalization(axis=concat_axis, epsilon=1.1e-5,
+            x = GroupNormalization(axis=concat_axis, epsilon=1.1e-5,
                                    name=name_or_none(block_prefix, '_bottleneck_bn'))(x)
             x = Activation('relu')(x)
 
@@ -292,7 +294,7 @@ def __transition_block(ip, nb_filter, compression=1.0, weight_decay=1e-4, block_
     with K.name_scope('Transition'):
         concat_axis = 1 if K.image_data_format() == 'channels_first' else -1
 
-        x = BatchNormalization(axis=concat_axis, epsilon=1.1e-5, name=name_or_none(block_prefix, '_bn'))(ip)
+        x = GroupNormalization(axis=concat_axis, epsilon=1.1e-5, name=name_or_none(block_prefix, '_bn'))(ip)
         x = Activation('relu')(x)
         x = Conv2D(int(nb_filter * compression), (1, 1), kernel_initializer='he_normal', padding='same',
                    use_bias=False, kernel_regularizer=l2(weight_decay), name=name_or_none(block_prefix, '_conv2D'))(x)
@@ -423,7 +425,7 @@ def __create_fcn_dense_net(nb_classes, img_input, include_top, nb_dense_block=5,
         x = Conv2D(init_conv_filters, initial_kernel_size, kernel_initializer='he_normal', padding='same',
                    name='initial_conv2D',
                    use_bias=False, kernel_regularizer=l2(weight_decay))(img_input)
-        x = BatchNormalization(axis=concat_axis, epsilon=1.1e-5, name='initial_bn')(x)
+        x = GroupNormalization(axis=concat_axis, epsilon=1.1e-5, name='initial_bn')(x)
         x = Activation('relu')(x)
 
         nb_filter = init_conv_filters
