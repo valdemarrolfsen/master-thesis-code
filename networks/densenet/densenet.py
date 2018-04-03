@@ -115,7 +115,7 @@ def densenetfcn(input_shape, nb_dense_block=5, growth_rate=16, nb_layers_per_blo
             A Keras model instance.
     """
 
-    print('Using {} with {} per block', nb_dense_block, nb_layers_per_block)
+    print('Using {} dense blocks with {} layers per block'.format(nb_dense_block, nb_layers_per_block))
     if weights not in {None}:
         raise ValueError('The `weights` argument should be '
                          '`None` (random initialization) as no '
