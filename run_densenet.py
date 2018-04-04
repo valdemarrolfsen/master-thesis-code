@@ -50,6 +50,11 @@ def define_args():
                         help='Batch size',
                         default=2
                         )
+    parser.add_argument('--config',
+                        type=int,
+                        help='The config for the network, choices are 56, 67 and 103',
+                        default=67
+                        )
     args = parser.parse_args()
     print('Using args: ', args)
 
@@ -66,4 +71,5 @@ if __name__ == '__main__':
                    (args.input_size, args.input_size),
                    args.classes,
                    args.batch_size,
-                   0)
+                   initial_epoch=0,
+                   config=args.config)
