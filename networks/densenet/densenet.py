@@ -52,6 +52,7 @@ def build_densenet(input_size, classes, config=67):
                         nb_dense_block=5,
                         classes=classes,
                         activation=activation,
+                        dropout_rate=0.2,
                         **kwargs)
 
     optimizer = Adam(lr=1e-3)
