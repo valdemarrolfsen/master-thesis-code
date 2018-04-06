@@ -1,8 +1,5 @@
 import argparse
-from comet_ml import Experiment
 from networks.densenet.train import train_densenet
-
-experiment = Experiment(api_key="NQEkxvH9S8g4YfcfTaN8zKOj9")
 
 
 def define_args():
