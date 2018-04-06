@@ -1,5 +1,6 @@
 import cv2
 import math
+import os
 from skimage import io
 
 from osgeo import osr
@@ -15,7 +16,8 @@ bounding_box = [
 
 
 def eccentricity(a, b):
-    return math.sqrt(1 - (b / a) ** 2)
+    return 0.0167
+    #return math.sqrt(1 - (b / a) ** 2)
 
 
 def n_rad(a, b, lat):
@@ -33,7 +35,7 @@ def degree_to_meter(a, b, lat, lon, h):
     return x, y, z
 
 
-def georeference_raster(raster_path, lat, lon):
+def georeference_raster(raster_path, lat, lon, zoom):
     """
 
     :param lon: Longitude
@@ -51,19 +53,26 @@ def georeference_raster(raster_path, lat, lon):
 
     # Make WGS84 lon lat coordinate system
     world_sr = osr.SpatialReference()
-    world_sr.SetWellKnownGeogCS('WGS84')
+    world_sr.ImportFromEPSG(4326)
 
     # Get raster projection
-    epsg = 4326
+    epsg = 3857
     srs = osr.SpatialReference()
     srs.ImportFromEPSG(epsg)
-    dest_wkt = srs.ExportToWkt()
 
-    # coord_transform = osr.CoordinateTransformation(world_sr, srs)
-    # newpoints = coord_transform.TransformPoints([[lon, lat]])
+    min_y, min_x = point_from_pixels(lat, lon, zoom, -200)
+    max_y, max_x = point_from_pixels(lat, lon, zoom, 200)
 
-    min_y, min_x = point_from_pixels(lat, lon, 16, -200)
-    max_y, max_x = point_from_pixels(lat, lon, 16, 200)
+    coord_transform = osr.CoordinateTransformation(world_sr, srs)
+    newpoints = coord_transform.TransformPoints([[min_x, min_y], [max_x, max_y]])
+
+    delta_x = -4
+    delta_y = 14
+
+    min_x = newpoints[0][0] + delta_x
+    min_y = newpoints[0][1] + delta_y
+    max_x = newpoints[1][0] + delta_x
+    max_y = newpoints[1][1] + delta_y
 
     x_scale = (max_x - min_x) / 400
     y_scale = (max_y - min_y) / 400
@@ -76,21 +85,11 @@ def georeference_raster(raster_path, lat, lon):
     dst_ds.SetGeoTransform(gt)
 
     # Set projection
-    dst_ds.SetProjection(dest_wkt)
+    dst_ds.SetProjection(srs.ExportToWkt())
 
     # Close files
     dst_ds = None
     src_ds = None
-
-
-def get_google_maps_scale(lat, zoom):
-    """
-    Get the meters per pixel scale of the lat and zoom level
-    :param lat:
-    :param zoom:
-    :return: scale
-    """
-    return 156543.03392 * math.cos(lat * math.pi / 180) / math.pow(2, zoom)
 
 
 def slide_window(lat, lng, size, zoom):
@@ -114,12 +113,32 @@ def point_from_pixels(lat, lng, zoom, pixels):
     return point_lat, point_lng
 
 
+def georeference_new(raster_path, lat, lon, size, zoom):
+    ullat, ullon = point_from_pixels(lat, lon, zoom, -200)
+    lrlat, lrlon = point_from_pixels(lat, lon, zoom, 200)
+
+    trans = "gdal_translate -of GTiff -a_ullr {ullon} {ullat} {lrlon} {lrlat} -a_srs EPSG:4269 {path} ref_{path}".format(
+        ullon=ullon,
+        ullat=ullat,
+        lrlat=lrlat,
+        lrlon=lrlon,
+        path=raster_path
+    )
+
+    wrap = "gdalwarp -of GTiff  -t_srs EPSG:3857 ref_{path} finished_{path}".format(
+        path=raster_path
+    )
+
+    os.system(trans)
+    os.system(wrap)
+
+
 def run():
     lat = bounding_box[0]
     lng = bounding_box[1]
 
-    zoom = 16
-    size = 400
+    zoom = 18
+    size = 512
     map_type = "satellite"
     base_url = "https://maps.googleapis.com/maps/api/staticmap"
     api_key = "AIzaSyD3sIrrRRqyFNKrHeW58bplkmqHUXuG_Hg"
@@ -148,7 +167,7 @@ def run():
             cv2.imwrite(save_path, img)
 
             # temp_x, temp_y, _ = degree_to_meter(a, b, lat, lng, h)
-            georeference_raster(save_path, lat, lng)
+            # georeference_raster(save_path, lat, lng, zoom)
 
             _, lng = slide_window(lat, lng, size, zoom)
 
