@@ -14,11 +14,10 @@ from keras.models import Model
 from keras.optimizers import Adam
 from keras.regularizers import l2
 
-from keras_utils.normalization import GroupNormalization
 from networks.densenet.layers import SubPixelUpscaling
 
 
-def get_kwargs(config):
+def get_config_kwargs(config):
     configs = {
         103: {
             'growth_rate': 16,
@@ -47,7 +46,7 @@ def build_densenet(input_size, classes, config=67):
     if config not in configs:
         raise ValueError('Unknown config')
 
-    kwargs = get_kwargs(config)
+    kwargs = get_config_kwargs(config)
     model = densenetfcn((input_size[0], input_size[1], 3),
                         nb_dense_block=5,
                         classes=classes,
