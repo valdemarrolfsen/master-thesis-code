@@ -23,7 +23,7 @@ def get_crop_shape(target, refer):
     return (ch1, ch2), (cw1, cw2)
 
 
-def build_unet(nb_classes, input_shape):
+def build_unet(input_shape, nb_classes):
 
     concat_axis = 3
     inputs = layers.Input((input_shape[0], input_shape[1], 3))

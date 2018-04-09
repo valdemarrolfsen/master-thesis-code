@@ -35,7 +35,7 @@ def get_config_kwargs(config):
     return configs[config]
 
 
-def build_densenet(input_size, classes, config=67):
+def build_densenet(input_size, classes, config=56):
     activation = 'softmax'
     loss = 'categorical_crossentropy'
     if classes == 1:

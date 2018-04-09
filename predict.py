@@ -1,11 +1,12 @@
 import argparse
+
 import cv2
 import numpy as np
 
-from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
-from networks.pspnet.net_builder import build_pspnet
-from networks.unet.unet import build_unet
 from keras_utils.generators import create_generator
+from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
+from networks.densenet.densenet import build_densenet
+from networks.unet.unet import build_unet
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--weights-path", type=str)
@@ -34,13 +35,13 @@ input_size = args.input_size
 batch_size = args.batch_size
 
 model_choices = {
-    'pspnet': build_pspnet,
-    'unet': build_unet
+    'unet': build_unet,
+    'densenet': build_densenet
 }
 
 model_choice = model_choices[model_name]
 
-model = model_choice(n_classes, (input_size, input_size))
+model = model_choice((input_size, input_size), n_classes)
 
 model.load_weights(args.weights_path)
 
@@ -58,7 +59,7 @@ probs = model.predict(images, verbose=1)
 
 for i, prob in enumerate(probs):
     result = np.argmax(prob, axis=2)
-    # mask_result = np.argmax(masks[i], axis=2)
+    mask_result = np.argmax(masks[i], axis=2)
     # img = get_real_image(images_path, file_names[i])
     raster = get_real_image(images_path, file_names[i], use_gdal=True)
 
@@ -70,15 +71,15 @@ for i, prob in enumerate(probs):
         seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
         seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
-        # seg_mask[:, :, 0] += ((mask_result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
-        # seg_mask[:, :, 1] += ((mask_result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
-        # seg_mask[:, :, 2] += ((mask_result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+        seg_mask[:, :, 0] += ((mask_result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+        seg_mask[:, :, 1] += ((mask_result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+        seg_mask[:, :, 2] += ((mask_result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
     pred_name = "pred-{}.tif".format(i)
     pred_save_path = "{}/{}".format(args.output_path, pred_name)
 
     cv2.imwrite(pred_save_path, seg_img)
-    # cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), seg_mask)
+    cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), seg_mask)
     # cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
 
     try:
