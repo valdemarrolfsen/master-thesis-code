@@ -21,5 +21,5 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         steps_per_epoch=num_samples//batch_size,
         epochs=10000, verbose=True,
         workers=8,
-        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir), initial_epoch=initial_epoch, monitor_val='val_acc')
+        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_acc'), initial_epoch=initial_epoch)
 
