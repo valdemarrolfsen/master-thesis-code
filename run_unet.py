@@ -31,7 +31,6 @@ def define_args():
                         help='The name of the weight file',
                         default='{epoch:02d}-{loss:.2f}'
                         )
-
     parser.add_argument('--input-size',
                         type=int,
                         help='Input size for the images used (default 713)',

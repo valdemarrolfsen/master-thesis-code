@@ -10,7 +10,7 @@ tf.set_random_seed(2)
 
 
 def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch):
-    model = build_unet(nb_classes, input_size)
+    model = build_unet(input_size, nb_classes)
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes, rescale=False)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, nb_classes, rescale=False)
 
