@@ -68,6 +68,7 @@ if __name__ == '__main__':
     train_unet(args.data_dir,
                args.logs_dir,
                args.weights_dir,
+               args.weights_name,
                (args.input_size, args.input_size),
                args.classes,
                args.batch_size,
