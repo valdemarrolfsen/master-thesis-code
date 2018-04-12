@@ -215,7 +215,7 @@ def __conv_block(ip, nb_filter, bottleneck=False, dropout_rate=None, weight_deca
     with K.name_scope('ConvBlock'):
         concat_axis = 1 if K.image_data_format() == 'channels_first' else -1
 
-        x = BatchNormalization(groups=2, axis=concat_axis, epsilon=1.1e-5, name=name_or_none(block_prefix, '_bn'))(ip)
+        x = BatchNormalization(axis=concat_axis, epsilon=1.1e-5, name=name_or_none(block_prefix, '_bn'))(ip)
         x = Activation('relu')(x)
 
         if bottleneck:
