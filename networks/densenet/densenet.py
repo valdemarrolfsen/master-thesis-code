@@ -7,7 +7,7 @@ from keras.models import Model
 from keras.optimizers import Adam
 from keras.regularizers import l2
 
-from keras_utils.metrics import jaccard_distance_loss
+from keras_utils.metrics import jaccard_distance_loss, soft_jaccard_loss
 from networks.densenet.layers import SubPixelUpscaling
 
 
@@ -31,7 +31,7 @@ def get_config_kwargs(config):
 
 def build_densenet(input_size, classes, config=56):
     activation = 'softmax'
-    loss = jaccard_distance_loss
+    loss = soft_jaccard_loss
     if classes == 1:
         activation = 'sigmoid'
         loss = 'binary_crossentropy'
