@@ -66,9 +66,9 @@ for i, prob in enumerate(probs):
     G = raster.GetRasterBand(2).ReadAsArray()
     B = raster.GetRasterBand(3).ReadAsArray()
     img = np.zeros((input_size, input_size, 3))
-    img[:, :, 0] = R
+    img[:, :, 0] = B
     img[:, :, 1] = G
-    img[:, :, 2] = B
+    img[:, :, 2] = R
 
     seg_img = np.zeros((input_size, input_size, 3))
     seg_mask = np.zeros((input_size, input_size, 3))

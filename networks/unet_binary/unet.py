@@ -25,47 +25,6 @@ def get_crop_shape(target, refer):
     return (ch1, ch2), (cw1, cw2)
 
 
-SMOOTH = 1e-12
-
-
-def jaccard_coef(y_true, y_pred):
-    intersection = K.sum(y_true * y_pred, axis=[0, -1, -2])
-    sum_ = K.sum(y_true + y_pred, axis=[0, -1, -2])
-
-    jac = (intersection + SMOOTH) / (sum_ - intersection + SMOOTH)
-
-    return K.mean(jac)
-
-
-def jaccard_coef_int(y_true, y_pred):
-    y_pred_pos = K.round(K.clip(y_pred, 0, 1))
-
-    intersection = K.sum(y_true * y_pred_pos, axis=[0, -1, -2])
-    sum_ = K.sum(y_true + y_pred_pos, axis=[0, -1, -2])
-
-    jac = (intersection + SMOOTH) / (sum_ - intersection + SMOOTH)
-
-    return K.mean(jac)
-
-
-def jaccard_coef_loss(y_true, y_pred):
-    return -K.log(jaccard_coef(y_true, y_pred)) + binary_crossentropy(y_pred, y_true)
-
-
-def dice_coef(y_true, y_pred, smooth=1):
-    """
-    Dice = (2*|X & Y|)/ (|X|+ |Y|)
-         =  2*sum(|A*B|)/(sum(A^2)+sum(B^2))
-    ref: https://arxiv.org/pdf/1606.04797v1.pdf
-    """
-    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    return (2. * intersection + smooth) / (K.sum(K.square(y_true), -1) + K.sum(K.square(y_pred), -1) + smooth)
-
-
-def dice_coef_loss(y_true, y_pred):
-    return 1 - dice_coef(y_true, y_pred)
-
-
 def build_unet_binary_deeper_elu(input_shape, classes=1):
     concat_axis = 3
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
