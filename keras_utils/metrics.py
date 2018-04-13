@@ -37,8 +37,8 @@ def general_jaccard(y_true, y_pred):
 
 
 def jaccard(y_true, y_pred):
-    intersection = K.abs((y_true * y_pred).sum())
-    union = K.abs(y_true.sum()) + K.abs(y_pred.sum()) - intersection
+    intersection = K.sum(K.abs(y_true * y_pred))
+    union = K.sum(K.abs(y_true) + K.abs(y_pred)) - intersection
     return (intersection + 1e-15) / (union + 1e-15)
 
 
