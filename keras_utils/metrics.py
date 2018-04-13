@@ -50,6 +50,8 @@ SMOOTH = 1e-15
 
 
 def jaccard_coef(y_true, y_pred):
+    y_true = K.variable(y_true)
+    y_pred = K.variable(y_pred)
     intersection = K.sum(y_true * y_pred, axis=[0, -1, -2])
     sum_ = K.sum(y_true + y_pred, axis=[0, -1, -2])
 
