@@ -11,10 +11,10 @@ def general_dice(y_true, y_pred):
         else:
             return 0
 
-    for instrument_id in set(y_true.flatten()):
-        if instrument_id == 0:
+    for cls in set(y_true.flatten()):
+        if cls == 0:
             continue
-        result += [dice(y_true == instrument_id, y_pred == instrument_id)]
+        result += [dice(y_true == cls, y_pred == cls)]
 
     return np.mean(result)
 
@@ -28,10 +28,10 @@ def general_jaccard(y_true, y_pred):
         else:
             return 0
 
-    for c in set(y_true.flatten()):
-        if c == 0:
+    for cls in set(y_true.flatten()):
+        if cls == 0:
             continue
-        result += [jaccard(y_true == c, y_pred == c)]
+        result += [jaccard(y_true == cls, y_pred == cls)]
 
     return np.mean(result)
 
