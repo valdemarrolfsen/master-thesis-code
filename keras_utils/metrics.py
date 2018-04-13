@@ -49,32 +49,6 @@ def dice(y_true, y_pred):
 SMOOTH = 1e-15
 
 
-def jaccard_coef(y_true, y_pred):
-    y_true = K.variable(y_true)
-    y_pred = K.variable(y_pred)
-    intersection = K.sum(y_true * y_pred, axis=[0, -1, -2])
-    sum_ = K.sum(y_true + y_pred, axis=[0, -1, -2])
-
-    jac = (intersection + SMOOTH) / (sum_ - intersection + SMOOTH)
-
-    return K.eval(K.mean(jac))
-
-
-def jaccard_coef_int(y_true, y_pred):
-    y_pred_pos = K.round(K.clip(y_pred, 0, 1))
-
-    intersection = K.sum(y_true * y_pred_pos, axis=[0, -1, -2])
-    sum_ = K.sum(y_true + y_pred_pos, axis=[0, -1, -2])
-
-    jac = (intersection + SMOOTH) / (sum_ - intersection + SMOOTH)
-
-    return K.mean(jac)
-
-
-def jaccard_coef_loss(y_true, y_pred):
-    return -K.log(jaccard_coef(y_true, y_pred)) + K.binary_crossentropy(y_pred, y_true)
-
-
 def jaccard_distance_loss(y_true, y_pred, smooth=100.00):
     """Jaccard distance for semantic segmentation, also known as the intersection-over-union loss.
     This loss is useful when you have unbalanced numbers of pixels within an image

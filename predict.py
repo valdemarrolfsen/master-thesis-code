@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 from keras_utils.generators import create_generator
-from keras_utils.metrics import general_jaccard, jaccard_coef
+from keras_utils.metrics import general_jaccard
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
@@ -41,12 +41,10 @@ def run(args):
     probs = model.predict(images, verbose=1)
 
     IOU = []
-    otherIOU = []
     for i, prob in enumerate(probs):
         result = np.argmax(prob, axis=2)
         mask_result = np.argmax(masks[i], axis=2)
         IOU.append(general_jaccard(mask_result, result))
-        otherIOU.append(jaccard_coef(mask_result, result))
         # img = get_real_image(images_path, file_names[i])
         raster = get_real_image(images_path, file_names[i], use_gdal=True)
         R = raster.GetRasterBand(1).ReadAsArray()
