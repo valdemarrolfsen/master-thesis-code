@@ -57,7 +57,7 @@ def jaccard_coef(y_true, y_pred):
 
     jac = (intersection + SMOOTH) / (sum_ - intersection + SMOOTH)
 
-    return K.mean(jac)
+    return K.eval(K.mean(jac))
 
 
 def jaccard_coef_int(y_true, y_pred):
