@@ -51,7 +51,7 @@ def run(args):
         R = raster.GetRasterBand(1).ReadAsArray()
         G = raster.GetRasterBand(2).ReadAsArray()
         B = raster.GetRasterBand(3).ReadAsArray()
-        img = np.zeros((input_size, input_size, 3))
+        img = np.zeros((512, 512, 3))
         img[:, :, 0] = B
         img[:, :, 1] = G
         img[:, :, 2] = R
