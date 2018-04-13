@@ -7,7 +7,7 @@ from keras.models import Model
 from keras.optimizers import Adam
 from keras.regularizers import l2
 
-from keras_utils.metrics import jaccard_distance_loss, soft_jaccard_loss
+from keras_utils.metrics import jaccard_distance_loss, soft_jaccard_loss, jaccard_distance
 from networks.densenet.layers import SubPixelUpscaling
 
 
@@ -49,7 +49,7 @@ def build_densenet(input_size, classes, config=56):
                         **kwargs)
 
     optimizer = Adam(lr=1e-3)
-    model.compile(loss=loss, optimizer=optimizer, metrics=['acc', loss])
+    model.compile(loss=loss, optimizer=optimizer, metrics=['acc', loss, jaccard_distance])
     return model
 
 
