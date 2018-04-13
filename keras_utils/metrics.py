@@ -73,7 +73,7 @@ def jaccard_coef_loss(y_true, y_pred):
     return -K.log(jaccard_coef(y_true, y_pred)) + K.binary_crossentropy(y_pred, y_true)
 
 
-def jaccard_distance_loss(y_true, y_pred, smooth=100):
+def jaccard_distance_loss(y_true, y_pred, smooth=100.00):
     """Jaccard distance for semantic segmentation, also known as the intersection-over-union loss.
     This loss is useful when you have unbalanced numbers of pixels within an image
     because it gives all classes equal weight.
@@ -92,15 +92,15 @@ def jaccard_distance_loss(y_true, y_pred, smooth=100):
     https://en.wikipedia.org/wiki/Jaccard_index
     """
     intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    sum_ = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1)
-    jac = (intersection + smooth) / (sum_ - intersection + smooth)
+    union = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1) - intersection
+    jac = (intersection + smooth) / (union + smooth)
     return (1 - jac) * smooth
 
 
-def jaccard_distance(y_true, y_pred, smooth=100):
+def jaccard_distance(y_true, y_pred, smooth=100.00):
     intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    sum_ = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1)
-    jac = (intersection + smooth) / (sum_ - intersection + smooth)
+    union = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1) - intersection
+    jac = (intersection + smooth) / (union + smooth)
     return jac
 
 
