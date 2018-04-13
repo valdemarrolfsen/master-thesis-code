@@ -59,6 +59,11 @@ def define_args():
                         help='The config for the network, choices are 56, 67 and 103',
                         default=67
                         )
+    parser.add_argument('--initial-epoch',
+                        type=int,
+                        help='Initial epoch',
+                        default=0
+                        )
     args = parser.parse_args()
     print('Using args: ', args)
 
@@ -72,9 +77,9 @@ if __name__ == '__main__':
                    args.logs_dir,
                    args.weights_dir,
                    args.weights_name,
-                   args.use_pre_trained_weight,
+                   args.pre_trained_weight,
                    (args.input_size, args.input_size),
                    args.classes,
                    args.batch_size,
-                   initial_epoch=0,
+                   initial_epoch=args.initial_epoch,
                    config=args.config)

@@ -5,14 +5,14 @@ from keras_utils.generators import create_generator
 from networks.densenet.densenet import build_densenet
 
 
-def train_densenet(data_dir, logdir, weights_dir, weights_name, use_pre_trained_weight, input_size, classes, batch_size, initial_epoch, config):
+def train_densenet(data_dir, logdir, weights_dir, weights_name, pre_trained_weight, input_size, classes, batch_size, initial_epoch, config):
     model = build_densenet(input_size, classes, config=config)
     binary = classes == 1
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, classes, rescale=False, binary=binary)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, classes, rescale=False, binary=binary)
 
-    if use_pre_trained_weight is not None:
-        model.load_weights(use_pre_trained_weight)
+    if pre_trained_weight is not None:
+        model.load_weights(pre_trained_weight)
 
     model.fit_generator(
         generator=train_generator,
