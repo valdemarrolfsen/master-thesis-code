@@ -2,23 +2,6 @@ import numpy as np
 from keras import backend as K
 
 
-def general_dice(y_true, y_pred):
-    result = []
-
-    if y_true.sum() == 0:
-        if y_pred.sum() == 0:
-            return 1
-        else:
-            return 0
-
-    for cls in set(y_true.flatten()):
-        if cls == 0:
-            continue
-        result += [dice(y_true == cls, y_pred == cls)]
-
-    return np.mean(result)
-
-
 def general_jaccard(y_true, y_pred):
     result = []
 
@@ -37,19 +20,13 @@ def general_jaccard(y_true, y_pred):
 
 
 def jaccard(y_true, y_pred):
+    smooth = K.epsilon()
     intersection = (y_true * y_pred).sum()
     union = y_true.sum() + y_pred.sum() - intersection
-    return (intersection + 1e-15) / (union + 1e-15)
+    return (intersection + smooth) / (union + smooth)
 
 
-def dice(y_true, y_pred):
-    return (2 * (y_true * y_pred).sum() + 1e-15) / (y_true.sum() + y_pred.sum() + 1e-15)
-
-
-SMOOTH = 1e-15
-
-
-def jaccard_distance_loss(y_true, y_pred, smooth=1e-15):
+def jaccard_distance_loss(y_true, y_pred):
     """Jaccard distance for semantic segmentation, also known as the intersection-over-union loss.
     This loss is useful when you have unbalanced numbers of pixels within an image
     because it gives all classes equal weight.
@@ -67,18 +44,44 @@ def jaccard_distance_loss(y_true, y_pred, smooth=1e-15):
     IEEE Trans. Pattern Anal. Mach. Intell.. 26. . 10.5244/C.27.32.
     https://en.wikipedia.org/wiki/Jaccard_index
     """
+    smooth = K.epsilon()
     intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
     union = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1) - intersection
     jac = (intersection + smooth) / (union + smooth)
     return (1 - jac) * smooth
 
 
-def jaccard_distance(y_true, y_pred, smooth=1e-15):
+def jaccard_distance(y_true, y_pred):
+    smooth = K.epsilon()
     intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
     union = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1) - intersection
     jac = (intersection + smooth) / (union + smooth)
     return jac
 
 
-def soft_jaccard_loss(y_true, y_pred, smooth=1e-15):
-    return -K.log(jaccard_distance(y_true, y_pred, smooth)) + K.categorical_crossentropy(y_pred, y_true)
+def soft_jaccard_loss(y_true, y_pred):
+    return -K.log(jaccard_distance(y_true, y_pred)) + K.categorical_crossentropy(y_pred, y_true)
+
+
+def jaccard_without_background(target, output):
+    """
+
+    Args:
+        output(tensor): Tensor of shape (batch_size,w,h,num_classes). Output of SOFTMAX Activation
+        target: Tensor of shape (batch_size,w,h,num_classes). one hot encoded class matrix
+
+    Returns:
+        jaccard estimation
+    """
+    smooth = K.epsilon()
+    output = output[:, :, :, 1:]
+    target = target[:, :, :, 1:]
+    output = K.clip(K.abs(output), K.epsilon(), 1. - K.epsilon())
+    target = K.clip(K.abs(target), K.epsilon(), 1. - K.epsilon())
+
+    union = K.sum(output + target, axis=(1, 2, 3))
+    intersection = K.sum(output * target, axis=(1, 2, 3))
+
+    iou = (intersection + smooth) / (union - intersection + smooth)
+
+    return iou
