@@ -33,8 +33,8 @@ def define_args():
                         )
 
     parser.add_argument('--pre-trained-weight',
-                        type=bool,
-                        help='Boolean indicating if pretrained model should be used',
+                        type=str,
+                        help='Path to weight to load',
                         default=None
                         )
 
