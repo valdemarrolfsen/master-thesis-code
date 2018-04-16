@@ -3,6 +3,8 @@ from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concate
     BatchNormalization, Activation, Dropout
 from keras.optimizers import Adam
 
+from keras_utils.metrics import jaccard_without_background, soft_jaccard_loss, jaccard_distance_loss
+
 
 def get_crop_shape(target, refer):
     # width, the 3rd dimension
@@ -105,7 +107,7 @@ def build_unet(input_shape, nb_classes):
     model = Model(inputs=inputs, outputs=act)
     model.compile(
         optimizer=Adam(lr=1e-4),
-        loss='categorical_crossentropy',
-        metrics=['accuracy'])
+        loss=soft_jaccard_loss,
+        metrics=['acc', jaccard_without_background, jaccard_distance_loss])
 
     return model
