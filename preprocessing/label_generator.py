@@ -23,6 +23,7 @@ include_empty = None
 file_type = 'tif'
 res = None
 binary = False
+prefix = ''
 
 
 def setup():
@@ -37,6 +38,7 @@ def setup():
     global include_empty
     global res
     global binary
+    global prefix
 
     # Set ut the argument parser
     ap = argparse.ArgumentParser()
@@ -44,6 +46,7 @@ def setup():
     ap.add_argument('-o', '--output', type=str, required=True, help='path for output file')
     ap.add_argument('-c', '--color', type=str, required=True, help='color value or color attribute in table')
     ap.add_argument('-n', '--table', type=str, required=True, help='table name')
+    ap.add_argument('--prefix', type=str, default='', help='Prefix for files')
     ap.add_argument('--include-empty', type=bool, default=False, help='Include empty raster images')
     ap.add_argument('--binary', type=bool, default=False, help='Binary segmentation problem')
     ap.add_argument('--res', type=int, default=1000, help='Image resolution')
@@ -68,6 +71,7 @@ def setup():
     include_empty = args.include_empty
     res = args.res
     binary = args.binary
+    prefix = args.prefix
 
     paths = ['train', 'test', 'val']
     sub_paths = ['examples', 'labels']
@@ -152,6 +156,7 @@ def work(q, db, table_name, color_attribute, total_files=0):
     global include_empty
     global res
     global binary
+    global prefix
 
     train_portion = 0.7
     val_portion = 0.2
@@ -190,7 +195,7 @@ def work(q, db, table_name, color_attribute, total_files=0):
         # are we adding to train, val or test?
         prog = (total_files - q.qsize()) / total_files
 
-        filename = "{}-{}.{}".format(i, uuid.uuid4(), file_type)
+        filename = "{}{}-{}.{}".format(prefix, i, uuid.uuid4(), file_type)
 
         if prog < train_portion:
             s = 'train'
