@@ -1,6 +1,6 @@
 from keras import backend as K
 
-from keras_utils.metrics import jaccard_distance, jaccard_distance_loss
+from keras_utils.metrics import jaccard_distance
 
 
 def _end_mean(x, axis=-1):
@@ -33,4 +33,4 @@ def _metric_2d_adaptor(y_true, y_pred, metric=None, summary=_end_mean, **kwargs)
 def mean_intersection_over_union(y_true, y_pred):
     """ Same as keras_contrib.losses.jaccard_distance for 2d label data with one-hot channels.
     """
-    return _metric_2d_adaptor(y_true, y_pred, metric=jaccard_distance_loss, summary=_end_mean)
+    return _metric_2d_adaptor(y_true, y_pred, metric=jaccard_distance, summary=_end_mean)

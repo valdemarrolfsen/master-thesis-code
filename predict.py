@@ -50,7 +50,7 @@ def run(args):
         mask_result = np.argmax(masks[i], axis=2)
         IOU.append(general_jaccard(mask_result, result))
 
-        other_IOU.append(K.eval(mean_intersection_over_union(prob, masks[i])))
+        other_IOU.append(K.eval(mean_intersection_over_union(K.variable(prob), K.variable(masks[i]))))
 
         if not save_imgs:
             continue
