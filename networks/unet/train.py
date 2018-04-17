@@ -9,10 +9,14 @@ np.random.seed(2)
 tf.set_random_seed(2)
 
 
-def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch):
+def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch, pre_trained_weight):
     model = build_unet(input_size, nb_classes)
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes, rescale=False)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, nb_classes, rescale=False)
+
+    if pre_trained_weight:
+        print('Loading weights: {}'.format(pre_trained_weight))
+        model.load_weights(pre_trained_weight)
 
     model.fit_generator(
         generator=train_generator,

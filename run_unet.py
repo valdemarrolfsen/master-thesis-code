@@ -31,6 +31,13 @@ def define_args():
                         help='The name of the weight file',
                         default='{epoch:02d}-{loss:.2f}'
                         )
+
+    parser.add_argument('--pre-trained-weight',
+                        type=str,
+                        help='The name of the pretrained weight file',
+                        default=''
+                        )
+
     parser.add_argument('--input-size',
                         type=int,
                         help='Input size for the images used (default 713)',
@@ -71,4 +78,5 @@ if __name__ == '__main__':
                (args.input_size, args.input_size),
                args.classes,
                args.batch_size,
-               0)
+               0,
+               args.pre_trained_weight)
