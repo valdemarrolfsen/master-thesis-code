@@ -96,5 +96,5 @@ def class_jaccard(y_true, y_pred):
             continue
         true = y_true[:, :, :, cls]
         pred = y_pred[:, :, :, cls]
-        jacs.append(jaccard_distance(true, pred))
+        jacs.append(K.mean(jaccard_distance(true, pred)))
     return K.mean(jacs)
