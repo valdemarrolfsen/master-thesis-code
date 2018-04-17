@@ -94,7 +94,7 @@ def run(args):
             print("Was not able to reference image at path: {}".format(pred_save_path))
 
     print('mean IOU: {}'.format(np.mean(IOU)))
-    print('other IOU: {}'.format(np.mean(other_IOU)))
+    print('other IOU: {}'.format(other_IOU))
 
 
 if __name__ == '__main__':

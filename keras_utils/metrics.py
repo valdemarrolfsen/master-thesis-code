@@ -84,5 +84,4 @@ def jaccard_without_background(target, output):
     intersection = K.sum(output * target, axis=(1, 2, 3))
 
     iou = (intersection + smooth) / (union - intersection + smooth)
-
     return K.mean(iou)
