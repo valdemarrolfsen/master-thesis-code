@@ -5,6 +5,7 @@ import numpy as np
 from keras import backend as K
 
 from keras_utils.generators import create_generator
+from keras_utils.losses import mean_intersection_over_union
 from keras_utils.metrics import general_jaccard, jaccard_without_background
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 from networks.densenet.densenet import build_densenet
@@ -43,11 +44,13 @@ def run(args):
     probs = model.predict(images, verbose=1)
 
     IOU = []
-    other_IOU = K.eval(jaccard_without_background(K.variable(masks), K.variable(probs)))
+    other_IOU = []
     for i, prob in enumerate(probs):
         result = np.argmax(prob, axis=2)
         mask_result = np.argmax(masks[i], axis=2)
         IOU.append(general_jaccard(mask_result, result))
+
+        other_IOU.append(K.eval(mean_intersection_over_union(prob, masks[i])))
 
         if not save_imgs:
             continue
@@ -94,7 +97,7 @@ def run(args):
             print("Was not able to reference image at path: {}".format(pred_save_path))
 
     print('mean IOU: {}'.format(np.mean(IOU)))
-    print('other IOU: {}'.format(other_IOU))
+    print('other IOU: {}'.format(np.mean(other_IOU)))
 
 
 if __name__ == '__main__':
