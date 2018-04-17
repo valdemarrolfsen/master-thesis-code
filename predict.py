@@ -2,14 +2,13 @@ import argparse
 
 import cv2
 import numpy as np
+from keras import backend as K
 
 from keras_utils.generators import create_generator
-from keras_utils.metrics import general_jaccard, mean_intersection_over_union, jaccard_without_background, \
-    jaccard_distance
+from keras_utils.metrics import general_jaccard, jaccard_distance
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
-from keras import backend as K
 
 
 def run(args):
