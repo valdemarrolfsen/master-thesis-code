@@ -1,6 +1,5 @@
 import numpy as np
 from keras import backend as K
-from keras.utils import to_categorical
 
 
 def general_jaccard(y_true, y_pred):
@@ -84,4 +83,4 @@ def jaccard_without_background(target, output):
     intersection = K.sum(output * target, axis=-1)
 
     iou = (intersection + smooth) / (union - intersection + smooth)
-    return K.mean(iou)
+    return iou
