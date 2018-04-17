@@ -43,7 +43,7 @@ def run(args):
     probs = model.predict(images, verbose=1)
 
     IOU = []
-    other_IOU = class_jaccard(np.array(masks), np.array(probs))
+    other_IOU = class_jaccard(np.array(masks), np.array(K.eval(probs)))
     for i, prob in enumerate(probs):
         result = np.argmax(prob, axis=2)
         mask_result = np.argmax(masks[i], axis=2)
