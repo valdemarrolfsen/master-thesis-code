@@ -43,11 +43,10 @@ def run(args):
     probs = model.predict(images, verbose=1)
 
     IOU = []
-    other_IOU = []
+    other_IOU = K.eval(jaccard_without_background(K.variable(masks), K.variable(probs)))
     for i, prob in enumerate(probs):
         result = np.argmax(prob, axis=2)
         mask_result = np.argmax(masks[i], axis=2)
-        other_IOU.append(K.eval(jaccard_without_background(K.variable(masks[i]), K.variable(prob))))
         IOU.append(general_jaccard(mask_result, result))
 
         if not save_imgs:
