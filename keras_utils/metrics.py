@@ -19,6 +19,13 @@ def general_jaccard(y_true, y_pred):
     return np.mean(result)
 
 
+def batch_general_jaccard(y_true, y_pred):
+    batch_result = []
+    for i in range(len(y_true)):
+        batch_result.append(general_jaccard(y_true[i], y_pred[i]))
+    return batch_result
+
+
 def jaccard(y_true, y_pred):
     smooth = K.epsilon()
     intersection = (y_true * y_pred).sum()
