@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 from keras_utils.generators import create_generator
-from keras_utils.metrics import general_jaccard
+from keras_utils.metrics import general_jaccard, mean_intersection_over_union
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
@@ -16,6 +16,7 @@ def run(args):
     images_path = args.test_images
     input_size = args.input_size
     batch_size = args.batch_size
+    save_imgs = args.save_imgs
 
     model_choices = {
         'unet': build_unet,
@@ -41,10 +42,15 @@ def run(args):
     probs = model.predict(images, verbose=1)
 
     IOU = []
+    other_IOU = mean_intersection_over_union(masks, probs)
     for i, prob in enumerate(probs):
         result = np.argmax(prob, axis=2)
         mask_result = np.argmax(masks[i], axis=2)
         IOU.append(general_jaccard(mask_result, result))
+
+        if not save_imgs:
+            continue
+
         # img = get_real_image(images_path, file_names[i])
         raster = get_real_image(images_path, file_names[i], use_gdal=True)
         R = raster.GetRasterBand(1).ReadAsArray()
@@ -87,18 +93,19 @@ def run(args):
             print("Was not able to reference image at path: {}".format(pred_save_path))
 
     print('mean IOU: {}'.format(np.mean(IOU)))
+    print('other IOU: {}'.format(other_IOU))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--weights-path", type=str)
-    parser.add_argument("--epoch-number", type=int, default=5)
     parser.add_argument("--test-images", type=str, default="")
     parser.add_argument("--output-path", type=str, default="")
     parser.add_argument("--input-size", type=int, default=713)
     parser.add_argument("--batch-size", type=int, default=713)
     parser.add_argument("--model-name", type=str, default="")
     parser.add_argument("--classes", type=int)
+    parser.add_argument("--save-imgs", type=bool, default=True)
 
     class_color_map = {
         0: [237, 237, 237],  # Empty
