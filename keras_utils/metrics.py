@@ -87,21 +87,47 @@ def jaccard_without_background(target, output):
     return iou
 
 
-def mean_IoU(y_true, y_pred):
-    s = K.shape(y_true)
+def mean_intersection_over_union(y_true, y_pred, smooth=None, axis=-1):
+    """Jaccard distance for semantic segmentation, also known as the intersection-over-union loss.
+    This loss is useful when you have unbalanced numbers of pixels within an image
+    because it gives all classes equal weight. However, it is not the defacto
+    standard for image segmentation.
+    For example, assume you are trying to predict if each pixel is cat, dog, or background.
+    You have 80% background pixels, 10% dog, and 10% cat. If the model predicts 100% background
+    should it be be 80% right (as with categorical cross entropy) or 30% (with this loss)?
+    The loss has been modified to have a smooth gradient as it converges on zero.
+    This has been shifted so it converges on 0 and is smoothed to avoid exploding
+    or disappearing gradient.
+    Also see jaccard which takes a slighty different approach.
+    Jaccard = (|X & Y|)/ (|X|+ |Y| - |X & Y|)
+            = sum(|A*B|)/(sum(|A|)+sum(|B|)-sum(|A*B|))
+    # References
+    Csurka, Gabriela & Larlus, Diane & Perronnin, Florent. (2013).
+    What is a good evaluation measure for semantic segmentation?.
+    IEEE Trans. Pattern Anal. Mach. Intell.. 26. . 10.5244/C.27.32.
+    https://en.wikipedia.org/wiki/Jaccard_index
+    """
+    if smooth is None:
+        smooth = K.epsilon()
+    pred_shape = K.shape(y_pred)
+    true_shape = K.shape(y_true)
 
     # reshape such that w and h dim are multiplied together
-    y_true_reshaped = K.reshape(y_true, tf.stack([-1, s[1] * s[2], s[-1]]))
-    y_pred_reshaped = K.reshape(y_pred, tf.stack([-1, s[1] * s[2], s[-1]]))
+    y_pred_reshaped = K.reshape(y_pred, (-1, pred_shape[-1]))
+    y_true_reshaped = K.reshape(y_true, (-1, true_shape[-1]))
 
     # correctly classified
-    clf_pred = K.one_hot(K.argmax(y_pred_reshaped), s[-1])
-    equal_entries = K.cast(K.equal(clf_pred, y_true_reshaped), dtype='float32') * y_true_reshaped
+    clf_pred = K.one_hot(K.argmax(y_pred_reshaped), num_classes=true_shape[-1])
+    equal_entries = K.cast(
+        K.equal(clf_pred, y_true_reshaped), dtype='float32') * y_true_reshaped
 
     intersection = K.sum(equal_entries, axis=1)
-    union_per_class = K.sum(y_true_reshaped, axis=1) + K.sum(y_pred_reshaped, axis=1)
+    union_per_class = K.sum(
+        y_true_reshaped, axis=1) + K.sum(
+            y_pred_reshaped, axis=1)
 
-    iou = intersection / (union_per_class - intersection)
-    iou_mask = tf.is_finite(iou)
-    iou_masked = tf.boolean_mask(iou, iou_mask)
-    return K.mean(iou_masked)
+    # smooth added to avoid dividing by zero
+    iou = (intersection + smooth) / (
+        (union_per_class - intersection) + smooth)
+
+    return K.mean(iou)
