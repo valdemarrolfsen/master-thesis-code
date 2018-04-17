@@ -43,7 +43,7 @@ def run(args):
     probs = model.predict(images, verbose=1)
 
     IOU = []
-    other_IOU = mean_intersection_over_union(K.variable(masks), K.variable(probs))
+    other_IOU = K.eval(mean_intersection_over_union(K.variable(masks), K.variable(probs)))
     for i, prob in enumerate(probs):
         result = np.argmax(prob, axis=2)
         mask_result = np.argmax(masks[i], axis=2)
