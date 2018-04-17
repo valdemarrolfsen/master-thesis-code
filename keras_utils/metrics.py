@@ -89,12 +89,11 @@ def jaccard_without_background(target, output):
 
 def class_jaccard(y_true, y_pred):
     classes = y_true.shape[-1]
-    print(classes)
     jacs = []
-    for cls in range(classes):
+    for cls in range(classes - 1):
         if cls == 0:
             continue
         true = y_true[:, :, :, cls]
         pred = y_pred[:, :, :, cls]
         jacs.append(K.mean(jaccard_distance(true, pred)))
-    return K.mean(jacs)
+    return K.mean(K.cast(jacs, dtype='float32'))
