@@ -1,5 +1,6 @@
 import numpy as np
 from keras import backend as K
+import tensorflow as tf
 
 
 def general_jaccard(y_true, y_pred):
@@ -86,7 +87,21 @@ def jaccard_without_background(target, output):
     return iou
 
 
-def jaccard_class(y_true, y_pred):
-    y_true = K.argmax(y_true)
-    y_pred = K.argmax(y_pred)
-    return jaccard_distance(y_true, y_pred)
+def mean_IoU(y_true, y_pred):
+    s = K.shape(y_true)
+
+    # reshape such that w and h dim are multiplied together
+    y_true_reshaped = K.reshape(y_true, tf.stack([-1, s[1] * s[2], s[-1]]))
+    y_pred_reshaped = K.reshape(y_pred, tf.stack([-1, s[1] * s[2], s[-1]]))
+
+    # correctly classified
+    clf_pred = K.one_hot(K.argmax(y_pred_reshaped), s[-1])
+    equal_entries = K.cast(K.equal(clf_pred, y_true_reshaped), dtype='float32') * y_true_reshaped
+
+    intersection = K.sum(equal_entries, axis=1)
+    union_per_class = K.sum(y_true_reshaped, axis=1) + K.sum(y_pred_reshaped, axis=1)
+
+    iou = intersection / (union_per_class - intersection)
+    iou_mask = tf.is_finite(iou)
+    iou_masked = tf.boolean_mask(iou, iou_mask)
+    return K.mean(iou_masked)
