@@ -12,6 +12,7 @@ def train_densenet(data_dir, logdir, weights_dir, weights_name, pre_trained_weig
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, classes, rescale=False, binary=binary)
 
     if pre_trained_weight is not None:
+        print('Loading weights: {}'.format(pre_trained_weight))
         model.load_weights(pre_trained_weight)
 
     model.fit_generator(
