@@ -15,9 +15,28 @@ def general_jaccard(y_true, y_pred):
     for cls in set(y_true.flatten()):
         if cls == 0:
             continue
-        result += [jaccard(y_true == cls, y_pred == cls)]
+        result += [db_eval_iou(y_true == cls, y_pred == cls)]
 
     return np.mean(result)
+
+
+def db_eval_iou(annotation, segmentation):
+    """ Compute region similarity as the Jaccard Index.
+    Arguments:
+        annotation   (ndarray): binary annotation   map.
+        segmentation (ndarray): binary segmentation map.
+    Return:
+        jaccard (float): region similarity
+ """
+
+    annotation = annotation.astype(np.bool)
+    segmentation = segmentation.astype(np.bool)
+
+    if np.isclose(np.sum(annotation), 0) and np.isclose(np.sum(segmentation), 0):
+        return 1
+    else:
+        return np.sum((annotation & segmentation)) / \
+               np.sum((annotation | segmentation), dtype=np.float32)
 
 
 def jaccard(y_true, y_pred):
