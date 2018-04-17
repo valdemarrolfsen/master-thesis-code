@@ -84,3 +84,9 @@ def jaccard_without_background(target, output):
 
     iou = (intersection + smooth) / (union - intersection + smooth)
     return iou
+
+
+def jaccard_class(y_true, y_pred):
+    y_true = K.argmax(y_true)
+    y_pred = K.argmax(y_pred)
+    return jaccard_distance(y_true, y_pred)
