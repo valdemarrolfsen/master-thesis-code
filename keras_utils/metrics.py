@@ -112,23 +112,9 @@ def mean_intersection_over_union(y_true, y_pred, smooth=None, axis=-1):
 
     y_pred = y_pred[:, :, :, 1:]
     y_true = y_true[:, :, :, 1:]
-    pred_shape = K.shape(y_pred)
-    true_shape = K.shape(y_true)
-
-    # reshape such that w and h dim are multiplied together
-    y_pred_reshaped = K.reshape(y_pred, (-1, pred_shape[-1]))
-    y_true_reshaped = K.reshape(y_true, (-1, true_shape[-1]))
-
-    # correctly classified
-    clf_pred = K.one_hot(K.argmax(y_pred_reshaped), num_classes=true_shape[-1])
-    equal_entries = K.cast(
-        K.equal(clf_pred, y_true_reshaped), dtype='float32') * y_true_reshaped
-
-    intersection = K.sum(equal_entries, axis=1)
-    union_per_class = K.sum(
-        y_true_reshaped, axis=1) + K.sum(
-            y_pred_reshaped, axis=1)
-
+    equal_entries = K.cast(K.equal(y_pred, y_true), dtype='float32') * y_true
+    intersection = K.sum(equal_entries, axis=-1)
+    union_per_class = K.sum(y_true, axis=-1) + K.sum(y_pred, axis=-1)
     # smooth added to avoid dividing by zero
     iou = (intersection + smooth) / (
         (union_per_class - intersection) + smooth)
