@@ -1,5 +1,6 @@
 import numpy as np
 from keras import backend as K
+from keras.utils import to_categorical
 
 
 def general_jaccard(y_true, y_pred):
@@ -84,16 +85,4 @@ def jaccard_without_background(target, output):
 
     iou = (intersection + smooth) / (union - intersection + smooth)
 
-    return iou
-
-
-def class_jaccard(y_true, y_pred):
-    classes = y_true.shape[-1]
-    jacs = []
-    for cls in range(classes - 1):
-        if cls == 0:
-            continue
-        true = y_true[:, :, :, cls]
-        pred = y_pred[:, :, :, cls]
-        jacs.append(K.mean(jaccard_distance(true, pred)))
-    return K.mean(K.cast(jacs, dtype='float32'))
+    return K.mean(iou)
