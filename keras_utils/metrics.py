@@ -109,6 +109,10 @@ def mean_intersection_over_union(y_true, y_pred, smooth=None, axis=-1):
     """
     if smooth is None:
         smooth = K.epsilon()
+
+    y_pred = y_pred[:, :, :, 1:]
+    y_true = y_true[:, :, :, 1:]
+
     pred_shape = K.shape(y_pred)
     true_shape = K.shape(y_true)
 
