@@ -15,28 +15,9 @@ def general_jaccard(y_true, y_pred):
     for cls in set(y_true.flatten()):
         if cls == 0:
             continue
-        result += [db_eval_iou(y_true == cls, y_pred == cls)]
+        result += [jaccard(y_true == cls, y_pred == cls)]
 
     return np.mean(result)
-
-
-def db_eval_iou(annotation, segmentation):
-    """ Compute region similarity as the Jaccard Index.
-    Arguments:
-        annotation   (ndarray): binary annotation   map.
-        segmentation (ndarray): binary segmentation map.
-    Return:
-        jaccard (float): region similarity
- """
-
-    annotation = annotation.astype(np.bool)
-    segmentation = segmentation.astype(np.bool)
-
-    if np.isclose(np.sum(annotation), 0) and np.isclose(np.sum(segmentation), 0):
-        return 1
-    else:
-        return np.sum((annotation & segmentation)) / \
-               np.sum((annotation | segmentation), dtype=np.float32)
 
 
 def jaccard(y_true, y_pred):
@@ -99,8 +80,8 @@ def jaccard_without_background(target, output):
     output = K.clip(K.abs(output), K.epsilon(), 1. - K.epsilon())
     target = K.clip(K.abs(target), K.epsilon(), 1. - K.epsilon())
 
-    union = K.sum(output + target, axis=(1, 2, 3))
-    intersection = K.sum(output * target, axis=(1, 2, 3))
+    union = K.sum(output + target, axis=-1)
+    intersection = K.sum(output * target, axis=-1)
 
     iou = (intersection + smooth) / (union - intersection + smooth)
-    return K.mean(iou)
+    return K.mean(iou, axis=-1)
