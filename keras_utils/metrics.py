@@ -88,7 +88,7 @@ def jaccard_without_background(target, output):
 
 
 def class_jaccard(y_true, y_pred):
-    classes = y_true.shape()[-1]
+    classes = K.shape(y_true)[-1]
     print(classes)
     jacs = []
     for cls in range(classes):
