@@ -44,14 +44,11 @@ def run(args):
     probs = model.predict(images, verbose=1)
 
     IOU = []
-    other_IOU = []
+    other_IOU = K.eval(mean_intersection_over_union(K.variable(probs), K.variable(masks)))
     for i, prob in enumerate(probs):
         result = np.argmax(prob, axis=2)
         mask_result = np.argmax(masks[i], axis=2)
         IOU.append(general_jaccard(mask_result, result))
-
-        other_IOU.append(K.eval(mean_intersection_over_union(K.variable(prob), K.variable(masks[i]))))
-
         if not save_imgs:
             continue
 
@@ -97,7 +94,7 @@ def run(args):
             print("Was not able to reference image at path: {}".format(pred_save_path))
 
     print('mean IOU: {}'.format(np.mean(IOU)))
-    print('other IOU: {}'.format(np.mean(other_IOU)))
+    print('other IOU: {}'.format(other_IOU))
 
 
 if __name__ == '__main__':
