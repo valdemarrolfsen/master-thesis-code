@@ -40,13 +40,12 @@ def run(args):
 
     images, masks, file_names = next(generator)
     probs = model.predict(images, verbose=1)
-
-    IOU = []
-    other_IOU = batch_general_jaccard(masks, probs)
+    # Calculate IOU for the batch
+    iou = batch_general_jaccard(masks, probs)
+    print('mean IOU: {}'.format(np.mean(iou)))
     for i, prob in enumerate(probs):
         result = np.argmax(prob, axis=2)
         mask_result = np.argmax(masks[i], axis=2)
-        IOU.append(general_jaccard(mask_result, result))
         if not save_imgs:
             continue
 
@@ -90,9 +89,6 @@ def run(args):
             )
         except ValueError as e:
             print("Was not able to reference image at path: {}".format(pred_save_path))
-
-    print('mean IOU: {}'.format(np.mean(IOU)))
-    print('mean IOU: {}'.format(np.mean(other_IOU)))
 
 
 if __name__ == '__main__':

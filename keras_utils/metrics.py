@@ -72,24 +72,6 @@ def soft_jaccard_loss(y_true, y_pred):
     return -K.log(jaccard_distance(y_true, y_pred)) + K.categorical_crossentropy(y_pred, y_true)
 
 
-def jaccard_without_background(target, output):
-    """
-
-    Args:
-        output(tensor): Tensor of shape (batch_size,w,h,num_classes). Output of SOFTMAX Activation
-        target: Tensor of shape (batch_size,w,h,num_classes). one hot encoded class matrix
-
-    Returns:
-        jaccard estimation
-    """
-    smooth = K.epsilon()
-    output = output[:, :, :, 1:]
-    target = target[:, :, :, 1:]
-    output = K.clip(K.abs(output), K.epsilon(), 1. - K.epsilon())
-    target = K.clip(K.abs(target), K.epsilon(), 1. - K.epsilon())
-
-    union = K.sum(output + target, axis=-1)
-    intersection = K.sum(output * target, axis=-1)
-
-    iou = (intersection + smooth) / (union - intersection + smooth)
-    return iou
+def mean_jaccard_loss(y_true, y_pred):
+    mean_jac = np.mean(batch_general_jaccard(y_true, y_pred))
+    return 1 - mean_jac
