@@ -62,17 +62,4 @@ def jaccard_distance(y_true, y_pred):
 
 
 def soft_jaccard_loss(y_true, y_pred):
-    return -K.log(jaccard_without_background(y_true, y_pred)) + K.categorical_crossentropy(y_pred, y_true)
-
-
-def jaccard_without_background(y_true, y_pred):
-    smooth = K.epsilon()
-    output = y_pred[:, :, :, 1:]
-    target = y_true[:, :, :, 1:]
-    output = K.clip(K.abs(output), K.epsilon(), 1. - K.epsilon())
-    target = K.clip(K.abs(target), K.epsilon(), 1. - K.epsilon())
-
-    union = K.sum(output + target, axis=(1, 2, 3))
-    intersection = K.sum(output * target, axis=(1, 2, 3))
-    iou = (intersection + smooth) / (union - intersection + smooth)
-    return iou
+    return -K.log(jaccard_distance(y_true, y_pred)) + K.categorical_crossentropy(y_pred, y_true)
