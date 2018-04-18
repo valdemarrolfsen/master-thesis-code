@@ -49,7 +49,7 @@ def build_densenet(input_size, classes, config=56):
                         **kwargs)
 
     optimizer = Adam(lr=1e-4)
-    model.compile(loss=loss, optimizer=optimizer, metrics=['acc', loss, jaccard_distance])
+    model.compile(loss=loss, optimizer=optimizer, metrics=['acc'])
     return model
 
 
