@@ -1,9 +1,9 @@
 from keras import layers, Model
-from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concatenate, Flatten, Dense, \
-    BatchNormalization, Activation, Dropout
+from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concatenate, BatchNormalization, Activation, \
+    Dropout
 from keras.optimizers import Adam
 
-from keras_utils.metrics import jaccard_without_background, soft_jaccard_loss, jaccard_distance_loss
+from keras_utils.metrics import soft_jaccard_loss, mean_jaccard_loss, batch_general_jaccard
 
 
 def get_crop_shape(target, refer):
@@ -111,7 +111,7 @@ def build_unet(input_shape, nb_classes):
     model = Model(inputs=inputs, outputs=act)
     model.compile(
         optimizer=Adam(lr=1e-4),
-        loss=soft_jaccard_loss,
-        metrics=['acc', jaccard_without_background, jaccard_distance_loss])
+        loss=mean_jaccard_loss,
+        metrics=['acc', soft_jaccard_loss, batch_general_jaccard])
 
     return model
