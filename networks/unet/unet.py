@@ -112,6 +112,6 @@ def build_unet(input_shape, nb_classes):
     model.compile(
         optimizer=Adam(lr=1e-4),
         loss=soft_jaccard_loss,
-        metrics=['acc', batch_general_jaccard])
+        metrics=['acc'])
 
     return model
