@@ -5,11 +5,15 @@ from keras_utils.generators import create_generator
 from networks.pspnet import net_builder as layers
 
 
-def train_psp(data_dir, logdir, weights_dir, weights_name, input_size, classes, batch_size, initial_epoch):
-    model = layers.build_pspnet(nb_classes=classes, input_shape=input_size)
-    binary = classes == 1
-    train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, classes, rescale=False, binary=binary)
-    val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, classes, rescale=False, binary=binary)
+def train_psp(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch, pre_trained_weight):
+    model = layers.build_pspnet(nb_classes=nb_classes, input_shape=input_size)
+    binary = nb_classes == 1
+    train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes, rescale=False, binary=binary)
+    val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, nb_classes, rescale=False, binary=binary)
+
+    if pre_trained_weight:
+        print('Loading weights: {}'.format(pre_trained_weight))
+        model.load_weights(pre_trained_weight)
 
     model.fit_generator(
         generator=train_generator,
