@@ -21,7 +21,8 @@ def general_jaccard(y_true, y_pred):
 
 def batch_general_jaccard(y_true, y_pred):
     batch_result = []
-    for i in range(len(y_true)):
+    pred_shape = K.shape(y_pred)
+    for i in range(pred_shape[0]):
         pred = np.argmax(y_pred[i], axis=2)
         true = np.argmax(y_true[i], axis=2)
         batch_result.append(general_jaccard(true, pred))
