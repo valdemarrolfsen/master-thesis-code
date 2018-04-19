@@ -61,6 +61,12 @@ def define_args():
                         default=50
                         )
 
+    parser.add_argument('--initial-epoch',
+                        type=int,
+                        help='Initial epoch',
+                        default=0
+                        )
+
     args = parser.parse_args()
     print('Using args: ', args)
 
@@ -78,5 +84,5 @@ if __name__ == '__main__':
                (args.input_size, args.input_size),
                args.classes,
                args.batch_size,
-               0,
+               args.initial_epoch,
                args.pre_trained_weight)
