@@ -25,7 +25,7 @@ def load_images_from_folder(folder, num_samples=5000):
     return images
 
 
-def set_up_generators(image_dir, rescale, flip):
+def set_up_generators(image_dir, rescale, augment):
     datagen_args = dict(
         data_format='channels_last',
         # set input mean to 0 over the dataset
@@ -45,13 +45,15 @@ def set_up_generators(image_dir, rescale, flip):
         # randomly shift images vertically
         height_shift_range=0,
         # randomly flip images
-        horizontal_flip=True,
+        horizontal_flip=False,
         # randomly flip images
-        vertical_flip=True)
+        vertical_flip=False)
 
-    if not flip:
-        datagen_args['horizontal_flip'] = False
-        datagen_args['vertical_flip'] = False
+    if augment:
+        datagen_args['horizontal_flip'] = True
+        datagen_args['vertical_flip'] = True
+        datagen_args['zoom_range'] = [0.8, 1.2]
+        datagen_args['fill_mode'] = 'reflect'
 
     if rescale:
         # Scale down the values
@@ -77,12 +79,12 @@ def set_up_generators(image_dir, rescale, flip):
     return image_datagen, label_datagen
 
 
-def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, flip=False, with_file_names=False, binary=False):
+def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, augment=False, with_file_names=False, binary=False):
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
     # Set up the generators
-    image_datagen, label_datagen = set_up_generators(image_dir, rescale, flip)
+    image_datagen, label_datagen = set_up_generators(image_dir, rescale, augment)
 
     # Use the same seed for both generators so they return corresponding images
     seed = 1
@@ -92,12 +94,18 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     if with_file_names:
         shuffle = False
 
+    save_to_dir = None
+
+    if augment:
+        save_to_dir = 'augmented'
+
     image_generator = image_datagen.flow_from_directory(
         image_dir,
         batch_size=batch_size,
         target_size=input_size,
         class_mode=None,
         shuffle=shuffle,
+        save_to_dir=save_to_dir,
         seed=seed)
 
     label_generator = label_datagen.flow_from_directory(
@@ -107,6 +115,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
         class_mode=None,
         shuffle=shuffle,
         color_mode='grayscale',
+        save_to_dir=save_to_dir,
         seed=seed)
 
     generator = zip(image_generator, label_generator)

@@ -36,6 +36,7 @@ def run(args):
         (input_size, input_size),
         batch_size,
         n_classes,
+        augment=True,
         rescale=False,
         with_file_names=True
     )
