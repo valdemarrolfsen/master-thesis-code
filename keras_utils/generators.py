@@ -52,8 +52,8 @@ def set_up_generators(image_dir, rescale, augment):
     if augment:
         datagen_args['horizontal_flip'] = True
         datagen_args['vertical_flip'] = True
-        #datagen_args['zoom_range'] = [0.8, 1.2]
-        #datagen_args['fill_mode'] = 'reflect'
+        datagen_args['zoom_range'] = [0.5, 1.5]
+        datagen_args['fill_mode'] = 'reflect'
 
     if rescale:
         # Scale down the values
