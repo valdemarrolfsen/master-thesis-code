@@ -37,7 +37,7 @@ def run(arguments):
 
         for folder in folders:
 
-            print('Starting augmentation {} for folder: '.format(key, folder))
+            print('Starting augmentation {} for folder: {}'.format(key, folder))
 
             examples_path = os.path.join(input_folder, folder, 'examples', class_name)
             labels_path = os.path.join(input_folder, folder, 'labels', class_name)
@@ -49,9 +49,13 @@ def run(arguments):
 
             total_files = len(examples)
 
+            print('Found {} files'.format(total_files))
+
             q = Queue()
             for i, file in enumerate(examples):
                 q.put((file, labels[i], i))
+
+            print("Starting process with {} threads ".format(arguments.thread_count))
 
             for i in range(arguments.thread_count):
                 t = threading.Thread(target=work, args=(q, examples_output_path, labels_output_path, key, total_files))
