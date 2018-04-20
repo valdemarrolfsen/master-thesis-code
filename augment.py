@@ -2,6 +2,7 @@ import argparse
 import os
 import threading
 import cv2
+import gdal
 
 import imgaug as ia
 from imgaug import augmenters as iaa
@@ -97,7 +98,7 @@ def work(q, examples_output_path, labels_output_path, key, total_files=0):
 
         try:
             # Get coordinates for corresponding image
-            ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(example)
+            ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(gdal.Open(example_path))
 
             # Geo reference newly created raster
             geo_reference_raster(
