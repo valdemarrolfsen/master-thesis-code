@@ -26,10 +26,10 @@ processes = {
 folders = ['test', 'train', 'val']
 
 
-def run(args):
-    input_folder = args.input_folder
-    output_path = args.output_path
-    class_name = args.class_name
+def run(arguments):
+    input_folder = arguments.input_folder
+    output_path = arguments.output_path
+    class_name = arguments.class_name
 
     for key in processes.keys():
         for folder in folders:
@@ -47,7 +47,7 @@ def run(args):
             for i, file in enumerate(examples):
                 q.put((file, labels[i], i))
 
-            for i in range(args.thread_count):
+            for i in range(arguments.thread_count):
                 t = threading.Thread(target=work, args=(q, examples_output_path, labels_output_path, key, total_files))
 
                 # Sticks the thread in a list so that it remains accessible
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     ap.add_argument('--input-path', type=str, required=True, help='Path to file folder')
     ap.add_argument('--output-path', type=str, required=True, help='Path to output folder')
     ap.add_argument('--class-name', type=str, required=True, help='fkb')
-    ap.add_argument('--thread-count', type=str, required=True, default=8, help='fkb')
-    args = ap.parse_args()
+    ap.add_argument('--thread-count', type=str, default=8, help='fkb')
+    arguments = ap.parse_args()
 
-    run(args)
+    run(arguments)
