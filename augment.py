@@ -27,7 +27,7 @@ folders = ['test', 'train', 'val']
 
 
 def run(arguments):
-    input_folder = arguments.input_folder
+    input_folder = arguments.input_path
     output_path = arguments.output_path
     class_name = arguments.class_name
 
