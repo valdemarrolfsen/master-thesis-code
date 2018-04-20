@@ -8,6 +8,7 @@ from keras_utils.metrics import batch_general_jaccard
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
+from networks.pspnet.net_builder import build_pspnet
 
 
 def run(args):
@@ -20,7 +21,8 @@ def run(args):
 
     model_choices = {
         'unet': build_unet,
-        'densenet': build_densenet
+        'densenet': build_densenet,
+        'pspnet': build_pspnet
     }
 
     model_choice = model_choices[model_name]
