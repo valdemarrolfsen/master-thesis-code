@@ -52,8 +52,8 @@ def set_up_generators(image_dir, rescale, augment):
     if augment:
         datagen_args['horizontal_flip'] = True
         datagen_args['vertical_flip'] = True
-        datagen_args['zoom_range'] = [0.5, 1.5]
-        datagen_args['fill_mode'] = 'reflect'
+        # datagen_args['zoom_range'] = [0.5, 1.5]
+        # datagen_args['fill_mode'] = 'reflect'
 
     if rescale:
         # Scale down the values
@@ -94,20 +94,12 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     if with_file_names:
         shuffle = False
 
-    save_dir_img = None
-    save_dir_mask = None
-
-    if augment:
-        save_dir_img = 'augmented/images/'
-        save_dir_mask = 'augmented/masks/'
-
     image_generator = image_datagen.flow_from_directory(
         image_dir,
         batch_size=batch_size,
         target_size=input_size,
         class_mode=None,
         shuffle=shuffle,
-        save_to_dir=save_dir_img,
         seed=seed)
 
     label_generator = label_datagen.flow_from_directory(
@@ -117,7 +109,6 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
         class_mode=None,
         shuffle=shuffle,
         color_mode='grayscale',
-        save_to_dir=save_dir_mask,
         seed=seed)
 
     generator = zip(image_generator, label_generator)

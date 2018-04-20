@@ -2,3 +2,7 @@ GDAL==1.11.2
 numpy==1.14.0
 Pillow==5.0.0
 psycopg2==2.7.4
+imgaug==0.2.5
+scipy==1.0.0
+six==1.11.0
+scikit-image==0.13.1
