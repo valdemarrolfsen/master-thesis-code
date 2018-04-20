@@ -45,6 +45,12 @@ def run(arguments):
             examples_output_path = os.path.join(output_path, folder, 'examples', class_name)
             labels_output_path = os.path.join(output_path, folder, 'labels', class_name)
 
+            if not os.path.exists(examples_output_path):
+                os.makedirs(examples_output_path)
+
+            if not os.path.exists(labels_output_path):
+                os.makedirs(labels_output_path)
+
             print('Using path: {}'.format(examples_path))
 
             examples = utils.get_file_paths(examples_path)
@@ -90,8 +96,8 @@ def work(q, examples_output_path, labels_output_path, key, total_files=0):
         if current_augmentation['both']:
             label_aug = seq.augment_image(label)
 
-        example_aug_save_path = os.path.join(examples_output_path, '{}-{}'.format(key, example_path))
-        label_aug_save_path = os.path.join(labels_output_path, '{}-{}'.format(key, label_path))
+        example_aug_save_path = os.path.join(examples_output_path, '{}-{}'.format(key, example_path.split('/')[-1]))
+        label_aug_save_path = os.path.join(labels_output_path, '{}-{}'.format(key, label_path.split('/')[-1]))
 
         cv2.imwrite(example_aug_save_path, example_aug)
         cv2.imwrite(label_aug_save_path, label_aug)
