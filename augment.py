@@ -44,6 +44,8 @@ def run(arguments):
             examples_output_path = os.path.join(output_path, folder, 'examples', class_name)
             labels_output_path = os.path.join(output_path, folder, 'labels', class_name)
 
+            print('Using path: {}'.format(examples_path))
+
             examples = utils.get_file_paths(examples_path)
             labels = utils.get_file_paths(labels_path)
 
