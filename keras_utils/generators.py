@@ -97,9 +97,9 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     save_dir_img = None
     save_dir_mask = None
 
-
     if augment:
-        save_to_dir = 'augmented'
+        save_dir_img = 'augmented/images/'
+        save_dir_mask = 'augmented/masks/'
 
     image_generator = image_datagen.flow_from_directory(
         image_dir,
@@ -107,7 +107,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
         target_size=input_size,
         class_mode=None,
         shuffle=shuffle,
-        save_to_dir=save_to_dir,
+        save_to_dir=save_dir_img,
         seed=seed)
 
     label_generator = label_datagen.flow_from_directory(
@@ -117,7 +117,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
         class_mode=None,
         shuffle=shuffle,
         color_mode='grayscale',
-        save_to_dir=save_to_dir,
+        save_to_dir=save_dir_mask,
         seed=seed)
 
     generator = zip(image_generator, label_generator)
