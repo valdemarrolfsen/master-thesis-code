@@ -4,7 +4,8 @@ import threading
 import cv2
 
 import imgaug as ia
-import imgaug as iaa
+from imgaug import augmenters as iaa
+
 from queue import Queue, Empty
 
 from keras_utils.prediction import geo_reference_raster, get_geo_frame
