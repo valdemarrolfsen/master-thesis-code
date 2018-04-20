@@ -32,7 +32,13 @@ def run(arguments):
     class_name = arguments.class_name
 
     for key in processes:
+
+        print('Starting augmentation: {}'.format(key))
+
         for folder in folders:
+
+            print('Starting augmentation {} for folder: '.format(key, folder))
+
             examples_path = os.path.join(input_folder, folder, 'examples', class_name)
             labels_path = os.path.join(input_folder, folder, 'labels', class_name)
             examples_output_path = os.path.join(output_path, folder, 'examples', class_name)
