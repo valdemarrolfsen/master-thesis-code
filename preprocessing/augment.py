@@ -107,6 +107,8 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('--input-path', type=str, required=True, help='Path to file folder')
     ap.add_argument('--output-path', type=str, required=True, help='Path to output folder')
+    ap.add_argument('--class-name', type=str, required=True, help='fkb')
+    ap.add_argument('--thread-count', type=str, required=True, default=8, help='fkb')
     args = ap.parse_args()
 
     run(args)
