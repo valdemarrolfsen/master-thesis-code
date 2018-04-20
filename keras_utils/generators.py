@@ -52,8 +52,8 @@ def set_up_generators(image_dir, rescale, augment):
     if augment:
         datagen_args['horizontal_flip'] = True
         datagen_args['vertical_flip'] = True
-        datagen_args['zoom_range'] = [0.8, 1.2]
-        datagen_args['fill_mode'] = 'reflect'
+        #datagen_args['zoom_range'] = [0.8, 1.2]
+        #datagen_args['fill_mode'] = 'reflect'
 
     if rescale:
         # Scale down the values
@@ -94,7 +94,9 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     if with_file_names:
         shuffle = False
 
-    save_to_dir = None
+    save_dir_img = None
+    save_dir_mask = None
+
 
     if augment:
         save_to_dir = 'augmented'
