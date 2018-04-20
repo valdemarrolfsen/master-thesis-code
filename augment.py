@@ -31,7 +31,7 @@ def run(arguments):
     output_path = arguments.output_path
     class_name = arguments.class_name
 
-    for key in processes.keys():
+    for key in processes:
         for folder in folders:
             examples_path = os.path.join(input_folder, folder, 'examples', class_name)
             labels_path = os.path.join(input_folder, folder, 'labels', class_name)
