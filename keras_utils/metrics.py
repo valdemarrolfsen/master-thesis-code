@@ -62,4 +62,8 @@ def jaccard_distance(y_true, y_pred):
 
 
 def soft_jaccard_loss(y_true, y_pred):
-    return -K.log(jaccard_distance(y_true, y_pred)) + K.categorical_crossentropy(y_pred, y_true)
+    return -K.log(jaccard_distance(y_true, y_pred)) + K.categorical_crossentropy(y_true, y_pred)
+
+
+def binary_soft_jaccard_loss(target, output):
+    return -K.log(jaccard_distance(target, output)) + K.binary_crossentropy(target, output)
