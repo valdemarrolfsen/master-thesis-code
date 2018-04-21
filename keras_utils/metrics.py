@@ -61,9 +61,19 @@ def jaccard_distance(y_true, y_pred):
     return jac
 
 
+def binary_jaccard_distance(y_true, y_pred):
+    smooth = K.epsilon()
+    intersection = K.sum(y_true * y_pred, axis=[0, -1, -2])
+    sum_ = K.sum(y_true + y_pred, axis=[0, -1, -2])
+
+    jac = (intersection + smooth) / (sum_ - intersection + smooth)
+
+    return K.mean(jac)
+
+
 def soft_jaccard_loss(y_true, y_pred):
     return -K.log(jaccard_distance(y_true, y_pred)) + K.categorical_crossentropy(y_true, y_pred)
 
 
 def binary_soft_jaccard_loss(target, output):
-    return -K.log(jaccard_distance(target, output)) + K.binary_crossentropy(target, output)
+    return -K.log(binary_jaccard_distance(target, output)) + K.binary_crossentropy(target, output)
