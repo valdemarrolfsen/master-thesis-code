@@ -43,7 +43,6 @@ def run():
         batch_size,
         2,
         rescale=False,
-        flip=False,
         with_file_names=True,
         binary=True
     )
