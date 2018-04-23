@@ -31,6 +31,8 @@ def run(args):
 
     model.load_weights(args.weights_path)
 
+    binary = n_classes == 1
+
     generator, _ = create_generator(
         images_path,
         (input_size, input_size),
@@ -38,7 +40,8 @@ def run(args):
         n_classes,
         augment=True,
         rescale=False,
-        with_file_names=True
+        with_file_names=True,
+        binary=binary
     )
 
     images, masks, file_names = next(generator)
