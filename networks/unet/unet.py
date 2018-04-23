@@ -3,7 +3,7 @@ from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concate
     Dropout
 from keras.optimizers import Adam
 
-from keras_utils.metrics import soft_jaccard_loss, binary_soft_jaccard_loss
+from keras_utils.metrics import soft_jaccard_loss, binary_soft_jaccard_loss, binary_jaccard_loss
 
 
 def get_crop_shape(target, refer):
@@ -112,7 +112,7 @@ def build_unet(input_shape, nb_classes):
     loss = soft_jaccard_loss
     if nb_classes == 1:
         activation = 'sigmoid'
-        loss = binary_soft_jaccard_loss
+        loss = binary_jaccard_loss
 
     act = Activation(activation)(conv10)
     model = Model(inputs=inputs, outputs=act)
