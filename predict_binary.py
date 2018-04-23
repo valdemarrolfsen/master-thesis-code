@@ -61,7 +61,7 @@ def run():
         img[:, :, 0] = B
         img[:, :, 1] = G
         img[:, :, 2] = R
-
+        prob = np.round(prob)
         prob = (prob[:, :, 0] * 255.).astype(np.uint8)
         pred_name = "pred-{}.tif".format(i)
         pred_save_path = "{}/{}".format(args.output_path, pred_name)
