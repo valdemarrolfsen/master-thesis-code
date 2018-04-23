@@ -12,11 +12,15 @@ def general_jaccard(y_true, y_pred):
     return np.mean(result)
 
 
-def batch_general_jaccard(y_true, y_pred):
+def batch_general_jaccard(y_true, y_pred, binary=False):
     batch_result = []
     for i in range(len(y_true)):
-        pred = np.argmax(y_pred[i], axis=2)
-        true = np.argmax(y_true[i], axis=2)
+        if binary:
+            pred = np.round(y_pred[i])
+            true = y_true[i]
+        else:
+            pred = np.argmax(y_pred[i], axis=2)
+            true = np.argmax(y_true[i], axis=2)
         batch_result.append(general_jaccard(true, pred))
     return batch_result
 

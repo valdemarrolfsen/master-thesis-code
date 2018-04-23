@@ -47,7 +47,7 @@ def run(args):
     images, masks, file_names = next(generator)
     probs = model.predict(images, verbose=1)
     # Calculate IOU for the batch
-    iou = batch_general_jaccard(masks, probs)
+    iou = batch_general_jaccard(masks, probs, binary=binary)
     print('mean IOU: {}'.format(np.mean(iou)))
     for i, prob in enumerate(probs):
         result = np.argmax(prob, axis=2)
