@@ -54,7 +54,13 @@ def run():
         # mask_result = np.argmax(masks[i], axis=2)
         # img = get_real_image(images_path, file_names[i])
         raster = get_real_image(images_path, file_names[i], use_gdal=True)
-        img = np.array(raster.GetRasterBand(1).ReadAsArray())
+        R = raster.GetRasterBand(1).ReadAsArray()
+        G = raster.GetRasterBand(2).ReadAsArray()
+        B = raster.GetRasterBand(3).ReadAsArray()
+        img = np.zeros((512, 512, 3))
+        img[:, :, 0] = B
+        img[:, :, 1] = G
+        img[:, :, 2] = R
 
         prob = (prob[:, :, 0] * 255.).astype(np.uint8)
         pred_name = "pred-{}.tif".format(i)
