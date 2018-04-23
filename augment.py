@@ -102,24 +102,6 @@ def work(q, examples_output_path, labels_output_path, key, total_files=0):
         cv2.imwrite(example_aug_save_path, example_aug)
         cv2.imwrite(label_aug_save_path, label_aug)
 
-        try:
-            # Get coordinates for corresponding image
-            ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(gdal.Open(example_path))
-
-            # Geo reference newly created raster
-            geo_reference_raster(
-                example_aug_save_path,
-                [ulx, scalex, skewx, uly, skewy, scaley]
-            )
-
-            geo_reference_raster(
-                label_aug_save_path,
-                [ulx, scalex, skewx, uly, skewy, scaley]
-            )
-
-        except ValueError as e:
-            print("Was not able to reference image at path: {}".format(example_aug_save_path))
-
         q.task_done()
 
 
