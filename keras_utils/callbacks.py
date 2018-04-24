@@ -14,7 +14,7 @@ class MeanIOUCallback(Callback):
         pass
 
     def on_epoch_end(self, epoch, logs=None):
-        generator = self.validation_data,
+        generator = self.validation_data
         images, masks = next(generator)
         probs = self.model.predict(images, verbose=0)
         iou = np.mean(batch_general_jaccard(masks, probs, binary=True))
