@@ -14,8 +14,8 @@ class MeanIOUCallback(Callback):
         pass
 
     def on_epoch_end(self, epoch, logs=None):
-        generator = self.model.validation_data,
-        steps = self.model.validation_steps
+        generator = self.validation_data,
+        steps = self.validation_steps
         ious = []
         for i in range(steps):
             images, masks = next(generator)
