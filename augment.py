@@ -2,14 +2,12 @@ import argparse
 import os
 import threading
 import cv2
-import gdal
 
 import imgaug as ia
 from imgaug import augmenters as iaa
 
 from queue import Queue, Empty
 
-from keras_utils.prediction import geo_reference_raster, get_geo_frame
 from preprocessing import utils
 
 ia.seed(1)
@@ -24,7 +22,7 @@ processes = {
     'sharpen': {'both': False, 'seq': iaa.Sharpen(alpha=(0.0, 1.0), lightness=(0.75, 2.0))}
 }
 
-folders = ['test', 'train', 'val']
+folders = ['train', 'val']
 
 
 def run(arguments):
