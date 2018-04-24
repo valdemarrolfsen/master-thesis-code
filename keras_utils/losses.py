@@ -1,24 +1,24 @@
 from keras import backend as K
 
 
-def jaccard_distance(y_true, y_pred):
+def jaccard_distance(target, output):
     smooth = K.epsilon()
-    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    union = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1) - intersection
+    intersection = K.sum(K.abs(target * output), axis=-1)
+    union = K.sum(K.abs(target) + K.abs(output), axis=-1) - intersection
     jac = (intersection + smooth) / (union + smooth)
     return jac
 
 
-def binary_jaccard_distance(y_true, y_pred):
+def binary_jaccard_distance(target, output):
     smooth = K.epsilon()
-    intersection = K.sum(K.abs(y_true * y_pred))
-    union = K.sum(K.abs(y_true) + K.abs(y_pred)) - intersection
-    jac = (intersection + smooth) / (union + smooth)
-    return jac
+    intersection = K.sum(target * output, axis=[0, -1, -2])
+    sum_ = K.sum(target + output, axis=[0, -1, -2])
+    jac = (intersection + smooth) / (sum_ - intersection + smooth)
+    return K.mean(jac)
 
 
-def soft_jaccard_loss(y_true, y_pred):
-    return -K.log(jaccard_distance(y_true, y_pred)) + K.categorical_crossentropy(y_true, y_pred)
+def soft_jaccard_loss(target, output):
+    return -K.log(jaccard_distance(target, output)) + K.categorical_crossentropy(target, output)
 
 
 def binary_jaccard_loss(target, output):
@@ -26,4 +26,4 @@ def binary_jaccard_loss(target, output):
 
 
 def binary_soft_jaccard_loss(target, output):
-    return -K.log(jaccard_distance(target, output)) + K.binary_crossentropy(target, output)
+    return -K.log(binary_jaccard_distance(target, output)) + K.binary_crossentropy(target, output)
