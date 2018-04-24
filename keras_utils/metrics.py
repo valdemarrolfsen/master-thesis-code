@@ -36,3 +36,15 @@ def batch_general_jaccard(y_true, y_pred, binary=False):
             true = np.argmax(y_true[i], axis=2)
         batch_result.append(general_jaccard(true, pred))
     return batch_result
+
+
+def f1_score(y_true, y_pred):
+    """https://stackoverflow.com/questions/45411902/how-to-use-f1-score-with-keras-model"""
+    c1 = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    c2 = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    c3 = K.sum(K.round(K.clip(y_true, 0, 1)))
+    if c3 == 0:
+        return 0
+    precision = c1 / c2
+    recall = c1 / c3
+    return 2 * (precision * recall) / (precision + recall)
