@@ -7,7 +7,7 @@ from keras.models import Model
 from keras.optimizers import Adam
 from keras.regularizers import l2
 
-from keras_utils.metrics import soft_jaccard_loss, jaccard_distance
+from keras_utils.losses import soft_jaccard_loss
 from networks.densenet.layers import SubPixelUpscaling
 
 

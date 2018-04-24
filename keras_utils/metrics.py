@@ -11,11 +11,17 @@ def boolean_jaccard(y_true, y_pred):
 
 def general_jaccard(y_true, y_pred):
     result = []
+
+    if y_true.sum() == 0:
+        if y_pred.sum() == 0:
+            return 1
+        else:
+            return 0
+
     for cls in set(y_true.flatten()):
         if cls == 0:
             continue
         result += [boolean_jaccard(y_true == cls, y_pred == cls)]
-
     return np.mean(result)
 
 
@@ -30,31 +36,3 @@ def batch_general_jaccard(y_true, y_pred, binary=False):
             true = np.argmax(y_true[i], axis=2)
         batch_result.append(general_jaccard(true, pred))
     return batch_result
-
-
-def jaccard_distance(y_true, y_pred):
-    smooth = K.epsilon()
-    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    union = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1) - intersection
-    jac = (intersection + smooth) / (union + smooth)
-    return jac
-
-
-def binary_jaccard_distance(y_true, y_pred):
-    smooth = K.epsilon()
-    intersection = K.sum(K.abs(y_true * y_pred))
-    union = K.sum(K.abs(y_true) + K.abs(y_pred)) - intersection
-    jac = (intersection + smooth) / (union + smooth)
-    return jac
-
-
-def soft_jaccard_loss(y_true, y_pred):
-    return -K.log(jaccard_distance(y_true, y_pred)) + K.categorical_crossentropy(y_true, y_pred)
-
-
-def binary_jaccard_loss(target, output):
-    return 1 - binary_jaccard_distance(target, output)
-
-
-def binary_soft_jaccard_loss(target, output):
-    return -K.log(jaccard_distance(target, output)) + K.binary_crossentropy(target, output)
