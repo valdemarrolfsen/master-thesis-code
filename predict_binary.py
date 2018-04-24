@@ -3,6 +3,7 @@ import argparse
 import cv2
 import numpy as np
 
+from keras import backend as K
 from keras_utils.generators import create_generator
 from keras_utils.metrics import batch_general_jaccard, f1_score
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
@@ -51,7 +52,7 @@ def run():
     images, masks, file_names = next(generator)
     probs = model.predict(images, verbose=1)
     iou = batch_general_jaccard(masks, probs, binary=True)
-    f1 = f1_score(masks, probs)
+    f1 = K.eval(f1_score(K.variable(masks), K.variable(probs)))
     print('mean IOU: {}'.format(np.mean(iou)))
     print('F1 score: {}'.format(f1))
     for i, prob in enumerate(probs):
