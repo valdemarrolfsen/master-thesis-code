@@ -14,9 +14,15 @@ class MeanIOUCallback(Callback):
         pass
 
     def on_epoch_end(self, epoch, logs=None):
-        val_predict = np.asarray(self.model.predict(self.model.validation_data[0]))
-        val_target = self.model.validation_data[1]
-        meaniou = np.mean(batch_general_jaccard(val_target, val_predict, binary=True))
+        generator = self.model.validation_data,
+        steps = self.model.validation_steps
+        ious = []
+        for i in range(steps):
+            images, masks = next(generator)
+            probs = self.model.predict(images, verbose=0)
+            iou = np.mean(batch_general_jaccard(masks, probs, binary=True))
+            ious.append(iou)
+        meaniou = np.mean(ious)
         self.ious.append(meaniou)
         print('- mean IOU: {}'.format(meaniou))
         return
