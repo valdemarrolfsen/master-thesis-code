@@ -4,6 +4,7 @@ from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D, concate
 from keras.optimizers import Adam
 
 from keras_utils.losses import soft_jaccard_loss, binary_soft_jaccard_loss
+from keras_utils.multigpu import ModelMGPU
 
 
 def get_crop_shape(target, refer):
@@ -116,6 +117,7 @@ def build_unet(input_shape, nb_classes):
 
     act = Activation(activation)(conv10)
     model = Model(inputs=inputs, outputs=act)
+    model = ModelMGPU(model, 2)
     model.compile(
         optimizer=Adam(lr=1e-4),
         loss=loss,
