@@ -67,6 +67,12 @@ def define_args():
                         default=0
                         )
 
+    parser.add_argument('--learning-rate',
+                        type=float,
+                        help='Learning rate',
+                        default=1e-4
+                        )
+
     args = parser.parse_args()
     print('Using args: ', args)
 
@@ -85,4 +91,5 @@ if __name__ == '__main__':
                args.classes,
                args.batch_size,
                args.initial_epoch,
-               args.pre_trained_weight)
+               args.pre_trained_weight,
+               args.learning_rate)

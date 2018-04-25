@@ -27,7 +27,7 @@ def get_crop_shape(target, refer):
     return (ch1, ch2), (cw1, cw2)
 
 
-def build_unet(input_shape, nb_classes):
+def build_unet(input_shape, nb_classes, lr=1e-4):
     concat_axis = 3
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
     conv1 = Conv2D(32, (3, 3), padding="same", name="conv1_1", activation="relu", data_format="channels_last",
@@ -141,7 +141,7 @@ def build_unet(input_shape, nb_classes):
     model = Model(inputs=inputs, outputs=act)
     model = ModelMGPU(model, 2)
     model.compile(
-        optimizer=Adam(lr=1e-4),
+        optimizer=Adam(lr=lr),
         loss=loss,
         metrics=['acc'])
 
