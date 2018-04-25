@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from keras_utils.callbacks import callbacks
 from keras_utils.generators import create_generator
-from networks.unet.unet import build_unet
+from networks.unet.unet import build_unet, build_unet16
 
 np.random.seed(2)
 tf.set_random_seed(2)
