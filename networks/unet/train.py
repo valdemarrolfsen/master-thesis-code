@@ -2,6 +2,7 @@ import os
 
 from keras_utils.callbacks import callbacks
 from keras_utils.generators import create_generator
+from keras_utils.multigpu import ModelMGPU
 from networks.unet.unet import build_unet
 import tensorflow as tf
 import numpy as np
@@ -11,6 +12,7 @@ tf.set_random_seed(2)
 
 def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch, pre_trained_weight):
     model = build_unet(input_size, nb_classes)
+    model = ModelMGPU(model, 2)
     binary = nb_classes == 1
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes, rescale=False, binary=binary)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, nb_classes, rescale=False, binary=binary)
