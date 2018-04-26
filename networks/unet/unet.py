@@ -64,7 +64,9 @@ def build_unet(input_shape, nb_classes, lr=1e-4):
 
     act = Activation(activation)(conv11)
     model = Model(inputs=inputs, outputs=act)
-    model = ModelMGPU(model, 2)
+    gpus = _get_number_of_gpus()
+    if gpus > 1:
+        model = ModelMGPU(model, gpus)
     model.compile(
         optimizer=Adam(lr=lr),
         loss=loss,
