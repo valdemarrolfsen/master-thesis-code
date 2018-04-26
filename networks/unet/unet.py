@@ -29,7 +29,7 @@ def up_block(input_tensor, concat_target, filters):
     return x
 
 
-def build_unet(input_shape, nb_classes, lr=1e-4):
+def build_unet(input_shape, nb_classes):
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
     conv1 = down_block(inputs, 32)
     pool1 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv1)
@@ -57,21 +57,14 @@ def build_unet(input_shape, nb_classes, lr=1e-4):
 
     if nb_classes == 1:
         activation = 'sigmoid'
-        loss = binary_soft_jaccard_loss
     else:
         activation = 'softmax'
-        loss = soft_jaccard_loss
 
     act = Activation(activation)(conv11)
     model = Model(inputs=inputs, outputs=act)
     gpus = _get_number_of_gpus()
     if gpus > 1:
         model = ModelMGPU(model, gpus)
-    model.compile(
-        optimizer=Adam(lr=lr),
-        loss=loss,
-        metrics=['acc'])
-
     return model
 
 
@@ -140,10 +133,8 @@ def build_unet16(input_shape, nb_classes, lr=1e-4):
 
     if nb_classes == 1:
         activation = 'sigmoid'
-        loss = binary_soft_jaccard_loss
     else:
         activation = 'softmax'
-        loss = soft_jaccard_loss
 
     act = Activation(activation)(x)
     model = Model(inputs=inputs, outputs=act)
@@ -151,11 +142,6 @@ def build_unet16(input_shape, nb_classes, lr=1e-4):
     gpus = _get_number_of_gpus()
     if gpus > 1:
         model = ModelMGPU(model, gpus)
-    model.compile(
-        optimizer=Adam(lr=lr),
-        loss=loss,
-        metrics=['acc'])
-
     return model
 
 
@@ -289,19 +275,12 @@ def build_unet_old(input_shape, nb_classes, lr=1e-4):
     conv10 = layers.Conv2D(nb_classes, (1, 1))(conv9)
 
     activation = 'softmax'
-    loss = soft_jaccard_loss
     if nb_classes == 1:
         activation = 'sigmoid'
-        loss = binary_soft_jaccard_loss
 
     act = Activation(activation)(conv10)
     model = Model(inputs=inputs, outputs=act)
     gpus = _get_number_of_gpus()
     if gpus > 1:
         model = ModelMGPU(model, gpus)
-    model.compile(
-        optimizer=Adam(lr=lr),
-        loss=loss,
-        metrics=['acc'])
-
     return model

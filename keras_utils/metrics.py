@@ -48,3 +48,12 @@ def f1_score(y_true, y_pred):
     precision = c1 / c2
     recall = c1 / c3
     return 2 * (precision * recall) / (precision + recall)
+
+
+def binary_jaccard_distance_rounded(target, output):
+    smooth = K.epsilon()
+    output = K.round(K.clip(output, 0, 1))
+    intersection = K.sum(target * output, axis=[0, -1, -2])
+    sum_ = K.sum(target + output, axis=[0, -1, -2])
+    jac = (intersection + smooth) / (sum_ - intersection + smooth)
+    return K.mean(jac)
