@@ -22,7 +22,7 @@ processes = {
     'sharpen': {'both': False, 'seq': iaa.Sharpen(alpha=(0.0, 1.0), lightness=(0.75, 2.0))}
 }
 
-folders = ['train', 'val']
+folders = ['train']
 
 
 def run(arguments):
