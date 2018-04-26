@@ -2,14 +2,13 @@ import argparse
 
 import cv2
 import numpy as np
-
 from keras import backend as K
+
 from keras_utils.generators import create_generator
 from keras_utils.metrics import batch_general_jaccard, f1_score
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
-from networks.unet_binary.unet import build_unet_binary_deeper_elu, build_unet_binary_standard
 
 
 def run():
@@ -29,8 +28,6 @@ def run():
     batch_size = args.batch_size
 
     model_choices = {
-        'deeper-elu': build_unet_binary_deeper_elu,
-        'standard': build_unet_binary_standard,
         'densenet': build_densenet,
         'unet': build_unet
     }

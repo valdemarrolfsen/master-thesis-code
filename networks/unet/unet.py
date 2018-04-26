@@ -145,13 +145,22 @@ def build_unet16(input_shape, nb_classes, lr=1e-4):
 
     act = Activation(activation)(x)
     model = Model(inputs=inputs, outputs=act)
-    model = ModelMGPU(model, 2)
+
+    gpus = _get_number_of_gpus()
+    if gpus > 1:
+        model = ModelMGPU(model, gpus)
     model.compile(
         optimizer=Adam(lr=lr),
         loss=loss,
         metrics=['acc'])
 
     return model
+
+
+def _get_number_of_gpus():
+    devices = [x.name for x in K.get_session().list_devices()]
+    # ['/cpu:0', '/gpu:0', '/gpu:1']
+    return len([1 for d in devices if 'gpu' in d])
 
 
 def get_crop_shape(target, refer):
