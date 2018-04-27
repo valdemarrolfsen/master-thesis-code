@@ -18,7 +18,7 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
 
     binary = nb_classes == 1
     if binary:
-        loss = binary_soft_jaccard_loss
+        loss = lovasz_hinge
     else:
         loss = soft_jaccard_loss
 
