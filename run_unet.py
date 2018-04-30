@@ -55,12 +55,6 @@ def define_args():
                         default=2
                         )
 
-    parser.add_argument('--steps-per-epoch',
-                        type=int,
-                        help='Steps per epoch',
-                        default=0
-                        )
-
     parser.add_argument('--initial-epoch',
                         type=int,
                         help='Initial epoch',
@@ -99,5 +93,4 @@ if __name__ == '__main__':
                args.initial_epoch,
                args.pre_trained_weight,
                args.learning_rate,
-               args.steps_per_epoch,
                args.augment)

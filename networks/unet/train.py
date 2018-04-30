@@ -24,8 +24,7 @@ def session_config():
     set_session(sess)  # set this TensorFlow session as the default session for Keras
 
 
-def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch, pre_trained_weight, learning_rate,
-               steps_per_epoch, augment):
+def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch, pre_trained_weight, learning_rate, augment):
     session_config()
     model = build_unet(input_size, nb_classes)
 
@@ -49,9 +48,10 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         print('Loading weights: {}'.format(pre_trained_weight))
         model.load_weights(pre_trained_weight)
 
-    if steps_per_epoch == 0:
+    steps_per_epoch = num_samples // batch_size
+    if augment:
         # calculate steps automatically.
-        steps_per_epoch = num_samples // batch_size
+        steps_per_epoch = 4 * steps_per_epoch
 
     model.fit_generator(
         generator=train_generator,
