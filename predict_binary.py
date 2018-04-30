@@ -6,7 +6,6 @@ from keras import backend as K
 
 from keras_utils.generators import create_generator
 from keras_utils.metrics import batch_general_jaccard, f1_score
-from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet, build_unet_old
 
@@ -20,12 +19,14 @@ def run():
     parser.add_argument("--input-size", type=int, default=713)
     parser.add_argument("--batch-size", type=int, default=713)
     parser.add_argument("--model-name", type=str, default="standard")
+    parser.add_argument("--save-imgs", type=bool, default=True)
     args = parser.parse_args()
 
     model_name = args.model_name
     images_path = args.test_images
     input_size = args.input_size
     batch_size = args.batch_size
+    save_imgs = args.save_imgs
 
     model_choices = {
         'densenet': build_densenet,
@@ -53,6 +54,11 @@ def run():
     f1 = K.eval(f1_score(K.variable(masks), K.variable(probs)))
     print('mean IOU: {}'.format(np.mean(iou)))
     print('F1 score: {}'.format(f1))
+
+    if not save_imgs:
+        return
+    # wow such hack
+    from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
     for i, prob in enumerate(probs):
         # mask_result = np.argmax(masks[i], axis=2)
         # img = get_real_image(images_path, file_names[i])
