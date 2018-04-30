@@ -149,7 +149,7 @@ def build_unet16(input_shape, nb_classes, lr=1e-4):
 def _get_number_of_gpus():
     devices = [x.name for x in K.get_session().list_devices()]
     # ['/cpu:0', '/gpu:0', '/gpu:1']
-    return len([1 for d in devices if 'gpu' in d])
+    return len([1 for d in devices if 'gpu' in d.lower()])
 
 
 def get_crop_shape(target, refer):
