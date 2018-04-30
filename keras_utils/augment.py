@@ -17,11 +17,19 @@ augmentations = [
 
 
 def image_augmentation(img, mask):
+    """
+    Batch wise image augmentation. Randomly augments the images with flip, sharpen and/or gaussian blur
+    :param img:
+    :param mask:
+    :return:
+    """
     for aug in augmentations:
         if not aug['common']:
-            img = aug['seq'].augment_image(img)
-        elif np.random.rand() > 0.5:
-            img = aug['seq'].augment_image(img)
-            mask = aug['seq'].augment_image(mask)
+            img = aug['seq'].augment_images(img)
+            continue
+        for i in range(len(img)):
+            if np.random.rand() > 0.5:
+                img[i] = aug['seq'].augment_image(img[i])
+                mask[i] = aug['seq'].augment_image(mask[i])
 
     return img, mask

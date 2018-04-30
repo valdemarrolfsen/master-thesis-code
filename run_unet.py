@@ -58,7 +58,7 @@ def define_args():
     parser.add_argument('--steps-per-epoch',
                         type=int,
                         help='Steps per epoch',
-                        default=50
+                        default=0
                         )
 
     parser.add_argument('--initial-epoch',
@@ -71,6 +71,12 @@ def define_args():
                         type=float,
                         help='Learning rate',
                         default=1e-4
+                        )
+
+    parser.add_argument('--augment',
+                        type=bool,
+                        help='If to augment images or not.',
+                        default=False
                         )
 
     args = parser.parse_args()
@@ -92,4 +98,6 @@ if __name__ == '__main__':
                args.batch_size,
                args.initial_epoch,
                args.pre_trained_weight,
-               args.learning_rate)
+               args.learning_rate,
+               args.steps_per_epoch,
+               args.augment)

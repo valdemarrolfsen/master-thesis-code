@@ -27,7 +27,7 @@ def load_images_from_folder(folder, num_samples=5000):
     return images
 
 
-def set_up_generators(image_dir, rescale, augment):
+def set_up_generators(image_dir, rescale):
     datagen_args = dict(
         data_format='channels_last',
         # set input mean to 0 over the dataset
@@ -50,12 +50,6 @@ def set_up_generators(image_dir, rescale, augment):
         horizontal_flip=False,
         # randomly flip images
         vertical_flip=False)
-
-    if augment:
-        datagen_args['horizontal_flip'] = True
-        datagen_args['vertical_flip'] = True
-        # datagen_args['zoom_range'] = [0.5, 1.5]
-        # datagen_args['fill_mode'] = 'reflect'
 
     if rescale:
         # Scale down the values
@@ -86,7 +80,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     label_dir = os.path.join(datadir, "labels")
 
     # Set up the generators
-    image_datagen, label_datagen = set_up_generators(image_dir, rescale, augment)
+    image_datagen, label_datagen = set_up_generators(image_dir, rescale)
 
     # Use the same seed for both generators so they return corresponding images
     seed = 1
@@ -119,9 +113,12 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     if with_file_names:
         file_name_generator = image_generator
 
+    if augment and not binary:
+        raise NotImplementedError('Augment for categorical not implemented. Implement it in the generator.')
+
     # If we are doing binary predictions, we do not want to one-hot encode the labels.
     if binary:
-        return custom_binary_gen(generator, batch_size, file_name_generator), image_generator.samples
+        return custom_binary_gen(generator, batch_size, file_name_generator, augment), image_generator.samples
 
     return custom_gen(
         generator,
@@ -161,7 +158,7 @@ def custom_gen(generator, input_size, batch_size, nb_classes, file_name_generato
             yield img, output
 
 
-def custom_binary_gen(generator, batch_size, file_name_generator):
+def custom_binary_gen(generator, batch_size, file_name_generator, augment):
     """
     Generator that cleans data and returns binary labels.
     :param generator:
@@ -175,10 +172,12 @@ def custom_binary_gen(generator, batch_size, file_name_generator):
         if len(img) != batch_size:
             continue
 
+        # clean mask image
         mask[mask > 1] = 0
 
-        # Augment the images
-        img, mask = image_augmentation(img, mask)
+        if augment:
+            # Augment the images
+            img, mask = image_augmentation(img, mask)
 
         if file_name_generator:
             idx = (file_name_generator.batch_index - 1) * file_name_generator.batch_size
