@@ -17,7 +17,6 @@ thread_count = None
 examples_path = None
 labels_path = None
 color_attribute = None
-table_name = None
 class_name = None
 include_empty = None
 file_type = 'tif'
@@ -33,7 +32,6 @@ def setup():
     global examples_path
     global labels_path
     global color_attribute
-    global table_name
     global class_name
     global include_empty
     global res
@@ -45,7 +43,6 @@ def setup():
     ap.add_argument('-i', '--input', type=str, required=True, help='path to input file')
     ap.add_argument('-o', '--output', type=str, required=True, help='path for output file')
     ap.add_argument('-c', '--color', type=str, required=True, help='color value or color attribute in table')
-    ap.add_argument('-n', '--table', type=str, required=True, help='table name')
     ap.add_argument('--prefix', type=str, default='', help='Prefix for files')
     ap.add_argument('--include-empty', type=bool, default=False, help='Include empty raster images')
     ap.add_argument('--binary', type=bool, default=False, help='Binary segmentation problem')
@@ -66,7 +63,6 @@ def setup():
     output_path = args.output
     thread_count = args.threads
     color_attribute = args.color
-    table_name = args.table
     class_name = args.class_name
     include_empty = args.include_empty
     res = args.res
@@ -84,10 +80,10 @@ def run():
     global file_path
     global thread_count
     global color_attribute
-    global table_name
+    global class_name
     tiff_files = utils.get_file_paths(file_path)
     total_files = len(tiff_files)
-    print('Using table {}'.format(table_name))
+    print('Using class {}'.format(class_name))
     print('Found {} files'.format(total_files))
     np.random.shuffle(tiff_files)
     q = Queue()
@@ -100,7 +96,7 @@ def run():
         # Create a new database connection for each thread.
         db = Db()
         db.connect()
-        t = threading.Thread(target=work, args=(q, db, table_name, color_attribute, total_files))
+        t = threading.Thread(target=work, args=(q, db, class_name, color_attribute, total_files))
 
         # Sticks the thread in a list so that it remains accessible
         t.daemon = True
@@ -147,11 +143,10 @@ def is_raster_empty(rast):
     return False
 
 
-def work(q, db, table_name, color_attribute, total_files=0):
+def work(q, db, class_name, color_attribute, total_files=0):
     global file_type
     global examples_path
     global labels_path
-    global class_name
     global output_path
     global include_empty
     global res
@@ -179,7 +174,7 @@ def work(q, db, table_name, color_attribute, total_files=0):
                 max_x,
                 max_y,
                 res,
-                table_name,
+                class_name,
                 color_attribute
             )
         else:
