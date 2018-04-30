@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import tensorflow as tf
+from keras.backend import set_session
 from keras.optimizers import Adam
 
 from keras_utils.callbacks import callbacks
@@ -14,6 +15,12 @@ tf.set_random_seed(2)
 
 
 def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch, pre_trained_weight, learning_rate):
+
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
+    sess = tf.Session(config=config)
+    set_session(sess)  # set this TensorFlow session as the default session for Keras
+    
     model = build_unet(input_size, nb_classes)
 
     binary = nb_classes == 1
