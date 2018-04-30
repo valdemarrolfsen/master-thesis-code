@@ -63,6 +63,7 @@ def build_unet(input_shape, nb_classes):
     act = Activation(activation)(conv11)
     model = Model(inputs=inputs, outputs=act)
     gpus = _get_number_of_gpus()
+    print('Fund {} gpus'.format(gpus))
     if gpus > 1:
         model = ModelMGPU(model, gpus)
     return model
