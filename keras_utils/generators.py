@@ -4,6 +4,8 @@ import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
 
+from keras_utils.augment import image_augmentation
+
 
 def load_images_from_folder(folder, num_samples=5000):
     images = []
@@ -174,6 +176,10 @@ def custom_binary_gen(generator, batch_size, file_name_generator):
             continue
 
         mask[mask > 1] = 0
+
+        # Augment the images
+        img, mask = image_augmentation(img, mask)
+
         if file_name_generator:
             idx = (file_name_generator.batch_index - 1) * file_name_generator.batch_size
             file_names = file_name_generator.filenames[idx: idx + file_name_generator.batch_size]
