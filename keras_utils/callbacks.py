@@ -123,7 +123,7 @@ class CyclicLR(Callback):
         else:
             return self.base_lr + (self.max_lr - self.base_lr) * np.maximum(0, (1 - x)) * self.scale_fn(self.clr_iterations)
 
-    def on_train_begin(self, logs={}):
+    def on_train_begin(self, logs=None):
         logs = logs or {}
 
         if self.clr_iterations == 0:
@@ -132,7 +132,6 @@ class CyclicLR(Callback):
             K.set_value(self.model.optimizer.lr, self.clr())
 
     def on_batch_end(self, epoch, logs=None):
-
         logs = logs or {}
         self.trn_iterations += 1
         self.clr_iterations += 1
@@ -143,3 +142,7 @@ class CyclicLR(Callback):
         for k, v in logs.items():
             self.history.setdefault(k, []).append(v)
         K.set_value(self.model.optimizer.lr, self.clr())
+
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        logs['lr'] = K.get_value(self.model.optimizer.lr)
