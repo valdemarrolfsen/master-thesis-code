@@ -2,6 +2,7 @@ import argparse
 
 from preprocessing import utils
 from preprocessing.db import Db
+from tqdm import tqdm
 
 global COUNT
 
@@ -25,7 +26,7 @@ def run(arguments):
 
     db = Db()
     db.connect()
-    for file in tiff_files:
+    for file in tqdm(tiff_files):
         min_x, min_y, max_x, max_y = utils.get_bounding_box_from_tiff(file)
         if min_x == -1:
             continue
