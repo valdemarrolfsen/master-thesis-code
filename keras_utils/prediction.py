@@ -168,7 +168,7 @@ def geo_reference_raster(raster_path, geotransform):
     dst_ds.SetGeoTransform(gt)
 
     # Get raster projection
-    epsg = 3857
+    epsg = 25833
     srs = osr.SpatialReference()
     srs.ImportFromEPSG(epsg)
     dest_wkt = srs.ExportToWkt()
