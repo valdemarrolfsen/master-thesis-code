@@ -44,8 +44,7 @@ RUN conda install -y python=${python_version} && \
       sklearn_pandas \
       opencv-python \
       tqdm \
-      tensorflow-gpu \
-      comet_ml && \
+      tensorflow-gpu && \
     pip install https://cntk.ai/PythonWheel/GPU/cntk-2.1-cp36-cp36m-linux_x86_64.whl && \
     conda install \
       bcolz \
