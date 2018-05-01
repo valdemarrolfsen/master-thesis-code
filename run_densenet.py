@@ -64,6 +64,11 @@ def define_args():
                         help='Initial epoch',
                         default=0
                         )
+    parser.add_argument('--augment',
+                        type=bool,
+                        help='If to augment images or not.',
+                        default=False
+                        )
     args = parser.parse_args()
     print('Using args: ', args)
 
@@ -77,9 +82,10 @@ if __name__ == '__main__':
                    args.logs_dir,
                    args.weights_dir,
                    args.weights_name,
-                   args.pre_trained_weight,
                    (args.input_size, args.input_size),
                    args.classes,
                    args.batch_size,
-                   initial_epoch=args.initial_epoch,
-                   config=args.config)
+                   args.config,
+                   args.initial_epoch,
+                   args.pre_trained_weight,
+                   args.augment)

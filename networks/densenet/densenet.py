@@ -31,10 +31,8 @@ def get_config_kwargs(config):
 
 def build_densenet(input_size, classes, config=56):
     activation = 'softmax'
-    loss = soft_jaccard_loss
     if classes == 1:
         activation = 'sigmoid'
-        loss = 'binary_crossentropy'
 
     configs = [56, 67, 103]
     if config not in configs:
@@ -48,8 +46,6 @@ def build_densenet(input_size, classes, config=56):
                         dropout_rate=0.2,
                         **kwargs)
 
-    optimizer = Adam(lr=1e-4)
-    model.compile(loss=loss, optimizer=optimizer, metrics=['acc'])
     return model
 
 
