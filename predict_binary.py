@@ -3,9 +3,11 @@ import argparse
 import cv2
 import numpy as np
 from keras import backend as K
+from keras.optimizers import Adam
 
 from keras_utils.generators import create_generator
-from keras_utils.metrics import batch_general_jaccard, f1_score
+from keras_utils.losses import binary_soft_jaccard_loss
+from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet, build_unet_old
 
@@ -36,13 +38,16 @@ def run():
 
     model_choice = model_choices[model_name]
     model = model_choice((input_size, input_size), 1)
+    model.compile(
+        optimizer=Adam(lr=1e-4),
+        loss=binary_soft_jaccard_loss,
+        metrics=['acc', binary_jaccard_distance_rounded])
     model.load_weights(args.weights_path)
-
     generator, _ = create_generator(
         images_path,
         (input_size, input_size),
         batch_size,
-        2,
+        1,
         rescale=False,
         with_file_names=True,
         binary=True
