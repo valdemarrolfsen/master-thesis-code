@@ -89,9 +89,9 @@ def run():
     sample_images = None
     # load all images
     images = load_images_from_folder(images_path, num_samples=100000)
-
+    im = images[5]
     pred = predict_img_with_smooth_windowing(
-        images[0],
+        im,
         window_size=input_size,
         subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
         nb_classes=n_classes,
@@ -106,7 +106,9 @@ def run():
     print(np.unique(pred))
     pred = (pred[:, :, 0] * 255.).astype(np.uint8)
     out_path = os.path.join(output_path, 'test.tif')
+    real_path = os.path.join(output_path, 'real.tif')
     print(cv2.imwrite(out_path, pred))
+    print(cv2.imwrite(real_path, im))
 
 
 if __name__ == '__main__':
