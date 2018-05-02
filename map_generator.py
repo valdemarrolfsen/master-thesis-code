@@ -112,7 +112,7 @@ def run():
 
     cheap = cheap_tiling_prediction(im, window_size=input_size, nb_classes=1, pred_func=(
             lambda img_batch_subdiv: model.predict(
-                image_to_neural_input(img_batch_subdiv, generator), verbose=True
+                image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
             )
         ))
 
