@@ -1,3 +1,4 @@
+import os
 import argparse
 import cv2
 import numpy as np
@@ -68,6 +69,7 @@ def run():
     images_path = args.test_images
     sample_path = args.sample_images
     input_size = args.input_size
+    output_path = args.output_path
 
     model_choices = {
         'pspnet': build_pspnet,
@@ -101,6 +103,10 @@ def run():
     )
 
     print(pred)
+    pred = np.round(pred)
+    pred = (pred[:, :, 0] * 255.).astype(np.uint8)
+    out_path = os.path.join(output_path, 'test.tif')
+    cv2.imwrite(out_path, pred)
 
 
 if __name__ == '__main__':
