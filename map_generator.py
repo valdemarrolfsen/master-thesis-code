@@ -63,7 +63,7 @@ def run():
     parser.add_argument("--classes", type=int)
 
     args = parser.parse_args()
-    n_classes = args.classes
+    nb_classes = args.classes
     model_name = args.model_name
     image_path = args.test_image
     sample_path = args.sample_images
@@ -92,15 +92,15 @@ def run():
     pred = predict_img_with_smooth_windowing(
         image,
         window_size=input_size,
-        subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
-        nb_classes=n_classes,
+        subdivisions=4,  # Minimal amount of overlap for windowing. Must be an even number.
+        nb_classes=nb_classes,
         pred_func=(
             lambda img_batch_subdiv: model.predict(
                 image_to_neural_input(img_batch_subdiv, generator), verbose=True
             )
         )
     )
-    pred = round_predictions(pred, 1, [0.2])
+    pred = round_predictions(pred, nb_classes, [0.2])
     pred = (pred[:, :, 0] * 255.).astype(np.uint8)
     out_path = os.path.join(output_path, 'test.tif')
     real_path = os.path.join(output_path, 'real.tif')
