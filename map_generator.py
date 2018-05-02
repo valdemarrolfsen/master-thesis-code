@@ -102,25 +102,23 @@ def run():
         )
     )
 
-    pred = np.round(pred)
-    print(np.unique(pred))
     pred = (pred[:, :, 0] * 255.).astype(np.uint8)
     out_path = os.path.join(output_path, 'test.tif')
     real_path = os.path.join(output_path, 'real.tif')
     print(cv2.imwrite(out_path, pred))
     print(cv2.imwrite(real_path, im))
 
-    cheap = cheap_tiling_prediction(im, window_size=input_size, nb_classes=1, pred_func=(
-            lambda img_batch_subdiv: model.predict(
-                image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
-            )
-        ))
-
-    cheap = np.round(cheap)
-    print(np.unique(cheap))
-    cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
-    out_path = os.path.join(output_path, 'test-cheap.tif')
-    print(cv2.imwrite(out_path, cheap))
+    # cheap = cheap_tiling_prediction(im, window_size=input_size, nb_classes=1, pred_func=(
+    #         lambda img_batch_subdiv: model.predict(
+    #             image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
+    #         )
+    #     ))
+    #
+    # cheap = np.round(cheap)
+    # print(np.unique(cheap))
+    # cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
+    # out_path = os.path.join(output_path, 'test-cheap.tif')
+    # print(cv2.imwrite(out_path, cheap))
 
 
 if __name__ == '__main__':
