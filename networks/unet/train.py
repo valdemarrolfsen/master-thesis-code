@@ -47,8 +47,11 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
     if pre_trained_weight:
         print('Loading weights: {}'.format(pre_trained_weight))
         model.load_weights(pre_trained_weight)
-
     steps_per_epoch = num_samples // batch_size
+
+    if augment:
+        steps_per_epoch = steps_per_epoch * 4
+
     model.fit_generator(
         generator=train_generator,
         validation_data=val_generator,
