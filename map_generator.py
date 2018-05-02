@@ -89,7 +89,7 @@ def run():
     sample_images = None
     # load all images
     images = load_images_from_folder(images_path, num_samples=100000)
-    im = images[5]
+    im = images[0]
     pred = predict_img_with_smooth_windowing(
         im,
         window_size=input_size,
