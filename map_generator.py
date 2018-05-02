@@ -9,7 +9,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras_utils.generators import load_images_from_folder
 from keras_utils.losses import binary_soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
-from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing
+from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction
 from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
 
@@ -109,6 +109,18 @@ def run():
     real_path = os.path.join(output_path, 'real.tif')
     print(cv2.imwrite(out_path, pred))
     print(cv2.imwrite(real_path, im))
+
+    cheap = cheap_tiling_prediction(im, window_size=input_size, nb_classes=1, pred_func=(
+            lambda img_batch_subdiv: model.predict(
+                image_to_neural_input(img_batch_subdiv, generator), verbose=True
+            )
+        ))
+
+    cheap = np.round(cheap)
+    print(np.unique(cheap))
+    cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
+    out_path = os.path.join(output_path, 'test-cheap.tif')
+    print(cv2.imwrite(out_path, cheap))
 
 
 if __name__ == '__main__':
