@@ -102,11 +102,11 @@ def run():
         )
     )
 
-    print(pred)
     pred = np.round(pred)
+    print(np.unique(pred))
     pred = (pred[:, :, 0] * 255.).astype(np.uint8)
     out_path = os.path.join(output_path, 'test.tif')
-    cv2.imwrite(out_path, pred)
+    print(cv2.imwrite(out_path, pred))
 
 
 if __name__ == '__main__':
