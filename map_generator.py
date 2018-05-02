@@ -2,7 +2,6 @@ import os
 import argparse
 import cv2
 import numpy as np
-from tqdm import tqdm
 from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
 
@@ -56,7 +55,7 @@ def image_to_neural_input(images, image_datagen):
 def run():
     parser = argparse.ArgumentParser()
     parser.add_argument("--weights-path", type=str)
-    parser.add_argument("--test-images", type=str, default="")
+    parser.add_argument("--test-image", type=str, default="")
     parser.add_argument("--sample-images", type=str, default="")
     parser.add_argument("--output-path", type=str, default="")
     parser.add_argument("--input-size", type=int, default=713)
@@ -66,7 +65,7 @@ def run():
     args = parser.parse_args()
     n_classes = args.classes
     model_name = args.model_name
-    images_path = args.test_images
+    image_path = args.test_image
     sample_path = args.sample_images
     input_size = args.input_size
     output_path = args.output_path
@@ -88,10 +87,9 @@ def run():
     generator = get_generator(sample_images)
     sample_images = None
     # load all images
-    images = load_images_from_folder(images_path, num_samples=100000)
-    im = images[0]
+    image = cv2.imread(image_path)
     pred = predict_img_with_smooth_windowing(
-        im,
+        image,
         window_size=input_size,
         subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
         nb_classes=n_classes,
@@ -106,7 +104,7 @@ def run():
     out_path = os.path.join(output_path, 'test.tif')
     real_path = os.path.join(output_path, 'real.tif')
     print(cv2.imwrite(out_path, pred))
-    print(cv2.imwrite(real_path, im))
+    print(cv2.imwrite(real_path, image))
 
     # cheap = cheap_tiling_prediction(im, window_size=input_size, nb_classes=1, pred_func=(
     #         lambda img_batch_subdiv: model.predict(
