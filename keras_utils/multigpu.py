@@ -1,3 +1,4 @@
+from keras import backend as K
 from keras import Model
 from keras.utils import multi_gpu_model
 
@@ -18,6 +19,11 @@ class ModelMGPU(Model):
 
         return super(ModelMGPU, self).__getattribute__(attrname)
 
+
+def get_number_of_gpus():
+    devices = [x.name for x in K.get_session().list_devices()]
+    # ['/cpu:0', '/gpu:0', '/gpu:1']
+    return len([1 for d in devices if 'gpu' in d.lower()])
 
 # # model topology instantiation above
 # ser_model = Keras.models.Model(inputs = x, output=out)

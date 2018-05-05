@@ -7,6 +7,7 @@ from keras_utils.callbacks import callbacks
 from keras_utils.generators import create_generator
 from keras_utils.losses import binary_soft_jaccard_loss, soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
+from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from networks.densenet.densenet import build_densenet
 
 
@@ -24,6 +25,11 @@ def train_densenet(data_dir, logdir, weights_dir, weights_name, input_size, nb_c
                    augment):
     session_config()
     model = build_densenet(input_size, nb_classes, config=config)
+
+    gpus = get_number_of_gpus()
+    print('Fund {} gpus'.format(gpus))
+    if gpus > 1:
+        model = ModelMGPU(model, gpus)
 
     binary = nb_classes == 1
     if binary:

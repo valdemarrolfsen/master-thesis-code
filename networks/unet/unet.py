@@ -6,7 +6,7 @@ from keras.layers import Conv2D, MaxPooling2D, concatenate, BatchNormalization, 
 from keras.optimizers import Adam
 
 from keras_utils.losses import soft_jaccard_loss, binary_soft_jaccard_loss
-from keras_utils.multigpu import ModelMGPU
+from keras_utils.multigpu import ModelMGPU, get_number_of_gpus
 
 
 def down_block(input_tensor, filters, bottleneck=False):
@@ -62,7 +62,7 @@ def build_unet(input_shape, nb_classes):
 
     act = Activation(activation)(conv11)
     model = Model(inputs=inputs, outputs=act)
-    gpus = _get_number_of_gpus()
+    gpus = get_number_of_gpus()
     print('Fund {} gpus'.format(gpus))
     if gpus > 1:
         model = ModelMGPU(model, gpus)
@@ -140,16 +140,10 @@ def build_unet16(input_shape, nb_classes, lr=1e-4):
     act = Activation(activation)(x)
     model = Model(inputs=inputs, outputs=act)
 
-    gpus = _get_number_of_gpus()
+    gpus = get_number_of_gpus()
     if gpus > 1:
         model = ModelMGPU(model, gpus)
     return model
-
-
-def _get_number_of_gpus():
-    devices = [x.name for x in K.get_session().list_devices()]
-    # ['/cpu:0', '/gpu:0', '/gpu:1']
-    return len([1 for d in devices if 'gpu' in d.lower()])
 
 
 def get_crop_shape(target, refer):
@@ -281,7 +275,7 @@ def build_unet_old(input_shape, nb_classes, lr=1e-4):
 
     act = Activation(activation)(conv10)
     model = Model(inputs=inputs, outputs=act)
-    gpus = _get_number_of_gpus()
+    gpus = get_number_of_gpus()
     if gpus > 1:
         model = ModelMGPU(model, gpus)
     return model
