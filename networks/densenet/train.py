@@ -56,6 +56,6 @@ def train_densenet(data_dir, logdir, weights_dir, weights_name, input_size, nb_c
         steps_per_epoch=steps_per_epoch,
         epochs=10000, verbose=True,
         workers=8,
-        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_acc', base_lr=1e-5, max_lr=1e-4,
+        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_binary_jaccard_distance_rounded', base_lr=1e-5, max_lr=1e-4,
                             steps_per_epoch=steps_per_epoch),
         initial_epoch=initial_epoch)
