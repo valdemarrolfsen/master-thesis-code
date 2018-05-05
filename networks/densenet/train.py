@@ -44,8 +44,11 @@ def train_densenet(data_dir, logdir, weights_dir, weights_name, input_size, nb_c
     if pre_trained_weight:
         print('Loading weights: {}'.format(pre_trained_weight))
         model.load_weights(pre_trained_weight)
-
     steps_per_epoch = num_samples // batch_size
+
+    if augment:
+        steps_per_epoch = steps_per_epoch * 4
+
     model.fit_generator(
         generator=train_generator,
         validation_data=val_generator,
@@ -53,6 +56,6 @@ def train_densenet(data_dir, logdir, weights_dir, weights_name, input_size, nb_c
         steps_per_epoch=steps_per_epoch,
         epochs=10000, verbose=True,
         workers=8,
-        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_acc', base_lr=1e-4, max_lr=1e-2,
+        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_acc', base_lr=1e-5, max_lr=1e-4,
                             steps_per_epoch=steps_per_epoch),
         initial_epoch=initial_epoch)
