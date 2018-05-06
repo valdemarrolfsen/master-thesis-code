@@ -81,10 +81,13 @@ def run():
     global thread_count
     global color_attribute
     global class_name
+    global binary
     tiff_files = utils.get_file_paths(file_path)
     total_files = len(tiff_files)
     print('Using class {}'.format(class_name))
     print('Found {} files'.format(total_files))
+    if binary:
+        print('Using binary')
     np.random.shuffle(tiff_files)
     q = Queue()
     for i, file in enumerate(tiff_files):
