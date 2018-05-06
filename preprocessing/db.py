@@ -154,12 +154,12 @@ class Db(object):
             WITH bygg AS (
               SELECT COUNT(*) as count1
               FROM   bygning_flate
-              WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+              WHERE color=4 AND st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
             ),
             anlegg AS (
               SELECT COUNT(*) as count2
               FROM   bygnanlegg_flate
-              WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) 
+              WHERE color=4 AND st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) 
             )
             SELECT sum(count1)
                     FROM (
@@ -203,14 +203,14 @@ class Db(object):
                     ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
                     '8BUI', {color_attribute}::INTEGER, 0) as rast
                   FROM bygning_flate
-                  WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+                  WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 4
                 ),
                 structures AS (
                   SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
                     ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
                     '8BUI', {color_attribute}::INTEGER, 0) as rast
                   FROM bygnanlegg_flate
-                  WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+                  WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 4
                 ),
                 empty as (
                   SELECT st_asraster(
@@ -241,7 +241,7 @@ class Db(object):
                         ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
                         '8BUI', {color_attribute}::INTEGER, 0) as rast
                       FROM veg_flate
-                      WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+                      WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 1
                     ),
                     empty as (
                       SELECT st_asraster(
