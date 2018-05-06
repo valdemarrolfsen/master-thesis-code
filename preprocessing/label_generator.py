@@ -202,7 +202,7 @@ def work(q, db, class_name, color_attribute, total_files=0):
         examples_path = os.path.join(output_path, "{}/examples/{}/".format(s, class_name))
         labels_path = os.path.join(output_path, "{}/labels/{}/".format(s, class_name))
 
-        path = os.path.join(labels_path, filename)
+        path = os.path.join(labels_path, 'val_' + filename)
 
         if not raster_records:
             q.task_done()
