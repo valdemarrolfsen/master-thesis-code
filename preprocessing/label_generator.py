@@ -229,6 +229,7 @@ def work(q, db, class_name, color_attribute, total_files=0):
         copyfile(file, os.path.join(examples_path, filename))
         utils.save_file(rast, path)
         q.task_done()
+    q.task_done()
 
 
 if __name__ == '__main__':
