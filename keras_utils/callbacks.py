@@ -10,7 +10,7 @@ def callbacks(logdir, weightsdir, filename, monitor_val='val_acc', base_lr=1e-4,
     checkpoint = ModelCheckpoint(weightsdir, monitor=monitor_val, verbose=2,
                                  save_best_only=True, save_weights_only=True, mode='auto')
     tensorboard_callback = TensorBoard(log_dir=logdir, write_graph=True, histogram_freq=0)
-    plateau_callback = CyclicLR(base_lr=base_lr, max_lr=max_lr, step_size=3*steps_per_epoch, mode='triangular2')
+    plateau_callback = CyclicLR(base_lr=base_lr, max_lr=max_lr, step_size=3*steps_per_epoch, mode='triangular')
     early_stopping = EarlyStopping(monitor=monitor_val, patience=50, verbose=1)
     return [checkpoint, plateau_callback, tensorboard_callback, early_stopping]
 
