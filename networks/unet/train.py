@@ -59,5 +59,5 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         steps_per_epoch=steps_per_epoch,
         epochs=10000, verbose=True,
         workers=8,
-        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_binary_jaccard_distance_rounded', base_lr=0.0005, max_lr=0.009, steps_per_epoch=steps_per_epoch),
+        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_binary_jaccard_distance_rounded', base_lr=0.0002, max_lr=0.002, steps_per_epoch=steps_per_epoch),
         initial_epoch=initial_epoch)

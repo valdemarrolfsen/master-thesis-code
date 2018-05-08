@@ -37,6 +37,9 @@ class Db(object):
         self.cursor.execute("SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';")
         self.cursor.execute("SET postgis.enable_outdb_rasters TO True;")
 
+    def disconnect(self):
+        self.conn.close()
+
     def get_tif_from_bbox(self, min_x, max_y, max_x, min_y, res, color_attribute='255'):
         x_res = res
         y_res = res
