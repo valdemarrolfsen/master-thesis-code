@@ -19,17 +19,17 @@ def down_block(input_tensor, filters, bottleneck=False):
     return x
 
 
-def up_block(input_tensor, concat_target, filters):
+def up_block(input_tensor, concat_target, filters, dropout=0.2):
     concat_axis = 3
     with K.name_scope('UpBlock'):
         x = concatenate([Conv2DTranspose(filters, (2, 2), strides=(2, 2), padding='same')(input_tensor), concat_target], axis=concat_axis)
-        x = Dropout(0.2)(x)
+        x = Dropout(dropout)(x)
         x = Conv2D(filters, (3, 3), padding="same", activation="relu", data_format="channels_last", kernel_initializer='he_uniform')(x)
         x = Conv2D(filters, (3, 3), padding="same", activation="relu", data_format="channels_last", kernel_initializer='he_uniform')(x)
     return x
 
 
-def build_unet(input_shape, nb_classes):
+def build_unet(input_shape, nb_classes, dropout=0.2):
     inputs = layers.Input((input_shape[0], input_shape[1], 3))
     conv1 = down_block(inputs, 32)
     pool1 = MaxPooling2D(pool_size=(2, 2), data_format="channels_last")(conv1)
@@ -48,11 +48,11 @@ def build_unet(input_shape, nb_classes):
 
     bottleneck = down_block(pool5, 1024, bottleneck=True)
 
-    conv6 = up_block(bottleneck, conv5, 512)
-    conv7 = up_block(conv6, conv4, 256)
-    conv8 = up_block(conv7, conv3, 128)
-    conv9 = up_block(conv8, conv2, 64)
-    conv10 = up_block(conv9, conv1, 32)
+    conv6 = up_block(bottleneck, conv5, 512, dropout=dropout)
+    conv7 = up_block(conv6, conv4, 256, dropout=dropout)
+    conv8 = up_block(conv7, conv3, 128, dropout=dropout)
+    conv9 = up_block(conv8, conv2, 64, dropout=dropout)
+    conv10 = up_block(conv9, conv1, 32, dropout=dropout)
     conv11 = layers.Conv2D(nb_classes, (1, 1))(conv10)
 
     if nb_classes == 1:

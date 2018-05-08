@@ -4,15 +4,20 @@ from keras import backend as K
 from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint, TensorBoard, EarlyStopping, Callback
 
 
-def callbacks(logdir, weightsdir, filename, monitor_val='val_acc', base_lr=1e-4, max_lr=1e-2, steps_per_epoch=0):
-    weightsdir = os.path.join(weightsdir, 'weights.{}.h5'.format(filename))
+def callbacks(logdir, weightsdir, filename, monitor_val='val_acc', base_lr=1e-4, max_lr=1e-2, steps_per_epoch=0, cyclic=None):
 
+    weightsdir = os.path.join(weightsdir, 'weights.{}.h5'.format(filename))
     checkpoint = ModelCheckpoint(weightsdir, monitor=monitor_val, verbose=2,
                                  save_best_only=True, save_weights_only=True, mode='auto')
     tensorboard_callback = TensorBoard(log_dir=logdir, write_graph=True, histogram_freq=0)
-    plateau_callback = CyclicLR(base_lr=base_lr, max_lr=max_lr, step_size=3*steps_per_epoch, mode='triangular2')
+
+    if cyclic is not None:
+        lr_callback = CyclicLR(base_lr=base_lr, max_lr=max_lr, step_size=3*steps_per_epoch, mode=cyclic)
+    else:
+        lr_callback = ReduceLROnPlateau(monitor=monitor_val, factor=np.sqrt(0.1), verbose=1, patience=3, min_lr=0.1e-6)
+
     early_stopping = EarlyStopping(monitor=monitor_val, patience=10, verbose=1)
-    return [checkpoint, plateau_callback, tensorboard_callback, early_stopping]
+    return [checkpoint, lr_callback, tensorboard_callback, early_stopping]
 
 
 class CyclicLR(Callback):
