@@ -54,6 +54,8 @@ def lrtest_densenet(data_dir, logdir, weights_dir, weights_name, input_size, nb_
     if augment:
         steps_per_epoch = steps_per_epoch * 4
 
+    steps_per_epoch = 100
+
     clr = CyclicLR(base_lr=0, max_lr=1e-1, step_size=5 * steps_per_epoch, mode='triangular')
     model.fit_generator(
         generator=train_generator,
