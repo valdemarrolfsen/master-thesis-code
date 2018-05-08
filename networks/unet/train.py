@@ -27,7 +27,7 @@ def session_config():
 def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch, pre_trained_weight, learning_rate, augment):
     session_config()
     model = build_unet(input_size, nb_classes)
-
+    model.summary()
     binary = nb_classes == 1
     if binary:
         loss = binary_soft_jaccard_loss

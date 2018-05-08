@@ -30,7 +30,7 @@ def train_densenet(data_dir, logdir, weights_dir, weights_name, input_size, nb_c
                    augment):
     session_config()
     model = build_densenet(input_size, nb_classes, config=config)
-
+    model.summary()
     gpus = get_number_of_gpus()
     print('Found {} gpus'.format(gpus))
     if gpus > 1:
