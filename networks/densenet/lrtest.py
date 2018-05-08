@@ -10,7 +10,8 @@ from keras_utils.callbacks import callbacks, CyclicLR
 from keras_utils.generators import create_generator
 from keras_utils.losses import binary_soft_jaccard_loss, soft_jaccard_loss, lovasz_hinge
 from keras_utils.metrics import f1_score, binary_jaccard_distance_rounded
-from networks.unet.unet import build_unet, build_unet16
+from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
+from networks.densenet.densenet import build_densenet
 
 np.random.seed(2)
 tf.set_random_seed(2)
@@ -26,9 +27,15 @@ def session_config():
     set_session(sess)  # set this TensorFlow session as the default session for Keras
 
 
-def lrtest_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch, pre_trained_weight, learning_rate, augment):
+def lrtest_densenet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, config, initial_epoch, pre_trained_weight,
+                   augment):
     session_config()
-    model = build_unet(input_size, nb_classes)
+    model = build_densenet(input_size, nb_classes, config=config)
+
+    gpus = get_number_of_gpus()
+    print('Found {} gpus'.format(gpus))
+    if gpus > 1:
+        model = ModelMGPU(model, gpus)
 
     binary = nb_classes == 1
     if binary:
@@ -37,13 +44,12 @@ def lrtest_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_clas
         loss = soft_jaccard_loss
 
     model.compile(
-        optimizer=Adam(lr=learning_rate),
+        optimizer=Adam(lr=1e-3),
         loss=loss,
         metrics=['acc', binary_jaccard_distance_rounded])
 
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes, rescale=False, binary=binary,
                                                     augment=augment)
-
     steps_per_epoch = num_samples // batch_size
     if augment:
         steps_per_epoch = steps_per_epoch * 4
@@ -54,8 +60,7 @@ def lrtest_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_clas
         steps_per_epoch=steps_per_epoch,
         epochs=5, verbose=True,
         workers=8,
-        callbacks=[clr],
-        initial_epoch=initial_epoch)
+        callbacks=[clr])
 
     h = clr.history
     lr = h['lr']
