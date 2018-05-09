@@ -376,7 +376,7 @@ def _is_iterable(o):
     return True
 
 
-DEBUG_LOGGING = False
+DEBUG_LOGGING = True
 
 
 def debug_print(s, *args):
