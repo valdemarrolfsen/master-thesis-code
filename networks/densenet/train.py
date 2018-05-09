@@ -7,7 +7,7 @@ from keras.optimizers import Adam
 from keras_utils.callbacks import callbacks
 from keras_utils.generators import create_generator
 from keras_utils.losses import binary_soft_jaccard_loss, soft_jaccard_loss
-from keras_utils.memory import gradients_memory, gradients_speed
+from keras_utils.memory import gradients_memory, gradients_speed, gradients_collection
 from keras_utils.metrics import binary_jaccard_distance_rounded
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from networks.densenet.densenet import build_densenet
@@ -23,7 +23,7 @@ def session_config():
     K.set_session(sess)  # set this TensorFlow session as the default session for Keras
 
     # Optimize gradient memory usage
-    K.__dict__["gradients"] = gradients_speed
+    K.__dict__["gradients"] = gradients_collection
 
 
 def train_densenet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, config, initial_epoch, pre_trained_weight,
