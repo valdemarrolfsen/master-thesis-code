@@ -16,7 +16,9 @@ K.set_image_data_format('channels_last')
 
 
 def CapsNetR3(input_shape, n_class=2):
-    x = layers.Input((input_shape[0], input_shape[1], 3))
+    input_shape = (input_shape[0], input_shape[1], 3)
+
+    x = layers.Input(input_shape)
 
     # Layer 1: Just a conventional Conv2D layer
     conv1 = layers.Conv2D(filters=16, kernel_size=5, strides=1, padding='same', activation='relu', name='conv1')(x)

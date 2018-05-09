@@ -5,11 +5,11 @@ from keras import backend as K
 from keras.optimizers import Adam
 
 from keras_utils.callbacks import callbacks
-from keras_utils.generators import create_generator
 from keras_utils.losses import binary_soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from networks.segcaps.capsnet import CapsNetR3
+from networks.segcaps.data import create_caps_generator
 
 
 def session_config():
@@ -39,10 +39,10 @@ def train_capsnet(data_dir, logdir, weights_dir, weights_name, input_size, nb_cl
         loss=loss,
         metrics=['acc', binary_jaccard_distance_rounded])
 
-    train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes, rescale=False, binary=True,
-                                                    augment=augment)
-    val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, nb_classes, rescale=False, binary=True,
-                                                  augment=augment)
+    train_generator, num_samples = create_caps_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes, rescale=False, binary=True,
+                                                    augment=False)
+    val_generator, val_samples = create_caps_generator(os.path.join(data_dir, 'val'), input_size, batch_size, nb_classes, rescale=False, binary=True,
+                                                  augment=False)
 
     if pre_trained_weight:
         print('Loading weights: {}'.format(pre_trained_weight))
