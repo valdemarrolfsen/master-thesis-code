@@ -25,7 +25,7 @@ def session_config():
 def train_capsnet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, pre_trained_weight,
                    augment):
     session_config()
-    model = CapsNetR3(input_size)
+    model = CapsNetR3(input_size)[0]
     model.summary()
     gpus = get_number_of_gpus()
     print('Found {} gpus'.format(gpus))
