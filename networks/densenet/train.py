@@ -23,7 +23,7 @@ def session_config():
     K.set_session(sess)  # set this TensorFlow session as the default session for Keras
 
     # Optimize gradient memory usage
-    K.__dict__["gradients"] = gradients_collection
+    K.__dict__["gradients"] = gradients_speed
 
 
 def train_densenet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, config, initial_epoch, pre_trained_weight,
