@@ -213,7 +213,6 @@ def __conv_block(ip, nb_filter, bottleneck=False, dropout_rate=None, weight_deca
         concat_axis = 1 if K.image_data_format() == 'channels_first' else -1
 
         x = BatchNormalization(axis=concat_axis, epsilon=1.1e-5, name=name_or_none(block_prefix, '_bn'))(ip)
-        tf.add_to_collection('checkpoints', x)
         x = Activation('relu')(x)
 
         if bottleneck:
@@ -228,7 +227,6 @@ def __conv_block(ip, nb_filter, bottleneck=False, dropout_rate=None, weight_deca
 
         x = Conv2D(nb_filter, (3, 3), kernel_initializer='he_normal', padding='same', use_bias=False,
                    name=name_or_none(block_prefix, '_conv2D'))(x)
-        tf.add_to_collection('checkpoints', x)
         if dropout_rate:
             x = Dropout(dropout_rate)(x)
 
