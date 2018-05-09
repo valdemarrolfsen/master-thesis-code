@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import os
+from keras import backend as K
 from keras.optimizers import Adam, Nadam
 
 from keras_utils.callbacks import callbacks
@@ -67,6 +68,7 @@ def run():
     weights_name = 'unet-experiment-{}'
     input_size = (320, 320)
     batch_size = 20
+    start_from = 6
     binary = True
     session_config()
 
@@ -78,6 +80,8 @@ def run():
                                                   augment=False)
 
     for i, options in enumerate(experiments):
+        if i < start_from:
+            continue
         print('Running experiment {} with options: {}'.format(str(i), options))
         optimizer = get_optimizer(options['optimizer'], max_lr)
         loss = get_loss(options['loss'])
@@ -114,6 +118,8 @@ def run():
                                 cyclic=cyclic
                                 )
         )
+
+        K.clear_session()
 
 
 if __name__ == '__main__':
