@@ -25,7 +25,7 @@ def session_config():
 def train_capsnet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, pre_trained_weight,
                    augment):
     session_config()
-    model = CapsNetR3(input_size)[0]
+    model = CapsNetR3(input_size, n_class=nb_classes)[0]
     model.summary()
     gpus = get_number_of_gpus()
     print('Found {} gpus'.format(gpus))
@@ -49,14 +49,11 @@ def train_capsnet(data_dir, logdir, weights_dir, weights_name, input_size, nb_cl
         model.load_weights(pre_trained_weight)
     steps_per_epoch = num_samples // batch_size
 
-    if augment:
-        steps_per_epoch = steps_per_epoch * 4
-
     model.fit_generator(
         generator=train_generator,
         validation_data=val_generator,
         validation_steps=val_samples // batch_size,
-        steps_per_epoch=steps_per_epoch,
+        steps_per_epoch=100,
         epochs=10000, verbose=True,
         workers=8,
         callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_binary_jaccard_distance_rounded',
