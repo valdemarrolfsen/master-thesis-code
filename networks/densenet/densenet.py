@@ -53,7 +53,7 @@ def build_densenet(input_size, classes, config=56):
 def densenetfcn(input_shape, nb_dense_block=5, growth_rate=16, nb_layers_per_block=4,
                 reduction=0.0, dropout_rate=0.0, weight_decay=1E-4, init_conv_filters=48,
                 include_top=True, weights=None, input_tensor=None, classes=1, activation='softmax',
-                upsampling_conv=128, upsampling_type='deconv', early_transition=False,
+                upsampling_conv=128, upsampling_type='subpixel', early_transition=False,
                 transition_pooling='max', initial_kernel_size=(3, 3)):
     """Instantiate the DenseNet FCN architecture.
         Note that when using TensorFlow,
