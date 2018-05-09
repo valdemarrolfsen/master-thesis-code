@@ -53,7 +53,7 @@ def train_capsnet(data_dir, logdir, weights_dir, weights_name, input_size, nb_cl
         generator=train_generator,
         validation_data=val_generator,
         validation_steps=val_samples // batch_size,
-        steps_per_epoch=100,
+        steps_per_epoch=1000,
         epochs=10000, verbose=True,
         workers=8,
         callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_binary_jaccard_distance_rounded',
