@@ -16,7 +16,7 @@ def run():
 
     generator, _ = create_generator(
         images_path,
-        (input_size, input_size),
+        input_size,
         batch_size,
         1,
         rescale=False,
