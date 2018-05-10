@@ -60,7 +60,7 @@ def maximize_threshold(y_true, y_pred):
 
     print(thresholds)
 
-    mean_IOUs = [np.mean(batch_general_jaccard(y_true, y_pred, False, step)) for step in thresholds]
+    mean_IOUs = [np.mean(batch_general_jaccard(y_true, y_pred, True, step)) for step in thresholds]
     max_IOU_index = np.argmax(mean_IOUs)
 
     print("Max IOU with threshold {}".format(threshold_step*max_IOU_index))
