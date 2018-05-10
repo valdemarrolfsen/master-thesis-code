@@ -10,7 +10,7 @@ from run_unet_experiments import experiments
 
 def run():
     images_path = '/mnt/ekstern/rubval/buildings/test'
-    input_size = 320
+    input_size = (320, 320)
     batch_size = 2622
     weights = 'weights_train/weights.unet-experiment-{}.h5'
 
