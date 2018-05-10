@@ -6,8 +6,8 @@ from osgeo import gdal
 import numpy as np
 import os
 
-import utils
-from db import Db
+from preprocessing import utils
+from preprocessing.db import Db
 import argparse
 from shutil import copyfile
 
