@@ -60,7 +60,7 @@ def run():
     print('mean IOU: {}'.format(np.mean(iou)))
     print('F1 score: {}'.format(f1))
 
-    maximize_threshold(masks, probs, binary=True)
+    maximize_threshold(masks, probs)
 
     if not save_imgs:
         return

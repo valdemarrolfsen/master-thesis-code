@@ -51,14 +51,16 @@ def f1_score(y_true, y_pred):
     return 2 * (precision * recall) / (precision + recall)
 
 
-def maximize_threshold(y_true, y_pred, binary=False):
+def maximize_threshold(y_true, y_pred):
     threshold_step = 0.1
-    mean_ious = [np.mean(batch_general_jaccard(y_true, y_pred, False, step)) for step in np.arange(0.0, 1.0, threshold_step)]
-    max_iou_index = np.argmax(mean_ious)
+    thresholds = np.arange(0.0, 1.0, threshold_step)
+    mean_IOUs = [np.mean(batch_general_jaccard(y_true, y_pred, False, step)) for step in thresholds]
+    max_IOU_index = np.argmax(mean_IOUs)
 
-    print("Max IOU with threshold {}".format(threshold_step*max_iou_index))
-    print("Max IOU is {}".format(mean_ious[max_iou_index]))
-    return threshold_step*max_iou_index
+    print("Max IOU with threshold {}".format(threshold_step*max_IOU_index))
+    print("Max IOU is {}".format(mean_IOUs[max_IOU_index]))
+    print(mean_IOUs)
+    return threshold_step*max_IOU_index
 
 
 def binary_jaccard_distance_rounded(target, output):

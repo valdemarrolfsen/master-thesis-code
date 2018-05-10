@@ -40,7 +40,7 @@ def run():
         print('mean IOU for {}: {}'.format(i, np.mean(iou)))
         print('F1 score for {}: {}'.format(i, f1))
 
-        maximize_threshold(masks, probs, binary=True)
+        maximize_threshold(masks, probs)
 
 
 if __name__ == '__main__':
