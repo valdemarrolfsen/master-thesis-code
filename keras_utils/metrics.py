@@ -27,6 +27,9 @@ def general_jaccard(y_true, y_pred):
 
 def batch_general_jaccard(y_true, y_pred, binary=False, threshold=0.5):
     batch_result = []
+
+    print(threshold)
+
     for i in range(len(y_true)):
         if binary:
             pred = np.zeros(y_pred[i].shape)
@@ -54,6 +57,9 @@ def f1_score(y_true, y_pred):
 def maximize_threshold(y_true, y_pred):
     threshold_step = 0.1
     thresholds = np.arange(0.0, 1.0, threshold_step)
+
+    print(thresholds)
+
     mean_IOUs = [np.mean(batch_general_jaccard(y_true, y_pred, False, step)) for step in thresholds]
     max_IOU_index = np.argmax(mean_IOUs)
 
