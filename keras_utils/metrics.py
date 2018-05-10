@@ -29,7 +29,7 @@ def batch_general_jaccard(y_true, y_pred, binary=False, threshold=0.5):
     batch_result = []
     for i in range(len(y_true)):
         if binary:
-            pred[:][:] = pred[:][:] > threshold
+            pred[:][:] = y_pred[i][:][:] > threshold
             true = y_true[i]
         else:
             pred = np.argmax(y_pred[i], axis=2)
