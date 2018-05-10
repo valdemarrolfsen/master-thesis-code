@@ -158,7 +158,12 @@ class Db(object):
               FROM   bygning_flate
               WHERE color=4 AND st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
             """
-
+        elif class_name == 'roads':
+            query = """
+              SELECT st_area(geom)
+              FROM veg_flate
+              WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 1
+            """
         else:
             raise NotImplementedError('Class not implemented')
 
