@@ -11,7 +11,7 @@ from run_unet_experiments import experiments
 def run():
     images_path = '/mnt/ekstern/rubval/buildings/test'
     input_size = 320
-    batch_size = 2620
+    batch_size = 2622
     weights = 'weights_train/weights.unet-experiment-{}.h5'
 
     generator, _ = create_generator(
@@ -23,7 +23,7 @@ def run():
         binary=True
     )
 
-    images, masks, file_names = next(generator)
+    images, masks = next(generator)
 
     for i, options in enumerate(experiments):
         print('Running prediction for experiment {}'.format(str(i)))
