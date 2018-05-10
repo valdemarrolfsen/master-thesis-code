@@ -30,6 +30,7 @@ def run():
         dropout = options['dropout']
 
         model = build_unet(input_size, nb_classes=1, dropout=dropout)
+        model.compile('sgd', 'mse')
         model.load_weights(weights.format(i))
 
         probs = model.predict(images, verbose=1)
