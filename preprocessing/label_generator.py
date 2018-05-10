@@ -33,12 +33,6 @@ def setup():
     )
 
     args = ap.parse_args()
-    paths = ['train', 'test', 'val']
-    sub_paths = ['examples', 'labels']
-    for path in paths:
-        for s in sub_paths:
-            utils.make_path(os.path.join(args['output'], "{}/{}/{}/".format(path, s, args['class_name'])))
-
     return args
 
 
@@ -47,6 +41,12 @@ def run(arguments):
     class_name = arguments['class_name']
     thread_count = arguments['threads']
     binary = arguments['binary']
+
+    paths = ['train', 'test', 'val']
+    sub_paths = ['examples', 'labels']
+    for path in paths:
+        for s in sub_paths:
+            utils.make_path(os.path.join(arguments['output'], "{}/{}/{}/".format(path, s, arguments['class_name'])))
 
     tiff_files = utils.get_file_paths(file_path)
     total_files = len(tiff_files)
