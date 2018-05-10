@@ -220,7 +220,6 @@ def __conv_block(ip, nb_filter, bottleneck=False, dropout_rate=None, weight_deca
 
             x = Conv2D(inter_channel, (1, 1), kernel_initializer='he_normal', padding='same', use_bias=False,
                        kernel_regularizer=l2(weight_decay), name=name_or_none(block_prefix, '_bottleneck_conv2D'))(x)
-            tf.add_to_collection('checkpoints', x)
             x = BatchNormalization(axis=concat_axis, epsilon=1.1e-5,
                                    name=name_or_none(block_prefix, '_bottleneck_bn'))(x)
             x = Activation('relu')(x)
