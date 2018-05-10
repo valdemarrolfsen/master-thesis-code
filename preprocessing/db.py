@@ -160,7 +160,7 @@ class Db(object):
             """
         elif class_name == 'roads':
             query = """
-              SELECT st_area(geom)
+              SELECT sum(st_area(geom))
               FROM veg_flate
               WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 1
             """
@@ -178,6 +178,9 @@ class Db(object):
 
         self.cursor.execute(query)
         records = self.cursor.fetchall()
+
+        if not records[0][0]:
+            return 0
         return int(records[0][0])
 
     def get_binary_tiff(self, min_x, max_y, max_x, min_y, res, class_name, color_attribute='255'):
