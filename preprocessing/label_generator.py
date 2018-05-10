@@ -11,33 +11,8 @@ from db import Db
 import argparse
 from shutil import copyfile
 
-file_path = None
-output_path = None
-thread_count = None
-examples_path = None
-labels_path = None
-color_attribute = None
-class_name = None
-include_empty = None
-file_type = 'tif'
-res = None
-binary = False
-prefix = ''
-
 
 def setup():
-    global file_path
-    global output_path
-    global thread_count
-    global examples_path
-    global labels_path
-    global color_attribute
-    global class_name
-    global include_empty
-    global res
-    global binary
-    global prefix
-
     # Set ut the argument parser
     ap = argparse.ArgumentParser()
     ap.add_argument('-i', '--input', type=str, required=True, help='path to input file')
@@ -53,35 +28,26 @@ def setup():
         '-t',
         '--threads',
         type=int,
-        default=10,
-        help='the number of threads (defaults to 10)'
+        default=8,
+        help='the number of threads (defaults to 8)'
     )
 
     args = ap.parse_args()
-    # Get the file path
-    file_path = args.input
-    output_path = args.output
-    thread_count = args.threads
-    color_attribute = args.color
-    class_name = args.class_name
-    include_empty = args.include_empty
-    res = args.res
-    binary = args.binary
-    prefix = args.prefix
-
     paths = ['train', 'test', 'val']
     sub_paths = ['examples', 'labels']
     for path in paths:
         for s in sub_paths:
-            utils.make_path(os.path.join(output_path, "{}/{}/{}/".format(path, s, class_name)))
+            utils.make_path(os.path.join(args['output'], "{}/{}/{}/".format(path, s, args['class_name'])))
+
+    return args
 
 
-def run():
-    global file_path
-    global thread_count
-    global color_attribute
-    global class_name
-    global binary
+def run(arguments):
+    file_path = arguments['input']
+    class_name = arguments['class_name']
+    thread_count = arguments['threads']
+    binary = arguments['binary']
+
     tiff_files = utils.get_file_paths(file_path)
     total_files = len(tiff_files)
     print('Using class {}'.format(class_name))
@@ -99,7 +65,7 @@ def run():
         # Create a new database connection for each thread.
         db = Db()
         db.connect()
-        t = threading.Thread(target=work, args=(q, db, class_name, color_attribute, total_files))
+        t = threading.Thread(target=work, args=(q, db, total_files, arguments))
 
         # Sticks the thread in a list so that it remains accessible
         t.daemon = True
@@ -146,18 +112,17 @@ def is_raster_empty(rast):
     return False
 
 
-def work(q, db, class_name, color_attribute, total_files=0):
-    global file_type
-    global examples_path
-    global labels_path
-    global output_path
-    global include_empty
-    global res
-    global binary
-    global prefix
-
+def work(q, db, total_files, arguments):
     train_portion = 0.7
     val_portion = 0.2
+
+    binary = arguments['binary']
+    res = arguments['res']
+    class_name = arguments['class_name']
+    color = arguments['color']
+    prefix = arguments['prefix']
+    output_path = arguments['output']
+    include_empty = arguments['include_empty']
 
     while not q.empty():
         try:
@@ -178,7 +143,7 @@ def work(q, db, class_name, color_attribute, total_files=0):
                 max_y,
                 res,
                 class_name,
-                color_attribute
+                color
             )
         else:
             raster_records = db.get_tif_from_bbox(
@@ -187,13 +152,13 @@ def work(q, db, class_name, color_attribute, total_files=0):
                 max_x,
                 max_y,
                 res,
-                color_attribute
+                color
             )
         # Save the file to an unique id and add the correct file ending
         # are we adding to train, val or test?
         prog = (total_files - q.qsize()) / total_files
 
-        filename = "{}{}-{}.{}".format(prefix, i, uuid.uuid4(), file_type)
+        filename = "{}{}-{}.{}".format(prefix, i, uuid.uuid4(), 'tif')
 
         if prog < train_portion:
             s = 'train'
@@ -205,7 +170,7 @@ def work(q, db, class_name, color_attribute, total_files=0):
         examples_path = os.path.join(output_path, "{}/examples/{}/".format(s, class_name))
         labels_path = os.path.join(output_path, "{}/labels/{}/".format(s, class_name))
 
-        path = os.path.join(labels_path, 'val_' + filename)
+        path = os.path.join(labels_path, 'label_' + filename)
 
         if not raster_records:
             q.task_done()
@@ -234,5 +199,5 @@ def work(q, db, class_name, color_attribute, total_files=0):
 
 
 if __name__ == '__main__':
-    setup()
-    run()
+    argu = setup()
+    run(argu)
