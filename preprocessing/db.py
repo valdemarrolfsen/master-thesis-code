@@ -154,21 +154,13 @@ class Db(object):
     def count_features(self, min_x, max_y, max_x, min_y, class_name):
         if class_name == 'buildings':
             query = """
-            WITH bygg AS (
               SELECT COUNT(*) as count1
               FROM   bygning_flate
               WHERE color=4 AND st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
-            ),
-            anlegg AS (
-              SELECT COUNT(*) as count2
-              FROM   bygnanlegg_flate
-              WHERE color=4 AND st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) 
-            )
-            SELECT sum(count1)
-                    FROM (
-                      SELECT count1 FROM bygg
-                      UNION SELECT count2 FROM anlegg) foo
             """
+
+        else:
+            raise NotImplementedError('Class not implemented')
 
         query = query.format(
                 min_x=min_x,
