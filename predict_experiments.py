@@ -2,7 +2,7 @@ import numpy as np
 from keras import backend as K
 
 from keras_utils.generators import create_generator
-from keras_utils.metrics import batch_general_jaccard, f1_score
+from keras_utils.metrics import batch_general_jaccard, f1_score, maximize_threshold
 from networks.unet.unet import build_unet
 
 from run_unet_experiments import experiments
@@ -39,6 +39,8 @@ def run():
         f1 = K.eval(f1_score(K.variable(masks), K.variable(probs)))
         print('mean IOU for {}: {}'.format(i, np.mean(iou)))
         print('F1 score for {}: {}'.format(i, f1))
+
+        maximize_threshold(masks, probs, binary=True)
 
 
 if __name__ == '__main__':
