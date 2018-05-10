@@ -57,7 +57,7 @@ def maximize_threshold(y_true, y_pred, binary=False):
     max_iou_index = np.argmax(mean_ious)
 
     print("Max IOU with threshold {}".format(threshold_step*max_iou_index))
-
+    print("Max IOU is {}".format(mean_ious[max_iou_index]))
     return threshold_step*max_iou_index
 
 
