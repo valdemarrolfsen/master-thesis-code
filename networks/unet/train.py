@@ -24,7 +24,8 @@ def session_config():
     set_session(sess)  # set this TensorFlow session as the default session for Keras
 
 
-def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch, pre_trained_weight, learning_rate, augment):
+def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_classes, batch_size, initial_epoch,
+               pre_trained_weight, learning_rate, augment):
     session_config()
     model = build_unet(input_size, nb_classes)
     model.summary()
@@ -39,10 +40,23 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         loss=loss,
         metrics=['acc', binary_jaccard_distance_rounded])
 
-    train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes, rescale=False, binary=binary,
-                                                    augment=augment)
-    val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, nb_classes, rescale=False, binary=binary,
-                                                  augment=augment)
+    train_generator, num_samples = create_generator(
+        os.path.join(data_dir, 'train'),
+        input_size,
+        batch_size,
+        nb_classes,
+        rescale=False,
+        binary=binary,
+        augment=augment)
+
+    val_generator, val_samples = create_generator(
+        os.path.join(data_dir, 'val'),
+        input_size,
+        batch_size,
+        nb_classes,
+        rescale=False,
+        binary=binary,
+        augment=augment)
 
     if pre_trained_weight:
         print('Loading weights: {}'.format(pre_trained_weight))
@@ -59,5 +73,14 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         steps_per_epoch=steps_per_epoch,
         epochs=10000, verbose=True,
         workers=8,
-        callbacks=callbacks(logdir, filename=weights_name, weightsdir=weights_dir, monitor_val='val_binary_jaccard_distance_rounded', base_lr=0.0002, max_lr=0.002, steps_per_epoch=steps_per_epoch),
+        callbacks=callbacks(
+            logdir,
+            filename=weights_name,
+            weightsdir=weights_dir,
+            monitor_val='val_binary_jaccard_distance_rounded',
+            base_lr=0.0002,
+            max_lr=0.002,
+            steps_per_epoch=steps_per_epoch,
+            cyclic='triangular2'
+        ),
         initial_epoch=initial_epoch)
