@@ -160,7 +160,7 @@ class Db(object):
             """
         elif class_name == 'roads':
             query = """
-              SELECT sum(st_area(geom))
+              SELECT sum(st_area(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))))
               FROM veg_flate
               WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 1
             """
@@ -168,12 +168,12 @@ class Db(object):
         elif class_name == 'vegetation':
             query = """
                 WITH one AS (
-                  SELECT sum(st_area(geom)) as area
+                  SELECT sum(st_area(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)))) as area
                   FROM ar5_flate
                   WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 3
                 ),
                 two AS (
-                  SELECT sum(st_area(geom)) as area
+                  SELECT sum(st_area(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)))) as area
                   FROM arealbruk_flate
                   WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 3
                 )
