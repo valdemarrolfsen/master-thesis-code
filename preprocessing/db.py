@@ -292,7 +292,7 @@ class Db(object):
                     '8BUI', {color_attribute}::INTEGER, 0) as rast
                   FROM vann_flate
                   WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 2
-                )
+                ),
                 empty as (
                   SELECT st_asraster(
                           st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833), 
