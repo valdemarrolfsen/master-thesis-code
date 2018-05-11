@@ -235,17 +235,7 @@ class Db(object):
                 FROM (
                   SELECT rast FROM area
                   UNION SELECT rast FROM empty) foo
-                """.format(
-                min_x=min_x,
-                min_y=min_y,
-                max_x=max_x,
-                max_y=max_y,
-                x_res=x_res,
-                y_res=y_res,
-                x_scale=x_scale,
-                y_scale=y_scale,
-                color_attribute=color_attribute
-            )
+                """
         elif class_name == 'roads':
             query = """
                     WITH area AS (
@@ -265,17 +255,7 @@ class Db(object):
                     FROM (
                       SELECT rast FROM area
                       UNION SELECT rast FROM empty) foo
-                    """.format(
-                min_x=min_x,
-                min_y=min_y,
-                max_x=max_x,
-                max_y=max_y,
-                x_res=x_res,
-                y_res=y_res,
-                x_scale=x_scale,
-                y_scale=y_scale,
-                color_attribute=color_attribute
-            )
+                    """
         elif class_name == 'vegetation':
             query = """
                                 WITH area AS (
@@ -303,7 +283,31 @@ class Db(object):
                                   SELECT rast FROM area
                                   UNION SELECT rast FROM area2
                                   UNION SELECT rast FROM empty) foo
-                                """.format(
+                                """
+        elif class_name == 'water':
+            query = """
+                WITH area AS (
+                  SELECT st_asraster(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)),
+                    ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
+                    '8BUI', {color_attribute}::INTEGER, 0) as rast
+                  FROM vann_flate
+                  WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 2
+                )
+                empty as (
+                  SELECT st_asraster(
+                          st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833), 
+                          ST_MakeEmptyRaster({x_res}, {y_res}, {min_x}::FLOAT, {max_y}::FLOAT, {x_scale}, {y_scale}, 0, 0, 25833),
+                        '8BUI', 0, 0) as rast
+                )
+                SELECT ST_AsGDALRaster(st_union(foo.rast, 'max'),'GTiff')
+                FROM (
+                  SELECT rast FROM area
+                  UNION SELECT rast FROM empty) foo
+                """
+        else:
+            raise ValueError('Unknown class type')
+
+        query = query.format(
                 min_x=min_x,
                 min_y=min_y,
                 max_x=max_x,
@@ -314,6 +318,4 @@ class Db(object):
                 y_scale=y_scale,
                 color_attribute=color_attribute
             )
-        else:
-            raise ValueError('Unknown class type')
         return query

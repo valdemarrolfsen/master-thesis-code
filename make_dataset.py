@@ -1,25 +1,35 @@
+import argparse
+import os
+
 from preprocessing import label_generator
 
 datasets = [
-    '/mnt/ekstern/rubval/oslo/tiled-512x512/',
-    '/mnt/ekstern/rubval/bergen/tiled-512x512/',
-    '/mnt/ekstern/rubval/trondheim/tiled-512x512/',
-    '/mnt/ekstern/rubval/stavanger/tiled-512x512/',
-    '/mnt/ekstern/rubval/tromso/tiled-512x512/',
-    '/mnt/ekstern/rubval/bodo/tiled-512x512/',
+    'bodo/tiled-512x512/',
+    'oslo/tiled-512x512/',
+    'bergen/tiled-512x512/',
+    'trondheim/tiled-512x512/',
+    'stavanger/tiled-512x512/',
+    'tromso/tiled-512x512/',
 ]
 
 
 def run():
+    # Set ut the argument parser
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--input-base', type=str, required=True, help='path to input file')
+    ap.add_argument('--output', type=str, required=True, help='path for output file')
+    ap.add_argument('--classname', type=str, required=True, help='classname')
+    args = ap.parse_args()
     for dataset in datasets:
-        a = {'output': '/mnt/ekstern/rubval/vegetation',
+        dataset = os.path.join(args.input_base, dataset)
+        a = {'output': args.output,
              'input': dataset,
              'color': 1,
              'prefix': '',
              'include_empty': False,
              'binary': True,
              'res': 512,
-             'class_name': 'vegetation',
+             'class_name': args.classname,
              'threads': 8}
         label_generator.run(a)
 
