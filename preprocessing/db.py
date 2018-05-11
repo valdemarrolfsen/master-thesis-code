@@ -196,7 +196,6 @@ class Db(object):
 
         self.cursor.execute(query)
         records = self.cursor.fetchall()
-        print(records)
         if not records[0][0]:
             return 0
         return int(records[0][0])
