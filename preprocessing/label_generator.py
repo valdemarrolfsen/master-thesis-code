@@ -128,11 +128,13 @@ def work(q, db, total_files, arguments):
         try:
             file, i = q.get(True)
         except Empty:
+            q.task_done()
             break
 
         utils.print_process(total_files - q.qsize(), total_files)
         min_x, min_y, max_x, max_y = utils.get_bounding_box_from_tiff(file)
         if min_x == -1:
+            q.task_done()
             continue
 
         if binary:
@@ -195,7 +197,6 @@ def work(q, db, total_files, arguments):
         utils.save_file(rast, path)
         q.task_done()
     db.disconnect()
-    q.task_done()
 
 
 if __name__ == '__main__':
