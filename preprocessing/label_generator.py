@@ -126,7 +126,7 @@ def work(q, db, total_files, arguments):
 
     while not q.empty():
         try:
-            file, i = q.get(False)
+            file, i = q.get(True)
         except Empty:
             break
 
