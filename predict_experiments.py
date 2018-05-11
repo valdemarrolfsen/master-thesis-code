@@ -11,7 +11,7 @@ from run_unet_experiments import experiments
 def run():
     images_path = '/data/buildings/test'
     input_size = (320, 320)
-    batch_size = 2622
+    batch_size = 2600
     weights = 'weights_train/weights.unet-experiment-{}.h5'
 
     generator, _ = create_generator(
@@ -40,7 +40,7 @@ def run():
         print('mean IOU for {}: {}'.format(i, np.mean(iou)))
         print('F1 score for {}: {}'.format(i, f1))
 
-        maximize_threshold(masks, probs)
+        K.clear_session()
 
 
 if __name__ == '__main__':
