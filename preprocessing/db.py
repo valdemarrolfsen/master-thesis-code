@@ -164,6 +164,24 @@ class Db(object):
               FROM veg_flate
               WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 1
             """
+
+        elif class_name == 'vegetation':
+            query = """
+                WITH one AS (
+                  SELECT sum(st_area(geom)) as area
+                  FROM ar5_flate
+                  WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 3
+                ),
+                two AS (
+                  SELECT sum(st_area(geom)) as area
+                  FROM arealbruk_flate
+                  WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 3
+                )
+                SELECT foo.area
+                FROM (
+                  SELECT area from one
+                  UNION ALL SELECT area from two) foo
+            """
         else:
             raise NotImplementedError('Class not implemented')
 
@@ -178,7 +196,7 @@ class Db(object):
 
         self.cursor.execute(query)
         records = self.cursor.fetchall()
-
+        print(records)
         if not records[0][0]:
             return 0
         return int(records[0][0])
