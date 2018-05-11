@@ -156,7 +156,7 @@ class Db(object):
             query = """
               SELECT COUNT(*) as count1
               FROM   bygning_flate
-              WHERE color=4 AND st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))
+              WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color=4
             """
         elif class_name == 'roads':
             query = """
@@ -181,6 +181,12 @@ class Db(object):
                 FROM (
                   SELECT area from one
                   UNION ALL SELECT area from two) foo
+            """
+        elif class_name == 'water':
+            query = """
+                SELECT sum(st_area(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)))) as area
+                FROM vann_flate
+                WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color = 2
             """
         else:
             raise NotImplementedError('Class not implemented')
