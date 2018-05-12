@@ -44,6 +44,9 @@ def run():
             optimizer=Adam(lr=max_lr),
             loss=binary_soft_jaccard_loss,
             metrics=['acc', binary_jaccard_distance_rounded])
+        weight = 'weights_train/weights.unet-{}-final.h5'.format(dataset)
+        print('Loading weights: {}'.format(weight))
+        model.load_weights(weight)
 
         steps_per_epoch = num_samples // batch_size
         cyclic = 'triangular2'
