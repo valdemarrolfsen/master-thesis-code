@@ -28,13 +28,12 @@ def run():
     data_dir = '/data/{}/'
     logs_dir = 'logs/unet-{}-final-finetune'
     weights_dir = 'weights_train'
+    weights_name = 'unet-{}-final-finetune'
     input_size = (512, 512)
-    batch_size = 12
-
+    batch_size = 10
     binary = True
     session_config()
     for dataset in datasets:
-        weights_name = 'unet-{}-final-finetune'
         train_generator, num_samples = create_generator(os.path.join(data_dir.format(dataset), 'train'), input_size, batch_size, nb_classes=1, rescale=False,
                                                         binary=binary,
                                                         augment=False)
@@ -50,15 +49,7 @@ def run():
             loss=binary_soft_jaccard_loss,
             metrics=['acc', binary_jaccard_distance_rounded])
 
-        initial_epoch = 0
-        if dataset == 'vegetation':
-            print('Continue on vegetation')
-            weight = 'weights_train/weights.unet-vegetation-final-finetune.h5'
-            weights_name += '-continue'
-            initial_epoch = 8
-        else:
-            weight = 'weights_train/weights.unet-{}-final.h5'.format(dataset)
-
+        weight = 'weights_train/weights.unet-{}-final.h5'.format(dataset)
         print('Loading weights: {}'.format(weight))
         model.load_weights(weight)
 
@@ -71,7 +62,6 @@ def run():
             steps_per_epoch=steps_per_epoch,
             epochs=10000, verbose=True,
             workers=8,
-            initial_epoch=initial_epoch,
             callbacks=callbacks(logs_dir.format(dataset),
                                 filename=weights_name.format(dataset), weightsdir=weights_dir,
                                 monitor_val='val_binary_jaccard_distance_rounded',
