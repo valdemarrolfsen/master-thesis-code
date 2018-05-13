@@ -4,7 +4,7 @@ import tensorflow as tf
 from keras.backend import set_session
 from keras.optimizers import Adam
 
-from keras_utils.callbacks import callbacks
+from keras_utils.callbacks import callbacks, ValidationCallback
 from keras_utils.generators import create_generator
 from keras_utils.losses import binary_soft_jaccard_loss, soft_jaccard_loss, lovasz_hinge
 from keras_utils.metrics import f1_score, binary_jaccard_distance_rounded
@@ -66,6 +66,16 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
     if augment:
         steps_per_epoch = steps_per_epoch * 4
 
+    cb = [ValidationCallback(val_samples // batch_size, val_generator)] + callbacks(
+        logdir,
+        filename=weights_name,
+        weightsdir=weights_dir,
+        monitor_val='mIOU',
+        base_lr=0.0002,
+        max_lr=0.002,
+        steps_per_epoch=steps_per_epoch,
+        cyclic='triangular2'
+    )
     model.fit_generator(
         generator=train_generator,
         validation_data=val_generator,
@@ -73,14 +83,5 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         steps_per_epoch=steps_per_epoch,
         epochs=10000, verbose=True,
         workers=8,
-        callbacks=callbacks(
-            logdir,
-            filename=weights_name,
-            weightsdir=weights_dir,
-            monitor_val='val_binary_jaccard_distance_rounded',
-            base_lr=0.0002,
-            max_lr=0.002,
-            steps_per_epoch=steps_per_epoch,
-            cyclic='triangular2'
-        ),
+        callbacks=cb,
         initial_epoch=initial_epoch)

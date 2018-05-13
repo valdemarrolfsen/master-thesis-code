@@ -1,7 +1,10 @@
 import numpy as np
 import os
+from tqdm import tqdm
 from keras import backend as K
 from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint, TensorBoard, EarlyStopping, Callback
+
+from keras_utils.metrics import batch_general_jaccard, f1_score
 
 
 def callbacks(logdir, weightsdir, filename, monitor_val='val_acc', base_lr=1e-4, max_lr=1e-2, steps_per_epoch=0, cyclic=None):
@@ -18,6 +21,28 @@ def callbacks(logdir, weightsdir, filename, monitor_val='val_acc', base_lr=1e-4,
 
     early_stopping = EarlyStopping(monitor=monitor_val, patience=20, verbose=1)
     return [checkpoint, lr_callback, tensorboard_callback, early_stopping]
+
+
+class ValidationCallback(Callback):
+
+    def __init__(self, steps, val_generator):
+        super().__init__()
+        self.steps = steps
+        self.generator = val_generator
+
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        images, masks = next(self.generator)
+        probs = self.model.predict(images, verbose=0)
+        for _ in tqdm(range(self.steps-1)):
+            ims, mas = next(self.generator)
+            p = self.model.predict(images, verbose=0)
+            probs = np.concatenate((probs, p))
+            masks = np.concatenate((masks, mas))
+        iou = batch_general_jaccard(masks, probs, binary=True)
+        miou = np.mean(iou)
+        print('mean IOU: {}'.format(miou))
+        logs['mIOU'] = miou
 
 
 class CyclicLR(Callback):
