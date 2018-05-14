@@ -101,7 +101,7 @@ def run():
     pred = predict_img_with_smooth_windowing(
         image,
         window_size=input_size,
-        subdivisions=4,  # Minimal amount of overlap for windowing. Must be an even number.
+        subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
         nb_classes=nb_classes,
         pred_func=(
             lambda img_batch_subdiv: model.predict(
