@@ -82,7 +82,7 @@ def run():
     model.load_weights(args.weights_path)
 
     # TODO maybe just tile and use the one we are predicting?
-    sample_images = np.array(load_images_from_folder(sample_path, num_samples=500))
+    sample_images = np.array(load_images_from_folder(sample_path, num_samples=1000))
     generator = get_generator(sample_images)
     sample_images = None
     # load all images
