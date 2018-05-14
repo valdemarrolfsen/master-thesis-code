@@ -1,3 +1,5 @@
+import gc
+
 import cv2
 import os
 import numpy as np
@@ -75,7 +77,8 @@ def set_up_generators(image_dir, rescale):
         imgs = imgs.astype(np.float32) / 255
 
     image_datagen.fit(imgs)
-
+    del imgs
+    gc.collect()
     print('Train mean and std')
     print(image_datagen.mean)
     print(image_datagen.std)

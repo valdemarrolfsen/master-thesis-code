@@ -11,7 +11,7 @@ def callbacks(logdir, weightsdir, filename, monitor_val='val_acc', base_lr=1e-4,
 
     weightsdir = os.path.join(weightsdir, 'weights.{}.h5'.format(filename))
     checkpoint = ModelCheckpoint(weightsdir, monitor=monitor_val, verbose=2,
-                                 save_best_only=True, save_weights_only=True, mode='auto')
+                                 save_best_only=True, save_weights_only=True, mode='max')
     tensorboard_callback = TensorBoard(log_dir=logdir, write_graph=True, histogram_freq=0)
 
     if cyclic is not None:
