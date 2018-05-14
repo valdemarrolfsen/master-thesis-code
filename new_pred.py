@@ -1,4 +1,5 @@
 import argparse
+import os
 
 import cv2
 import numpy as np
@@ -81,10 +82,12 @@ def run():
         prob = np.round(prob)
         prob = (prob[:, :, 0] * 255.).astype(np.uint8)
         pred_name = "pred-{}.tif".format(i)
-        pred_save_path = "{}/{}".format(args.output_path, pred_name)
+        pred_save_path = os.path.join(args.output_path, pred_name)
 
         cv2.imwrite(pred_save_path, prob)
-        cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
+        im_name = "image-{}.tif".format(i)
+        im_path = os.path.join(args.output_path, im_name) 
+        cv2.imwrite(im_path, img)
 
 
 if __name__ == '__main__':
