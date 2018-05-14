@@ -45,7 +45,7 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         input_size,
         batch_size,
         nb_classes,
-        rescale=False,
+        rescale=True,
         binary=binary,
         augment=augment)
 
@@ -54,7 +54,7 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         input_size,
         batch_size,
         nb_classes,
-        rescale=False,
+        rescale=True,
         binary=binary,
         augment=augment)
 

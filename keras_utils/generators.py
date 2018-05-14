@@ -7,7 +7,7 @@ from keras.utils import to_categorical
 from keras_utils.augment import image_augmentation
 
 
-def load_images_from_folder(folder, num_samples=5000):
+def load_images_from_folder(folder, num_samples=10000):
     images = []
     for filename in os.listdir(folder):
         fold = os.path.join(folder, filename)
@@ -65,10 +65,13 @@ def set_up_generators(image_dir, rescale):
 
     # Compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied).
-    imgs = load_images_from_folder(image_dir)
+    imgs = np.array(load_images_from_folder(image_dir))
 
     if len(imgs) < 1:
         raise ValueError('No images found in {}'.format(image_dir))
+
+    if rescale:
+        imgs = imgs.astype(np.float32) / 255
 
     image_datagen.fit(imgs)
 
