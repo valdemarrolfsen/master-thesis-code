@@ -40,7 +40,7 @@ def get_generator(images):
     image_datagen.fit(images)
     generator = image_datagen.flow(
         x=images,
-        batch_size=images.shape[0],
+        batch_size=10,
         shuffle=False,
     )
     return generator
