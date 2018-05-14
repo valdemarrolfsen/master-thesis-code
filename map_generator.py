@@ -8,7 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras_utils.generators import load_images_from_folder
 from keras_utils.losses import binary_soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
-from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction, round_predictions
+from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction
 from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
 
@@ -98,7 +98,7 @@ def run():
             )
         )
     )
-    pred = round_predictions(pred, 1, [0.2])
+    pred = np.round(pred)
     pred = (pred[:, :, 0] * 255.).astype(np.uint8)
     out_path = os.path.join(output_path, 'test.tif')
     real_path = os.path.join(output_path, 'real.tif')
