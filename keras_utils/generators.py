@@ -65,12 +65,16 @@ def set_up_generators(image_dir, rescale):
 
     # Compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied).
-    imgs = load_images_from_folder(image_dir, num_samples=1000)
+    imgs = load_images_from_folder(image_dir)
 
     if len(imgs) < 1:
         raise ValueError('No images found in {}'.format(image_dir))
 
     image_datagen.fit(imgs)
+
+    print('Train mean and std')
+    print(image_datagen.mean)
+    print(image_datagen.std)
 
     return image_datagen, label_datagen
 

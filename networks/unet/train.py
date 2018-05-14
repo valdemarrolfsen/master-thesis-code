@@ -73,13 +73,10 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         monitor_val='mIOU',
         base_lr=0.0002,
         max_lr=0.002,
-        steps_per_epoch=steps_per_epoch,
-        cyclic='triangular2'
+        steps_per_epoch=steps_per_epoch
     )
     model.fit_generator(
         generator=train_generator,
-        validation_data=val_generator,
-        validation_steps=val_samples // batch_size,
         steps_per_epoch=steps_per_epoch,
         epochs=10000, verbose=True,
         workers=8,

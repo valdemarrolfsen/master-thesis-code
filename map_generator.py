@@ -81,7 +81,6 @@ def run():
         metrics=['acc', binary_jaccard_distance_rounded])
     model.load_weights(args.weights_path)
 
-    # TODO maybe just tile and use the one we are predicting?
     sample_images = np.array(load_images_from_folder(sample_path, num_samples=1000))
     generator = get_generator(sample_images)
     sample_images = None
@@ -112,7 +111,6 @@ def run():
         ))
 
     cheap = np.round(cheap)
-    print(np.unique(cheap))
     cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
     out_path = os.path.join(output_path, 'test-cheap.tif')
     print(cv2.imwrite(out_path, cheap))
