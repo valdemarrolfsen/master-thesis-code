@@ -45,6 +45,7 @@ def get_generator(images):
     )
     return generator
 
+
 def run():
     parser = argparse.ArgumentParser()
     parser.add_argument("--weights-path", type=str)
@@ -72,11 +73,10 @@ def run():
         metrics=['acc', binary_jaccard_distance_rounded])
     model.load_weights(args.weights_path)
 
-    images = load_images_from_folder(images_path)
+    images = np.array(load_images_from_folder(images_path))
     generator = get_generator(images)
     probs = model.predict_generator(generator, verbose=1)
     for i, prob in enumerate(probs):
-
         img = images[i]
         prob = np.round(prob)
         prob = (prob[:, :, 0] * 255.).astype(np.uint8)
