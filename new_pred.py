@@ -86,7 +86,8 @@ def run():
 
         cv2.imwrite(pred_save_path, prob)
         im_name = "image-{}.tif".format(i)
-        im_path = os.path.join(args.output_path, im_name) 
+        im_path = os.path.join(args.output_path, im_name)
+        print('Impath: {}'.format(im_path))
         cv2.imwrite(im_path, img)
 
 
