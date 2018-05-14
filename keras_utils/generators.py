@@ -1,13 +1,14 @@
 import cv2
 import os
 import numpy as np
+from tqdm import tqdm
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
 
 from keras_utils.augment import image_augmentation
 
 
-def load_images_from_folder(folder, num_samples=10000):
+def load_images_from_folder(folder, num_samples=5000):
     images = []
     for filename in os.listdir(folder):
         fold = os.path.join(folder, filename)
@@ -15,7 +16,7 @@ def load_images_from_folder(folder, num_samples=10000):
             folder = fold
             break
 
-    for i, filename in enumerate(os.listdir(folder)):
+    for i, filename in enumerate(tqdm(os.listdir(folder))):
         if i > num_samples:
             break
         imgpath = os.path.join(folder, filename)
