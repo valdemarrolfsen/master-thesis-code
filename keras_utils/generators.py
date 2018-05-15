@@ -25,6 +25,7 @@ def load_images_from_folder(folder, num_samples=5000):
         if not os.path.isfile(imgpath):
             continue
         img = cv2.imread(imgpath)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if img is not None:
             images.append(img)
     return images
