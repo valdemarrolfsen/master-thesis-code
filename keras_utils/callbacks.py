@@ -8,18 +8,18 @@ from keras_utils.metrics import batch_general_jaccard, f1_score
 
 
 def callbacks(logdir, weightsdir, filename, monitor_val='val_acc', base_lr=1e-4, max_lr=1e-2, steps_per_epoch=0, cyclic=None):
-
+    mode = 'max'
     weightsdir = os.path.join(weightsdir, 'weights.{}.h5'.format(filename))
     checkpoint = ModelCheckpoint(weightsdir, monitor=monitor_val, verbose=2,
-                                 save_best_only=True, save_weights_only=True, mode='max')
+                                 save_best_only=True, save_weights_only=True, mode=mode)
     tensorboard_callback = TensorBoard(log_dir=logdir, write_graph=True, histogram_freq=0)
 
     if cyclic is not None:
         lr_callback = CyclicLR(base_lr=base_lr, max_lr=max_lr, step_size=3*steps_per_epoch, mode=cyclic)
     else:
-        lr_callback = ReduceLROnPlateau(monitor=monitor_val, factor=np.sqrt(0.1), verbose=1, patience=3, min_lr=0.1e-6)
+        lr_callback = ReduceLROnPlateau(monitor=monitor_val, factor=np.sqrt(0.1), verbose=1, patience=3, min_lr=0.1e-6, mode=mode)
 
-    early_stopping = EarlyStopping(monitor=monitor_val, patience=20, verbose=1)
+    early_stopping = EarlyStopping(monitor=monitor_val, patience=12, verbose=1, mode=mode)
     return [checkpoint, lr_callback, tensorboard_callback, early_stopping]
 
 
