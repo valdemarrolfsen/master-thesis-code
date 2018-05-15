@@ -29,10 +29,10 @@ def run():
                 ims.append(img)
                 gc.collect()
 
-            imgs = np.array(imgs)
-            r_values.append(imgs[:][:][:][0].flatten())
-            g_values.append(imgs[:][:][:][1].flatten())
-            b_values.append(imgs[:][:][:][2].flatten())
+            ims = np.array(ims)
+            r_values.append(ims[:][:][:][0].flatten())
+            g_values.append(ims[:][:][:][1].flatten())
+            b_values.append(ims[:][:][:][2].flatten())
 
         means.append(np.mean(ims, axis=(0, 1, 2)))
 
