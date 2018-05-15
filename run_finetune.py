@@ -42,8 +42,8 @@ def run():
             rescale=True,
             binary=binary,
             augment=False,
-            mean=np.array([[[0.01279744, 0.01279744, 0.01279744]]]),
-            std=np.array([[[0.11312577, 0.11312577, 0.11312577]]])
+            mean=np.array([[[0.42800662, 0.40565866, 0.3564895]]]),
+            std=np.array([[[0.19446792, 0.1984272, 0.19501258]]])
         )
 
         val_generator, val_samples = create_generator(
@@ -54,8 +54,8 @@ def run():
             rescale=True,
             binary=binary,
             augment=False,
-            mean=np.array([[[0.01279744, 0.01279744, 0.01279744]]]),
-            std=np.array([[[0.11312577, 0.11312577, 0.11312577]]])
+            mean=np.array([[[0.42800662, 0.40565866, 0.3564895]]]),
+            std=np.array([[[0.19446792, 0.1984272, 0.19501258]]])
         )
 
         print('Running training for {}'.format(dataset))
