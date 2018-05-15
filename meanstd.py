@@ -16,8 +16,8 @@ def run():
     g_values = []
     b_values = []
 
-    iterations = 1000
-    files_per_iteration = 20
+    iterations = 100
+    files_per_iteration = 60
     files = []
 
     for folder in folders:
@@ -27,19 +27,16 @@ def run():
 
     print(len(files))
 
-    for i in tqdm(range(1000)):
+    for i in tqdm(range(iterations)):
         ims = []
-        for folder in folders:
-            path = imdir.format(folder)
-            files = os.listdir(path)
-            files = random.sample(files, 20)
-            for i, file in enumerate(files):
-                im = os.path.join(path, file)
-                img = cv2.imread(im)
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                img = img.astype(np.float32) / 255
-                ims.append(img)
-                gc.collect()
+        current_files = files[i*files_per_iteration:(i+1)*files_per_iteration]
+        for j, file in enumerate(current_files):
+            im = os.path.join(path, file)
+            img = cv2.imread(im)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            img = img.astype(np.float32) / 255
+            ims.append(img)
+            gc.collect()
 
         ims = np.array(ims)
         r_values.append(ims[:][:][:][0].flatten())
