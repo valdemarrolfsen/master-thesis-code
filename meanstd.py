@@ -29,7 +29,6 @@ def run():
     for i in tqdm(range(iterations)):
         ims = []
         current_files = files[i*files_per_iteration:(i+1)*files_per_iteration]
-        print(current_files)
         for j, file in enumerate(current_files):
             img = cv2.imread(file)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
