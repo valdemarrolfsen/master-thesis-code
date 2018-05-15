@@ -31,6 +31,7 @@ def run():
     for i in tqdm(range(iterations)):
         ims = []
         current_files = files[i*files_per_iteration:(i+1)*files_per_iteration]
+
         for j, file in enumerate(current_files):
             img = cv2.imread(file)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -42,6 +43,8 @@ def run():
         r_values.append(ims[:][:][:][0].flatten())
         g_values.append(ims[:][:][:][1].flatten())
         b_values.append(ims[:][:][:][2].flatten())
+
+        print(ims.shape)
 
         means.append(np.mean(ims, axis=(0, 1, 2)))
 
