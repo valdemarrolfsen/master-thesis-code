@@ -47,7 +47,10 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         nb_classes,
         rescale=True,
         binary=binary,
-        augment=augment)
+        augment=augment,
+        mean=np.array([[[0.01279744, 0.01279744, 0.01279744]]]),
+        std=np.array([[[0.11312577, 0.11312577, 0.11312577]]])
+    )
 
     val_generator, val_samples = create_generator(
         os.path.join(data_dir, 'val'),
@@ -56,7 +59,10 @@ def train_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_class
         nb_classes,
         rescale=True,
         binary=binary,
-        augment=augment)
+        augment=augment,
+        mean=np.array([[[0.01279744, 0.01279744, 0.01279744]]]),
+        std=np.array([[[0.11312577, 0.11312577, 0.11312577]]])
+    )
 
     if pre_trained_weight:
         print('Loading weights: {}'.format(pre_trained_weight))
