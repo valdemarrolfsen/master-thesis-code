@@ -25,8 +25,6 @@ def run():
         files_paths = os.listdir(path)
         files = files + random.sample(files_paths, 2000)
 
-    print(len(files))
-
     for i in tqdm(range(iterations)):
         ims = []
         current_files = files[i*files_per_iteration:(i+1)*files_per_iteration]
