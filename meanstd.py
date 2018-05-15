@@ -15,6 +15,18 @@ def run():
     r_values = []
     g_values = []
     b_values = []
+
+    iterations = 1000
+    files_per_iteration = 20
+    files = []
+
+    for folder in folders:
+        path = imdir.format(folder)
+        files_paths = os.listdir(path)
+        files.append(random.sample(files_paths, 2000))
+
+    print(len(files))
+
     for i in tqdm(range(1000)):
         ims = []
         for folder in folders:
