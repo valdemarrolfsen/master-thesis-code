@@ -36,7 +36,7 @@ class ValidationCallback(Callback):
         probs = self.model.predict(images, verbose=0)
         for _ in tqdm(range(self.steps-1)):
             ims, mas = next(self.generator)
-            p = self.model.predict(images, verbose=0)
+            p = self.model.predict(ims, verbose=0)
             print(np.unique(p))
             probs = np.concatenate((probs, p))
             masks = np.concatenate((masks, mas))
