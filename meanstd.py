@@ -6,8 +6,8 @@ import numpy as np
 import random
 from tqdm import tqdm
 
-folders = ['train', 'val', 'test']
-imdir = '/mnt/ekstern/rubval/buildings/{}/examples/buildings/'
+folders = ['bergen', 'bodo', 'oslo', 'stavanger', 'tromso', 'trondheim']
+imdir = '/mnt/ekstern/rubval/{}/tiled-512x512/'
 
 
 def run():
@@ -25,7 +25,7 @@ def run():
         absolute_paths = [os.path.join(path, file) for file in files_paths]
         files = files + absolute_paths
 
-    print(len(files))
+    print("Found {} files".format(len(files)))
     iterations = len(files)//files_per_iteration
 
     for i in tqdm(range(iterations)):
