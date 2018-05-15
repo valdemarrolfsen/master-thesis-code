@@ -37,6 +37,7 @@ class ValidationCallback(Callback):
         for _ in tqdm(range(self.steps-1)):
             ims, mas = next(self.generator)
             p = self.model.predict(images, verbose=0)
+            print(np.unique(p))
             probs = np.concatenate((probs, p))
             masks = np.concatenate((masks, mas))
         iou = batch_general_jaccard(masks, probs, binary=True)

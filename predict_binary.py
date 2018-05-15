@@ -48,9 +48,11 @@ def run():
         (input_size, input_size),
         batch_size,
         1,
-        rescale=False,
+        rescale=True,
         with_file_names=True,
-        binary=True
+        binary=True,
+        mean=[[[0.01279744, 0.01279744, 0.01279744]]],
+        std=[[[0.11312577, 0.11312577, 0.11312577]]]
     )
 
     images, masks, file_names = next(generator)

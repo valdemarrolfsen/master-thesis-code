@@ -30,7 +30,7 @@ def load_images_from_folder(folder, num_samples=5000):
     return images
 
 
-def set_up_generators(image_dir, rescale):
+def set_up_generators(image_dir, rescale, fit=True):
     datagen_args = dict(
         data_format='channels_last',
         # set input mean to 0 over the dataset
@@ -66,6 +66,8 @@ def set_up_generators(image_dir, rescale):
     datagen_args['featurewise_center'] = False
     label_datagen = ImageDataGenerator(**datagen_args)
 
+    if not fit:
+        return image_datagen, label_datagen
     # Compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied).
     imgs = np.array(load_images_from_folder(image_dir))
@@ -86,12 +88,23 @@ def set_up_generators(image_dir, rescale):
     return image_datagen, label_datagen
 
 
-def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, augment=False, with_file_names=False, binary=False):
+def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, augment=False, with_file_names=False, binary=False, mean=None,
+                     std=None):
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
+    if mean is not None and std is not None:
+        fit = False
+    else:
+        fit = True
     # Set up the generators
-    image_datagen, label_datagen = set_up_generators(image_dir, rescale)
+    image_datagen, label_datagen = set_up_generators(image_dir, rescale, fit)
+
+    if not fit:
+        image_datagen.mean = mean
+        image_datagen.std = std
+        label_datagen.mean = mean
+        label_datagen.std = std
 
     # Use the same seed for both generators so they return corresponding images
     seed = 1
