@@ -15,7 +15,7 @@ def run():
     r_values = []
     g_values = []
     b_values = []
-    for i in tqdm(range(100)):
+    for i in tqdm(range(1000)):
         ims = []
         for folder in folders:
             path = imdir.format(folder)
