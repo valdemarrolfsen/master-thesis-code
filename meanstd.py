@@ -25,6 +25,7 @@ def run():
         absolute_paths = [os.path.join(path, file) for file in files_paths]
         files = files + absolute_paths
 
+    print(len(files))
     iterations = len(files)//files_per_iteration
 
     for i in tqdm(range(iterations)):
