@@ -12,7 +12,10 @@ imdir = '/mnt/ekstern/rubval/buildings/{}/examples/buildings/'
 
 def run():
     means = []
-    for i in tqdm(range(100)):
+    r_values = []
+    g_values = []
+    b_values = []
+    for i in tqdm(range(1000)):
         ims = []
         for folder in folders:
             path = imdir.format(folder)
@@ -25,10 +28,18 @@ def run():
                 img = img.astype(np.float32) / 255
                 ims.append(img)
                 gc.collect()
+
+            imgs = np.array(imgs)
+            r_values.append(imgs[:][:][:][0].flatten())
+            g_values.append(imgs[:][:][:][1].flatten())
+            b_values.append(imgs[:][:][:][2].flatten())
+
         means.append(np.mean(ims, axis=(0, 1, 2)))
 
     print(np.mean(means, axis=0))
-    print(np.std(ims, axis=(0, 1, 2)))
+    print(np.std(r_values))
+    print(np.std(g_values))
+    print(np.std(b_values))
 
 
 if __name__ == '__main__':
