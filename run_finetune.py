@@ -62,7 +62,7 @@ def run():
         model = build_unet(input_size, nb_classes=1)
         model.summary()
         model.compile(
-            optimizer=Adam(lr=max_lr),
+            optimizer=Adam(),
             loss=binary_soft_jaccard_loss,
             metrics=['acc', binary_jaccard_distance_rounded])
 
