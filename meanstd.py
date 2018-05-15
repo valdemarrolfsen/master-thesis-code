@@ -1,3 +1,5 @@
+import gc
+
 import os
 import cv2
 import numpy as np
@@ -13,12 +15,14 @@ def run():
         path = imdir.format(folder)
         files = os.listdir(path)
         for i, file in enumerate(tqdm(files)):
-            if i > 3000:
+            if i > 1000:
                 break
             im = os.path.join(path, file)
             img = cv2.imread(im)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            ims.append(img / 255)
+            img = img.astype(np.float32) / 255
+            ims.append(img)
+            gc.collect()
     print(np.mean(ims, axis=(0, 1, 2)))
     print(np.std(ims, axis=(0, 1, 2)))
 
