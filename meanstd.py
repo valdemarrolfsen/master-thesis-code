@@ -16,7 +16,6 @@ def run():
     g_values = []
     b_values = []
 
-    iterations = 100
     files_per_iteration = 60
     files = []
 
@@ -24,7 +23,9 @@ def run():
         path = imdir.format(folder)
         files_paths = os.listdir(path)
         absolute_paths = [os.path.join(path, file) for file in files_paths]
-        files = files + random.sample(absolute_paths, 2000)
+        files = files + absolute_paths
+
+    iterations = len(files)//files_per_iteration
 
     for i in tqdm(range(iterations)):
         ims = []
