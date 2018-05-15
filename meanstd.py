@@ -28,6 +28,7 @@ def run():
     for i in tqdm(range(iterations)):
         ims = []
         current_files = files[i*files_per_iteration:(i+1)*files_per_iteration]
+        print(current_files)
         for j, file in enumerate(current_files):
             im = os.path.join(path, file)
             img = cv2.imread(im)
