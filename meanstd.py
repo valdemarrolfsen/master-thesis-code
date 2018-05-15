@@ -23,7 +23,7 @@ def run():
     for folder in folders:
         path = imdir.format(folder)
         files_paths = os.listdir(path)
-        files.append(random.sample(files_paths, 2000))
+        files = files + random.sample(files_paths, 2000)
 
     print(len(files))
 
