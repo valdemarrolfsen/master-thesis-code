@@ -23,15 +23,15 @@ def run():
     for folder in folders:
         path = imdir.format(folder)
         files_paths = os.listdir(path)
-        files = files + random.sample(files_paths, 2000)
+        absolute_paths = [os.path.join(path, file) for file in files_paths]
+        files = files + random.sample(absolute_paths, 2000)
 
     for i in tqdm(range(iterations)):
         ims = []
         current_files = files[i*files_per_iteration:(i+1)*files_per_iteration]
         print(current_files)
         for j, file in enumerate(current_files):
-            im = os.path.join(path, file)
-            img = cv2.imread(im)
+            img = cv2.imread(file)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img = img.astype(np.float32) / 255
             ims.append(img)
