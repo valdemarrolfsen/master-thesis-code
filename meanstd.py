@@ -2,7 +2,7 @@ import gc
 from queue import Queue
 
 import os
-import cv2
+from PIL import Image
 import numpy as np
 import random
 import threading
@@ -67,8 +67,7 @@ def run():
         current_files = files[i*files_per_iteration:(i+1)*files_per_iteration]
 
         for j, file in enumerate(current_files):
-            img = cv2.imread(file)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            img = np.array(Image.open(file))
             img = img.astype(np.float32) / 255
             ims.append(img)
             gc.collect()
