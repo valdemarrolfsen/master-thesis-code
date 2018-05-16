@@ -31,7 +31,7 @@ def load_images_from_folder(folder, num_samples=5000):
     return images
 
 
-def set_up_generators(image_dir, rescale, fit=True):
+def set_up_generators():
     datagen_args = dict(
         data_format='channels_last',
         # set input mean to 0 over the dataset
@@ -55,9 +55,7 @@ def set_up_generators(image_dir, rescale, fit=True):
         # randomly flip images
         vertical_flip=False)
 
-    if rescale:
-        # Scale down the values
-        datagen_args['rescale'] = 1. / 255
+    datagen_args['rescale'] = 1. / 255
 
     image_datagen = ImageDataGenerator(**datagen_args)
 
@@ -66,26 +64,6 @@ def set_up_generators(image_dir, rescale, fit=True):
     datagen_args['featurewise_std_normalization'] = False
     datagen_args['featurewise_center'] = False
     label_datagen = ImageDataGenerator(**datagen_args)
-
-    if not fit:
-        return image_datagen, label_datagen
-    # Compute quantities required for featurewise normalization
-    # (std, mean, and principal components if ZCA whitening is applied).
-    imgs = np.array(load_images_from_folder(image_dir))
-
-    if len(imgs) < 1:
-        raise ValueError('No images found in {}'.format(image_dir))
-
-    if rescale:
-        imgs = imgs.astype(np.float32) / 255
-
-    image_datagen.fit(imgs)
-    del imgs
-    gc.collect()
-    print('Train mean and std')
-    print(image_datagen.mean)
-    print(image_datagen.std)
-
     return image_datagen, label_datagen
 
 
@@ -94,18 +72,16 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
-    if mean is not None and std is not None:
-        fit = False
-    else:
-        fit = True
-    # Set up the generators
-    image_datagen, label_datagen = set_up_generators(image_dir, rescale, fit)
+    if mean in None or std is None:
+        raise ValueError('You need to provide mean and std to the generator')
 
-    if not fit:
-        image_datagen.mean = mean
-        image_datagen.std = std
-        label_datagen.mean = mean
-        label_datagen.std = std
+    # Set up the generators
+    image_datagen, label_datagen = set_up_generators()
+
+    image_datagen.mean = mean
+    image_datagen.std = std
+    label_datagen.mean = mean
+    label_datagen.std = std
 
     # Use the same seed for both generators so they return corresponding images
     seed = 1
