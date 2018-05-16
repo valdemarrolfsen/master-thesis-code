@@ -21,11 +21,11 @@ def delete():
         files = files + absolute_paths
     print("Found {} files".format(len(files)))
     delcount = 0
-    for file in files:
+    for file in tqdm(files):
         if contains_zero_value(file):
             os.remove(file)
             delcount += 1
-
+    print(delcount)
 
 def run():
     means = []
