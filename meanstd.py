@@ -44,7 +44,6 @@ def work(q, nb_files):
         if contains_zero_value(file):
             os.remove(file)
 
-
 def run():
     means = []
     r_values = []
@@ -61,18 +60,18 @@ def run():
         files = files + absolute_paths
 
     print("Found {} files".format(len(files)))
-    iterations = len(files) // files_per_iteration
+    iterations = len(files)//files_per_iteration
 
     for i in tqdm(range(iterations)):
         ims = []
-        current_files = files[i * files_per_iteration:(i + 1) * files_per_iteration]
-        if len(current_files) < 1:
-            continue
+        current_files = files[i*files_per_iteration:(i+1)*files_per_iteration]
+
         for j, file in enumerate(current_files):
             img = cv2.imread(file)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img = img.astype(np.float32) / 255
             ims.append(img)
+            gc.collect()
 
         ims = np.array(ims)
         r_values.append(ims[:][:][:][0].flatten())
@@ -91,3 +90,4 @@ def run():
 
 if __name__ == '__main__':
     run()
+
