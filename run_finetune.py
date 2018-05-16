@@ -61,7 +61,7 @@ def run():
                 binary=binary,
                 augment=False,
                 mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
-                std=np.array([[[0.192128373, 0.190317912, 0.189032864]]])
+                std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
             )
 
             val_generator, val_samples = create_generator(
@@ -73,7 +73,7 @@ def run():
                 binary=binary,
                 augment=False,
                 mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
-                std=np.array([[[0.192128373, 0.190317912, 0.189032864]]])
+                std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
             )
             if run['network'] == 'unet':
                 model = build_unet(input_size, nb_classes=1)
