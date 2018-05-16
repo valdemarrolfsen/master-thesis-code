@@ -6,8 +6,25 @@ import numpy as np
 import random
 from tqdm import tqdm
 
+from preprocessing.utils import contains_zero_value
+
 folders = ['bergen', 'bodo', 'oslo', 'stavanger', 'tromso', 'trondheim']
 imdir = '/mnt/ekstern/rubval/{}/tiled-512x512/'
+
+
+def delete():
+    files = []
+    for folder in folders:
+        path = imdir.format(folder)
+        files_paths = os.listdir(path)
+        absolute_paths = [os.path.join(path, file) for file in files_paths]
+        files = files + absolute_paths
+    print("Found {} files".format(len(files)))
+    delcount = 0
+    for file in files:
+        if contains_zero_value(file):
+            os.remove(file)
+            delcount += 1
 
 
 def run():
