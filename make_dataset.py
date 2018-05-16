@@ -24,10 +24,10 @@ def run():
         dataset = os.path.join(args.input_base, dataset)
         a = {'output': args.output,
              'input': dataset,
-             'color': 1,
+             'color': 'color',
              'prefix': '',
              'include_empty': False,
-             'binary': True,
+             'binary': False,
              'res': 512,
              'class_name': args.classname,
              'threads': 8}
