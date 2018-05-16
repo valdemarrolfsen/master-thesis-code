@@ -23,7 +23,7 @@ datasets = [
 
 runs = [
     {'name': 'densenet-{}-final', 'pre_weights_name': None, 'network': 'densenet', 'base_lr': 0.00002, 'max_lr': 0.00055, 'input_size': 256,
-     'batch_size': 8},
+     'batch_size': 6},
     {'name': 'unet-{}-final', 'pre_weights_name': None, 'network': 'unet', 'base_lr': 0.0002, 'max_lr': 0.002, 'input_size': 320, 'batch_size': 20},
     {'name': 'densenet-{}-final-finetune', 'pre_weights_name': 'densenet-{}-final', 'network': 'densenet', 'base_lr': 0.000002,
      'max_lr': 0.000055, 'input_size': 512, 'batch_size': 12},
