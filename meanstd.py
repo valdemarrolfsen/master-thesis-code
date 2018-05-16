@@ -8,6 +8,7 @@ import random
 import threading
 from tqdm import tqdm
 
+from preprocessing import utils
 from preprocessing.utils import contains_zero_value
 
 folders = ['bergen', 'bodo', 'oslo', 'stavanger', 'tromso', 'trondheim']
@@ -28,7 +29,7 @@ def delete():
         q.put((file, i))
 
     for i in range(8):
-        t = threading.Thread(target=work, args=(q, ))
+        t = threading.Thread(target=work, args=(q, len(files)))
         # Sticks the thread in a list so that it remains accessible
         t.daemon = True
         t.start()
@@ -36,8 +37,9 @@ def delete():
     q.join()
 
 
-def work(q):
+def work(q, nb_files):
     while not q.empty():
+        utils.print_process(nb_files - q.qsize(), nb_files)
         file, i = q.get()
         if contains_zero_value(file):
             os.remove(file)
@@ -64,13 +66,13 @@ def run():
     for i in tqdm(range(iterations)):
         ims = []
         current_files = files[i * files_per_iteration:(i + 1) * files_per_iteration]
-
+        if len(current_files) < 1:
+            continue
         for j, file in enumerate(current_files):
             img = cv2.imread(file)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img = img.astype(np.float32) / 255
             ims.append(img)
-            gc.collect()
 
         ims = np.array(ims)
         r_values.append(ims[:][:][:][0].flatten())
