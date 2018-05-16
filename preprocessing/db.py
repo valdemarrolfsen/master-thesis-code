@@ -154,7 +154,7 @@ class Db(object):
     def count_features(self, min_x, max_y, max_x, min_y, class_name):
         if class_name == 'buildings':
             query = """
-              SELECT COUNT(*) as count1
+              SELECT sum(st_area(st_intersection(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833))))
               FROM   bygning_flate
               WHERE st_intersects(geom, st_makeenvelope({min_x}, {min_y}, {max_x}, {max_y}, 25833)) AND color=4
             """
