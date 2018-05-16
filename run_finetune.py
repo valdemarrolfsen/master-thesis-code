@@ -23,7 +23,7 @@ datasets = [
 
 runs = [
     {'name': 'densenet-{}-final', 'pre_weights_name': None, 'network': 'densenet', 'base_lr': 0.00002, 'max_lr': 0.00055, 'input_size': 320,
-     'batch_size': 12},
+     'batch_size': 10},
     {'name': 'unet-{}-final', 'pre_weights_name': None, 'network': 'unet', 'base_lr': 0.0002, 'max_lr': 0.002, 'input_size': 320, 'batch_size': 20},
     {'name': 'densenet-{}-final-finetune', 'pre_weights_name': 'densenet-{}-final', 'network': 'densenet', 'base_lr': 0.000002,
      'max_lr': 0.000055, 'input_size': 512, 'batch_size': 12},
@@ -60,8 +60,8 @@ def run():
                 rescale=True,
                 binary=binary,
                 augment=False,
-                mean=np.array([[[0.42800662, 0.40565866, 0.3564895]]]),
-                std=np.array([[[0.19446792, 0.1984272, 0.19501258]]])
+                mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
+                std=np.array([[[0.192128373, 0.190317912, 0.189032864]]])
             )
 
             val_generator, val_samples = create_generator(
@@ -72,8 +72,8 @@ def run():
                 rescale=True,
                 binary=binary,
                 augment=False,
-                mean=np.array([[[0.42800662, 0.40565866, 0.3564895]]]),
-                std=np.array([[[0.19446792, 0.1984272, 0.19501258]]])
+                mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
+                std=np.array([[[0.192128373, 0.190317912, 0.189032864]]])
             )
             if run['network'] == 'unet':
                 model = build_unet(input_size, nb_classes=1)
