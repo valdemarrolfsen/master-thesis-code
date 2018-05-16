@@ -1,9 +1,11 @@
 import gc
+from queue import Queue
 
 import os
 import cv2
 import numpy as np
 import random
+import threading
 from tqdm import tqdm
 
 from preprocessing.utils import contains_zero_value
@@ -20,12 +22,26 @@ def delete():
         absolute_paths = [os.path.join(path, file) for file in files_paths]
         files = files + absolute_paths
     print("Found {} files".format(len(files)))
-    delcount = 0
-    for file in tqdm(files):
+
+    q = Queue()
+    for i, file in enumerate(files):
+        q.put((file, i))
+
+    for i in range(8):
+        t = threading.Thread(target=work, args=(q, ))
+        # Sticks the thread in a list so that it remains accessible
+        t.daemon = True
+        t.start()
+
+    q.join()
+
+
+def work(q):
+    while not q.empty():
+        file, i = q.get()
         if contains_zero_value(file):
             os.remove(file)
-            delcount += 1
-    print(delcount)
+
 
 def run():
     means = []
@@ -43,11 +59,11 @@ def run():
         files = files + absolute_paths
 
     print("Found {} files".format(len(files)))
-    iterations = len(files)//files_per_iteration
+    iterations = len(files) // files_per_iteration
 
     for i in tqdm(range(iterations)):
         ims = []
-        current_files = files[i*files_per_iteration:(i+1)*files_per_iteration]
+        current_files = files[i * files_per_iteration:(i + 1) * files_per_iteration]
 
         for j, file in enumerate(current_files):
             img = cv2.imread(file)
