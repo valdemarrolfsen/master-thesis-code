@@ -25,10 +25,11 @@ def callbacks(logdir, weightsdir, filename, monitor_val='val_acc', base_lr=1e-4,
 
 class ValidationCallback(Callback):
 
-    def __init__(self, steps, val_generator):
+    def __init__(self, steps, val_generator, binary=True):
         super().__init__()
         self.steps = steps
         self.generator = val_generator
+        self.binary = binary
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
@@ -39,7 +40,7 @@ class ValidationCallback(Callback):
             p = self.model.predict(ims, verbose=0)
             probs = np.concatenate((probs, p))
             masks = np.concatenate((masks, mas))
-        iou = batch_general_jaccard(masks, probs, binary=True)
+        iou = batch_general_jaccard(masks, probs, binary=self.binary)
         miou = np.mean(iou)
         print('mean IOU: {}'.format(miou))
         logs['mIOU'] = miou

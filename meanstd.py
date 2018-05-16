@@ -1,9 +1,6 @@
-import gc
-
-import os
 import cv2
 import numpy as np
-import random
+import os
 from tqdm import tqdm
 
 folders = ['bergen', 'bodo', 'oslo', 'stavanger', 'tromso', 'trondheim']
@@ -26,27 +23,25 @@ def run():
         files = files + absolute_paths
 
     print("Found {} files".format(len(files)))
-    iterations = len(files)//files_per_iteration
+    iterations = len(files) // files_per_iteration
 
     for i in tqdm(range(iterations)):
         ims = []
-        current_files = files[i*files_per_iteration:(i+1)*files_per_iteration]
-
+        current_files = files[i * files_per_iteration:(i + 1) * files_per_iteration]
         for j, file in enumerate(current_files):
             img = cv2.imread(file)
+            if img.shape != (512, 512, 3):
+                continue
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            img = img.astype(np.float32) / 255
+            img = img.astype(np.float64) / 255
             ims.append(img)
-            gc.collect()
 
         ims = np.array(ims)
         r_values.append(ims[:][:][:][0].flatten())
         g_values.append(ims[:][:][:][1].flatten())
         b_values.append(ims[:][:][:][2].flatten())
-
-        print(ims.shape)
-
-        means.append(np.mean(ims, axis=(0, 1, 2)))
+        mean = np.mean(ims, axis=(0, 1, 2), dtype=np.float64)
+        means.append(mean)
 
     print(np.mean(means, axis=0))
     print(np.std(r_values))

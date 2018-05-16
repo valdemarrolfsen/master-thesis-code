@@ -1,7 +1,17 @@
 import errno
 import json
+import cv2
+import numpy as np
 import os
 from osgeo import gdal
+
+
+def contains_zero_value(path):
+    img = cv2.imread(path, 0)
+    val, count = np.unique(img, return_counts=True)
+    if val[0] == 0 and count[0] > 100:
+        return True
+    return False
 
 
 def get_bounding_box_from_tiff(path):

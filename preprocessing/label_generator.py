@@ -11,6 +11,8 @@ from preprocessing.db import Db
 import argparse
 from shutil import copyfile
 
+from preprocessing.utils import contains_zero_value
+
 
 def setup():
     # Set ut the argument parser
@@ -130,8 +132,13 @@ def work(q, db, total_files, arguments):
         except Empty:
             q.task_done()
             break
-
         utils.print_process(total_files - q.qsize(), total_files)
+
+        # Toss away the ones with zero in
+        if contains_zero_value(file):
+            q.task_done()
+            continue
+
         min_x, min_y, max_x, max_y = utils.get_bounding_box_from_tiff(file)
         if min_x == -1:
             q.task_done()
