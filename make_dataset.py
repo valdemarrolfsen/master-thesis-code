@@ -24,10 +24,10 @@ def run():
         dataset = os.path.join(args.input_base, dataset)
         a = {'output': args.output,
              'input': dataset,
-             'color': 'color',
+             'color': 1 if args.classname != 'multiclass' else 'color',
              'prefix': '',
              'include_empty': False,
-             'binary': False,
+             'binary': True if args.classname != 'multiclass' else False,
              'res': 512,
              'class_name': args.classname,
              'threads': 8}
