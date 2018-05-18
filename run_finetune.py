@@ -37,7 +37,7 @@ def run():
     data_dir = '/data/{}/'
     weights_dir = 'weights_train'
     binary = True
-    start_run = 2
+    start_run = 3
 
     for i, run in enumerate(runs):
         base_lr = run['base_lr']
