@@ -51,8 +51,8 @@ def run():
         rescale=True,
         with_file_names=True,
         binary=True,
-        mean=np.array([[[0.42800662, 0.40565866, 0.3564895]]]),
-        std=np.array([[[0.19446792, 0.1984272, 0.19501258]]])
+        mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
+        std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
     )
 
     images, masks, file_names = next(generator)
