@@ -51,7 +51,7 @@ def run():
 
         for j, dataset in enumerate(datasets):
 
-            if start_run < (j+1)*(i+1):
+            if start_run > (j+1)*(i+1):
                 continue
 
             start_run += 1
