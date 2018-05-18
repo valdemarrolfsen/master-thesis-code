@@ -22,8 +22,7 @@ datasets = [
 ]
 
 runs = [
-    {'name': 'densenet-{}-final', 'pre_weights_name': None, 'network': 'densenet', 'base_lr': 0.00002, 'max_lr': 0.00055, 'input_size': 256,
-     'batch_size': 4},
+    {'name': 'densenet-{}-final', 'pre_weights_name': None, 'network': 'densenet', 'base_lr': 0.00002, 'max_lr': 0.00055, 'input_size': 256, 'batch_size': 4},
     {'name': 'unet-{}-final', 'pre_weights_name': None, 'network': 'unet', 'base_lr': 0.0002, 'max_lr': 0.002, 'input_size': 320, 'batch_size': 20},
     {'name': 'densenet-{}-final-finetune', 'pre_weights_name': 'densenet-{}-final', 'network': 'densenet', 'base_lr': 0.000002,
      'max_lr': 0.000055, 'input_size': 512, 'batch_size': 1},
@@ -38,8 +37,9 @@ def run():
     data_dir = '/data/{}/'
     weights_dir = 'weights_train'
     binary = True
+    start_run = 2
 
-    for run in runs:
+    for i, run in enumerate(runs):
         base_lr = run['base_lr']
         max_lr = run['max_lr']
         input_size = (run['input_size'], run['input_size'])
@@ -49,7 +49,13 @@ def run():
 
         print("Running for config {}".format(run))
 
-        for dataset in datasets:
+        for j, dataset in enumerate(datasets):
+
+            if start_run < (j+1)*(i+1):
+                continue
+
+            start_run += 1
+
             session_config()
             print('Running training for {}'.format(dataset))
             train_generator, num_samples = create_generator(
