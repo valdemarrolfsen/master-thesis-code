@@ -22,11 +22,11 @@ datasets = [
 ]
 
 runs = [
-    {'name': 'densenet-{}-final', 'pre_weights_name': None, 'network': 'densenet', 'base_lr': 0.00002, 'max_lr': 0.00055, 'input_size': 320,
-     'batch_size': 12},
+    {'name': 'densenet-{}-final', 'pre_weights_name': None, 'network': 'densenet', 'base_lr': 0.00002, 'max_lr': 0.00055, 'input_size': 256,
+     'batch_size': 4},
     {'name': 'unet-{}-final', 'pre_weights_name': None, 'network': 'unet', 'base_lr': 0.0002, 'max_lr': 0.002, 'input_size': 320, 'batch_size': 20},
     {'name': 'densenet-{}-final-finetune', 'pre_weights_name': 'densenet-{}-final', 'network': 'densenet', 'base_lr': 0.000002,
-     'max_lr': 0.000055, 'input_size': 512, 'batch_size': 12},
+     'max_lr': 0.000055, 'input_size': 512, 'batch_size': 1},
     {'name': 'unet-{}-final-finetune', 'pre_weights_name': 'unet-{}-final', 'network': 'unet', 'base_lr': 0.00002, 'max_lr': 0.0002, 'input_size': 512,
      'batch_size': 10}
 ]
@@ -60,8 +60,8 @@ def run():
                 rescale=True,
                 binary=binary,
                 augment=False,
-                mean=np.array([[[0.42800662, 0.40565866, 0.3564895]]]),
-                std=np.array([[[0.19446792, 0.1984272, 0.19501258]]])
+                mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
+                std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
             )
 
             val_generator, val_samples = create_generator(
@@ -72,13 +72,15 @@ def run():
                 rescale=True,
                 binary=binary,
                 augment=False,
-                mean=np.array([[[0.42800662, 0.40565866, 0.3564895]]]),
-                std=np.array([[[0.19446792, 0.1984272, 0.19501258]]])
+                mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
+                std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
             )
+
             if run['network'] == 'unet':
                 model = build_unet(input_size, nb_classes=1)
             else:
                 model = build_densenet(input_size, 1, 67)
+
             model.summary()
             gpus = get_number_of_gpus()
             print('Fund {} gpus'.format(gpus))

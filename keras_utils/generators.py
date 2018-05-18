@@ -72,7 +72,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
 
-    if mean in None or std is None:
+    if mean is None or std is None:
         raise ValueError('You need to provide mean and std to the generator')
 
     # Set up the generators
