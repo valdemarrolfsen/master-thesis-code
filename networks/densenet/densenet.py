@@ -30,7 +30,7 @@ def get_config_kwargs(config):
     return configs[config]
 
 
-def build_densenet(input_size, classes, config=56):
+def build_densenet(input_size, classes, config=67):
     activation = 'softmax'
     if classes == 1:
         activation = 'sigmoid'
