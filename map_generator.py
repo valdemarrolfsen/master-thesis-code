@@ -37,7 +37,9 @@ def get_generator():
         # randomly flip images
         horizontal_flip=False,
         # randomly flip images
-        vertical_flip=False)
+        vertical_flip=False,
+
+        rescale=1. / 255)
 
     image_datagen = ImageDataGenerator(**datagen_args)
     image_datagen.mean = np.array([[[0.36654497, 0.35386439, 0.30782658]]])
