@@ -9,6 +9,7 @@ RUN add-apt-repository ppa:ubuntugis/ppa -y && apt-get update && apt-get install
       bzip2 \
       g++ \
       git \
+      graphviz \
       python3-gdal \
       libgl1-mesa-glx \
       libhdf5-dev \
@@ -42,15 +43,25 @@ ARG python_version=3.6
 RUN conda install -y python=${python_version} && \
     pip install --upgrade pip && \
     pip install \
+      sklearn_pandas \
       opencv-python \
       tqdm \
-      tensorflow-gpu && conda install \
+      tensorflow-gpu && \
+    pip install https://cntk.ai/PythonWheel/GPU/cntk-2.1-cp36-cp36m-linux_x86_64.whl && \
+    conda install \
       bcolz \
       h5py \
+      matplotlib \
       mkl \
       nose \
+      notebook \
       Pillow \
-      six && \
+      pandas \
+      pygpu \
+      pyyaml \
+      scikit-learn \
+      six \
+      theano && \
     git clone git://github.com/keras-team/keras.git /src && pip install -e /src[tests] && \
     pip install git+git://github.com/keras-team/keras.git && \
     conda clean -yt
