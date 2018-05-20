@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
-
+from PIL import Image
 from keras_utils.generators import load_images_from_folder
 from keras_utils.losses import binary_soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
@@ -69,7 +69,6 @@ def run():
     args = parser.parse_args()
     model_name = args.model_name
     image_path = args.test_image
-    sample_path = args.sample_images
     input_size = args.input_size
     output_path = args.output_path
 
@@ -93,7 +92,7 @@ def run():
     model.load_weights(args.weights_path)
     generator = get_generator()
     # load the image
-    image = cv2.imread(image_path)
+    image = Image.open(image_path)
     pred = predict_img_with_smooth_windowing(
         image,
         window_size=input_size,

@@ -255,7 +255,7 @@ def cheap_tiling_prediction(img, window_size, nb_classes, pred_func):
     img = tmp
     print(img.shape, tmp.shape, prd.shape)
     for i in tqdm(range(0, prd.shape[0], window_size)):
-        for j in range(0, prd.shape[0], window_size):
+        for j in range(0, prd.shape[1], window_size):
             im = img[i:i + window_size, j:j + window_size]
             prd[i:i + window_size, j:j + window_size] = pred_func([im])
     prd = prd[:original_shape[0], :original_shape[1]]
