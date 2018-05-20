@@ -133,13 +133,16 @@ def run():
     if not save_imgs:
         return
 
+    print(final_prob.shape)
+
     # wow such hack
     from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
-    for i, prob in enumerate(probs):
+
+    for i, prob in enumerate(final_prob):
         # mask_result = np.argmax(masks[i], axis=2)
         # img = get_real_image(images_path, file_names[i])
         mask = masks[i]
-        raster = get_real_image(images_path, file_names[i], use_gdal=True)
+        raster = get_real_image(os.path.join(images_path, 'multiclass', 'test'), file_names[i], use_gdal=True)
         R = raster.GetRasterBand(1).ReadAsArray()
         G = raster.GetRasterBand(2).ReadAsArray()
         B = raster.GetRasterBand(3).ReadAsArray()
