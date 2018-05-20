@@ -17,7 +17,7 @@ class_color_map = {
     1: [254, 241, 179],  # Roads
     2: [116, 173, 209],  # Water
     3: [193, 235, 176],  # Grass
-    4: [170, 170, 170]   # Buildings
+    4: [170, 170, 170]  # Buildings
 }
 
 datasets = [
@@ -61,6 +61,21 @@ def run():
 
     model_choice = model_choices[model_name]
 
+    dataset_path = os.path.join(images_path, 'multiclass', 'test')
+
+    generator, _ = create_generator(
+        dataset_path,
+        (input_size, input_size),
+        batch_size,
+        1,
+        rescale=True,
+        with_file_names=True,
+        binary=True,
+        mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
+        std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
+    )
+    images, masks, file_names = next(generator)
+
     for dataset in datasets:
         model = model_choice((input_size, input_size), 1)
 
@@ -75,27 +90,13 @@ def run():
             metrics=['acc', binary_jaccard_distance_rounded])
 
         model.load_weights(args.weights_path.format(dataset))
-        dataset_path = os.path.join(images_path, dataset, 'test')
 
-        generator, _ = create_generator(
-            dataset_path,
-            (input_size, input_size),
-            batch_size,
-            1,
-            rescale=True,
-            with_file_names=True,
-            binary=True,
-            mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
-            std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
-        )
-
-        images, masks, file_names = next(generator)
         probs = model.predict(images, verbose=1)
-
-        iou = batch_general_jaccard(masks, probs, binary=True)
-        f1 = K.eval(f1_score(K.variable(masks), K.variable(probs)))
-        print('Mean IOU for {}: {}'.format(dataset, np.mean(iou)))
-        print('F1 score for {}: {}'.format(dataset, f1))
+        probs = np.round(probs)
+        # iou = batch_general_jaccard(masks, probs, binary=True)
+        # f1 = K.eval(f1_score(K.variable(masks), K.variable(probs)))
+        # print('Mean IOU for {}: {}'.format(dataset, np.mean(iou)))
+        # print('F1 score for {}: {}'.format(dataset, f1))
 
         all_probs[dataset] = probs
 
@@ -105,25 +106,11 @@ def run():
         prob = all_probs[key]
         prob[prob == 1] = scores[key]
 
-        if i == 0: # First iteration
+        if i == 0:  # First iteration
             final_prob = prob
             continue
 
         final_prob = np.maximum.reduce([final_prob, prob])
-
-    generator, _ = create_generator(
-        os.path.join(images_path, 'multiclass', 'test'),
-        (input_size, input_size),
-        batch_size,
-        1,
-        rescale=True,
-        with_file_names=True,
-        binary=True,
-        mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
-        std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
-    )
-
-    images, masks, file_names = next(generator)
 
     iou = batch_general_jaccard(masks, final_prob, binary=False)
     f1 = K.eval(f1_score(K.variable(masks), K.variable(final_prob)))
@@ -133,15 +120,11 @@ def run():
     if not save_imgs:
         return
 
-    print(final_prob.shape)
-
     # wow such hack
     from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 
     for i, prob in enumerate(final_prob):
-        # mask_result = np.argmax(masks[i], axis=2)
-        # img = get_real_image(images_path, file_names[i])
-        mask = masks[i]
+        mask = np.argmax(masks[i], axis=2)
         raster = get_real_image(os.path.join(images_path, 'multiclass', 'test'), file_names[i], use_gdal=True)
         R = raster.GetRasterBand(1).ReadAsArray()
         G = raster.GetRasterBand(2).ReadAsArray()
@@ -150,15 +133,25 @@ def run():
         img[:, :, 0] = B
         img[:, :, 1] = G
         img[:, :, 2] = R
-        prob = np.round(prob)
-        prob = (prob[:, :, 0] * 255.).astype(np.uint8)
-        mask = (mask[:, :, 0] * 255.).astype(np.uint8)
+
+        seg_pred = np.zeros((input_size, input_size, 3))
+        seg_mask = np.zeros((input_size, input_size, 3))
+
+        for c in range(5):
+            seg_pred[:, :, 0] += ((prob[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+            seg_pred[:, :, 1] += ((prob[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+            seg_pred[:, :, 2] += ((prob[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+
+            seg_mask[:, :, 0] += ((mask[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+            seg_mask[:, :, 1] += ((mask[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+            seg_mask[:, :, 2] += ((mask[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+
         pred_name = "pred-{}.tif".format(i)
         pred_save_path = "{}/{}".format(args.output_path, pred_name)
 
-        cv2.imwrite(pred_save_path, prob)
+        cv2.imwrite(pred_save_path, seg_pred)
+        cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), seg_mask)
         cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
-        cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), mask)
 
         try:
             # Get coordinates for corresponding image
