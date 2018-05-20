@@ -16,7 +16,7 @@ class_color_map = {
     1: [254, 241, 179],  # Roads
     2: [116, 173, 209],  # Water
     3: [193, 235, 176],  # Grass
-    4: [170, 170, 170]  # Buildings
+    4: [170, 170, 170]   # Buildings
 }
 
 datasets = [
@@ -68,7 +68,7 @@ def run():
             loss=binary_soft_jaccard_loss,
             metrics=['acc', binary_jaccard_distance_rounded])
 
-        model.load_weights(args.weights_path)
+        model.load_weights(args.weights_path.format(dataset))
         dataset_path = os.path.join(images_path, dataset, 'test')
 
         generator, _ = create_generator(
