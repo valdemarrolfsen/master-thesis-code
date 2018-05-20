@@ -1,14 +1,15 @@
-ARG cuda_version=9.0
+ARG cuda_version=9.2
 ARG cudnn_version=7
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel
 
 # Install system packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:ubuntugis/ppa -y && apt-get update && apt-get install -y --no-install-recommends \
       bzip2 \
       g++ \
       git \
-
-      graphviz \
+      python3-gdal \
       libgl1-mesa-glx \
       libhdf5-dev \
       openmpi-bin \
@@ -41,25 +42,15 @@ ARG python_version=3.6
 RUN conda install -y python=${python_version} && \
     pip install --upgrade pip && \
     pip install \
-      sklearn_pandas \
       opencv-python \
       tqdm \
-      tensorflow-gpu && \
-    pip install https://cntk.ai/PythonWheel/GPU/cntk-2.1-cp36-cp36m-linux_x86_64.whl && \
-    conda install \
+      tensorflow-gpu && conda install \
       bcolz \
       h5py \
-      matplotlib \
       mkl \
       nose \
-      notebook \
       Pillow \
-      pandas \
-      pygpu \
-      pyyaml \
-      scikit-learn \
-      six \
-      theano && \
+      six && \
     git clone git://github.com/keras-team/keras.git /src && pip install -e /src[tests] && \
     pip install git+git://github.com/keras-team/keras.git && \
     conda clean -yt
@@ -67,7 +58,3 @@ RUN conda install -y python=${python_version} && \
 ENV PYTHONPATH='/src/:$PYTHONPATH'
 
 WORKDIR /src
-
-EXPOSE 8888
-
-CMD jupyter notebook --port=8888 --ip=0.0.0.0
