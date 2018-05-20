@@ -14,8 +14,7 @@ RUN add-apt-repository ppa:ubuntugis/ppa -y && apt-get update && apt-get install
       libgl1-mesa-glx \
       libhdf5-dev \
       openmpi-bin \
-      wget && \
-    rm -rf /var/lib/apt/lists/*
+      wget
 
 # Install conda
 ENV CONDA_DIR /opt/conda
@@ -27,7 +26,8 @@ RUN wget --quiet --no-check-certificate https://repo.continuum.io/miniconda/Mini
     rm Miniconda3-4.2.12-Linux-x86_64.sh && \
     echo export PATH=$CONDA_DIR/bin:'$PATH' > /etc/profile.d/conda.sh
 
-RUN apt-get install -y python3-gdal
+RUN apt-get install -y python3-gdal && \
+        rm -rf /var/lib/apt/lists/*
 
 # Install Python packages and keras
 ENV NB_USER keras
