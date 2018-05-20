@@ -9,11 +9,12 @@ from keras_utils.generators import load_images_from_folder
 from keras_utils.losses import binary_soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
 from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction
+from networks.densenet.densenet import build_densenet
 from networks.pspnet.net_builder import build_pspnet
 from networks.unet.unet import build_unet
 
 
-def get_generator(images):
+def get_generator():
     datagen_args = dict(
         data_format='channels_last',
         # set input mean to 0 over the dataset
@@ -38,7 +39,8 @@ def get_generator(images):
         vertical_flip=False)
 
     image_datagen = ImageDataGenerator(**datagen_args)
-    image_datagen.fit(images)
+    image_datagen.mean = np.array([[[0.36654497, 0.35386439, 0.30782658]]])
+    image_datagen.std = np.array([[[0.19212837, 0.19031791, 0.18903286]]])
     return image_datagen
 
 
@@ -70,7 +72,8 @@ def run():
 
     model_choices = {
         'pspnet': build_pspnet,
-        'unet': build_unet
+        'unet': build_unet,
+        'densenet': build_densenet
     }
 
     model_choice = model_choices[model_name]
@@ -80,11 +83,8 @@ def run():
         loss=binary_soft_jaccard_loss,
         metrics=['acc', binary_jaccard_distance_rounded])
     model.load_weights(args.weights_path)
-
-    sample_images = np.array(load_images_from_folder(sample_path, num_samples=1000))
-    generator = get_generator(sample_images)
-    sample_images = None
-    # load all images
+    generator = get_generator()
+    # load the image
     image = cv2.imread(image_path)
     pred = predict_img_with_smooth_windowing(
         image,
@@ -105,10 +105,10 @@ def run():
     print(cv2.imwrite(real_path, image))
 
     cheap = cheap_tiling_prediction(image, window_size=input_size, nb_classes=1, pred_func=(
-            lambda img_batch_subdiv: model.predict(
-                image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
-            )
-        ))
+        lambda img_batch_subdiv: model.predict(
+            image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
+        )
+    ))
 
     cheap = np.round(cheap)
     cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
