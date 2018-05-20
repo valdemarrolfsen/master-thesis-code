@@ -101,11 +101,11 @@ def run():
 
     final_prob = None
 
-    for key in all_probs:
+    for i, key in enumerate(all_probs):
         prob = all_probs[key]
         prob[prob == 1] = scores[key]
 
-        if final_prob == None:
+        if i == 0: # First iteration
             final_prob = prob
             continue
 
