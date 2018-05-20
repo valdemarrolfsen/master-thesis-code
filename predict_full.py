@@ -125,7 +125,7 @@ def run():
 
     images, masks, file_names = next(generator)
 
-    iou = batch_general_jaccard(masks, final_prob, binary=True)
+    iou = batch_general_jaccard(masks, final_prob, binary=False)
     f1 = K.eval(f1_score(K.variable(masks), K.variable(final_prob)))
     print('Mean IOU for {}: {}'.format('multiclass', np.mean(iou)))
     print('F1 score for {}: {}'.format('multiclass', f1))
