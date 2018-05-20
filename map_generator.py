@@ -8,6 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras_utils.generators import load_images_from_folder
 from keras_utils.losses import binary_soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
+from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction
 from networks.densenet.densenet import build_densenet
 from networks.pspnet.net_builder import build_pspnet
@@ -78,10 +79,15 @@ def run():
 
     model_choice = model_choices[model_name]
     model = model_choice((input_size, input_size), 1)
+    gpus = get_number_of_gpus()
+    print('Fund {} gpus'.format(gpus))
+    if gpus > 1:
+        model = ModelMGPU(model, gpus)
     model.compile(
         optimizer=Adam(lr=1e-4),
         loss=binary_soft_jaccard_loss,
         metrics=['acc', binary_jaccard_distance_rounded])
+
     model.load_weights(args.weights_path)
     generator = get_generator()
     # load the image
