@@ -105,7 +105,7 @@ def run():
         prob = all_probs[key]
         prob[prob == 1] = scores[key]
 
-        if not final_prob:
+        if final_prob == None:
             final_prob = prob
             continue
 
