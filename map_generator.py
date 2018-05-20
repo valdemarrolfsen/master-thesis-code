@@ -5,7 +5,6 @@ import numpy as np
 from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
 from PIL import Image
-from keras_utils.generators import load_images_from_folder
 from keras_utils.losses import binary_soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
@@ -92,7 +91,7 @@ def run():
     model.load_weights(args.weights_path)
     generator = get_generator()
     # load the image
-    image = Image.open(image_path)
+    image = np.array(Image.open(image_path))
     pred = predict_img_with_smooth_windowing(
         image,
         window_size=input_size,
