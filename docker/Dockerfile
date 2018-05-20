@@ -27,6 +27,8 @@ RUN wget --quiet --no-check-certificate https://repo.continuum.io/miniconda/Mini
     rm Miniconda3-4.2.12-Linux-x86_64.sh && \
     echo export PATH=$CONDA_DIR/bin:'$PATH' > /etc/profile.d/conda.sh
 
+RUN apt-get install -y python3-gdal
+
 # Install Python packages and keras
 ENV NB_USER keras
 ENV NB_UID 1000
@@ -64,7 +66,6 @@ RUN conda install -y python=${python_version} && \
     git clone git://github.com/keras-team/keras.git /src && pip install -e /src[tests] && \
     pip install git+git://github.com/keras-team/keras.git && \
     conda clean -yt
-RUN apt-get install -y python3-gdal
 ENV PYTHONPATH='/src/:$PYTHONPATH'
 
 WORKDIR /src
