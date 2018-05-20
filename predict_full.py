@@ -8,6 +8,7 @@ from keras.optimizers import Adam
 from keras_utils.generators import create_generator
 from keras_utils.losses import binary_soft_jaccard_loss
 from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded, maximize_threshold
+from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet, build_unet_old
 
@@ -62,6 +63,11 @@ def run():
 
     for dataset in datasets:
         model = model_choice((input_size, input_size), 1)
+
+        gpus = get_number_of_gpus()
+        print('Fund {} gpus'.format(gpus))
+        if gpus > 1:
+            model = ModelMGPU(model, gpus)
 
         model.compile(
             optimizer=Adam(lr=1e-4),
