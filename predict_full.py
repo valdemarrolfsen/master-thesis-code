@@ -67,10 +67,10 @@ def run():
         dataset_path,
         (input_size, input_size),
         batch_size,
-        1,
+        5,
         rescale=True,
         with_file_names=True,
-        binary=True,
+        binary=False,
         mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
         std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
     )
@@ -138,9 +138,9 @@ def run():
         seg_mask = np.zeros((input_size, input_size, 3))
 
         for c in range(5):
-            seg_pred[:, :, 0] += ((prob[:, :] == c) * (class_color_map[c][2])).astype('uint8')
-            seg_pred[:, :, 1] += ((prob[:, :] == c) * (class_color_map[c][1])).astype('uint8')
-            seg_pred[:, :, 2] += ((prob[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+            seg_pred[:, :, 0] += ((prob[:, :, 0] == c) * (class_color_map[c][2])).astype('uint8')
+            seg_pred[:, :, 1] += ((prob[:, :, 0] == c) * (class_color_map[c][1])).astype('uint8')
+            seg_pred[:, :, 2] += ((prob[:, :, 0] == c) * (class_color_map[c][0])).astype('uint8')
 
             seg_mask[:, :, 0] += ((mask[:, :] == c) * (class_color_map[c][2])).astype('uint8')
             seg_mask[:, :, 1] += ((mask[:, :] == c) * (class_color_map[c][1])).astype('uint8')
