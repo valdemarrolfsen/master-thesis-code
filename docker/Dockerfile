@@ -11,7 +11,6 @@ RUN add-apt-repository ppa:ubuntugis/ppa -y && apt-get update && apt-get install
       git \
       graphviz \
       gdal-bin \
-      python3-gdal \
       libgl1-mesa-glx \
       libhdf5-dev \
       openmpi-bin \
