@@ -62,6 +62,7 @@ def _pad_img(img, window_size, subdivisions):
     Image is an np array of shape (x, y, nb_channels).
     """
     aug = int(round(window_size * (1 - 1.0 / subdivisions)))
+    print(aug)
     more_borders = ((aug, aug), (aug, aug), (0, 0))
     ret = np.pad(img, pad_width=more_borders, mode='reflect')
     # gc.collect()
@@ -248,6 +249,7 @@ def cheap_tiling_prediction(img, window_size, nb_classes, pred_func):
     Does predictions on an image without tiling.
     """
     original_shape = img.shape
+    print(original_shape)
     full_border = img.shape[0] + (window_size - (img.shape[0] % window_size))
     prd = np.zeros((full_border, full_border, nb_classes))
     tmp = np.zeros((full_border, full_border, original_shape[-1]))
@@ -260,3 +262,14 @@ def cheap_tiling_prediction(img, window_size, nb_classes, pred_func):
             prd[i:i + window_size, j:j + window_size] = pred_func([im])
     prd = prd[:original_shape[0], :original_shape[1]]
     return prd
+
+
+def overlapping_predictions(image, window_size, pred_func):
+    image_rot = np.rot90(np.array(image), axes=(0, 1))
+    pred = cheap_tiling_prediction(image, window_size, 1, pred_func)
+    pred1 = cheap_tiling_prediction(image_rot, window_size, 1, pred_func)
+
+    # Rotate back again
+    pred1_rot = np.rot90(np.array(pred1), axes=(1, 0))
+    merged_pred = np.power(pred * pred1_rot, 0.25)
+    return merged_pred
