@@ -61,10 +61,8 @@ def run():
 
     model_choice = model_choices[model_name]
 
-    dataset_path = os.path.join(images_path, 'multiclass', 'test')
-
     generator, _ = create_generator(
-        dataset_path,
+        images_path,
         (input_size, input_size),
         batch_size,
         5,
