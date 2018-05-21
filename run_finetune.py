@@ -15,8 +15,8 @@ from networks.unet.train import session_config
 from networks.unet.unet import build_unet
 
 datasets = [
-    #'buildings',
-    #'roads',
+    'buildings',
+    'roads',
     'water',
     'vegetation'
 ]
@@ -48,6 +48,9 @@ def run():
         print("Running for config {}".format(run))
 
         for j, dataset in enumerate(datasets):
+
+            if dataset != 'vegetation' and i == 0:
+                continue
 
             session_config()
             print('Running training for {}'.format(dataset))
