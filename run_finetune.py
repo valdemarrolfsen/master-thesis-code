@@ -15,7 +15,7 @@ from networks.unet.train import session_config
 from networks.unet.unet import build_unet
 
 datasets = [
-    'buildings',
+    #'buildings',
     'roads',
     'water',
     'vegetation'
