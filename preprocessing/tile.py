@@ -17,13 +17,15 @@ def run(args):
         for j in range(0, height, tilesize):
             w = min(i + tilesize, width) - i
             h = min(j + tilesize, height) - j
-            gdaltran_string = 'gdal_translate -of GTIFF -srcwin {} {} {} {} {} {}tiled_{}_{}.tif'.format(
-                str(i), str(j), str(w), str(h), args.input_file, args.output_dir, str(i), str(j)
+            file_name = os.path.splitext(os.path.basename(args.input_file))[0]
+            output_dir = os.path.join(args.output_dir, '{}_tiled_{}_{}.tif'.format(file_name, str(i), str(j)))
+            gdaltran_string = 'gdal_translate -of GTIFF -srcwin {} {} {} {} {} {}'.format(
+                str(i), str(j), str(w), str(h), args.input_file, output_dir
             )
             q.put(gdaltran_string)
 
     for i in range(args.threads):
-        t = threading.Thread(target=work, args=(q, ))
+        t = threading.Thread(target=work, args=(q,))
         t.daemon = True
         t.start()
 
@@ -42,13 +44,10 @@ def work(q):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_file', type=str, default='')
-    parser.add_argument('--output_dir', type=str, default='')
-    parser.add_argument('--tile-size', type=int, default=512)
+    parser.add_argument('--input_file', required=True, type=str)
+    parser.add_argument('--output_dir', required=True, type=str)
+    parser.add_argument('--tile-size', required=True, type=int, default=512)
     parser.add_argument('--threads', type=int, default=8)
     args = parser.parse_args()
 
-    if not args.input_file:
-        print('Usage: tile.py --input_file filename --output_dir (optional)')
-        sys.exit(0)
     run(args)
