@@ -15,7 +15,7 @@ from networks.unet.train import session_config
 from networks.unet.unet import build_unet
 
 datasets = [
-    #'buildings',
+    'buildings',
     'roads',
     'water',
     'vegetation'
@@ -23,8 +23,8 @@ datasets = [
 
 runs = [
     # {'name': 'unet-{}-final', 'pre_weights_name': None, 'network': 'unet', 'base_lr': 0.0002, 'max_lr': 0.002, 'input_size': 320, 'batch_size': 20},
-    {'name': 'densenet-{}-final-finetune', 'pre_weights_name': 'densenet-{}-final', 'network': 'densenet', 'base_lr': 0.000002,
-     'max_lr': 0.000055, 'input_size': 320, 'batch_size': 2},
+    #{'name': 'densenet-{}-final-finetune', 'pre_weights_name': 'densenet-{}-final', 'network': 'densenet', 'base_lr': 0.000002,
+    # 'max_lr': 0.000055, 'input_size': 320, 'batch_size': 2},
     {'name': 'unet-{}-final-finetune', 'pre_weights_name': 'unet-{}-final', 'network': 'unet', 'base_lr': 0.00002, 'max_lr': 0.0002, 'input_size': 512,
      'batch_size': 10}
 ]
