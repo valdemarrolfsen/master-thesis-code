@@ -18,9 +18,9 @@ def run(args):
             w = min(i + tilesize, width) - i
             h = min(j + tilesize, height) - j
             file_name = os.path.splitext(os.path.basename(args.input_file))[0]
-            output_dir = os.path.join(args.output_dir, '{}_tiled_{}_{}.tif'.format(file_name, str(i), str(j)))
+            output_dirs = os.path.join(args.output_dir, '{}_tiled_{}_{}.tif'.format(file_name, str(i), str(j)))
             gdaltran_string = 'gdal_translate -of GTIFF -srcwin {} {} {} {} {} {}'.format(
-                str(i), str(j), str(w), str(h), args.input_file, output_dir
+                str(i), str(j), str(w), str(h), args.input_file, output_dirs
             )
             q.put(gdaltran_string)
 
