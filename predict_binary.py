@@ -2,7 +2,6 @@ import argparse
 
 import cv2
 import numpy as np
-from keras import backend as K
 from keras.optimizers import Adam
 
 from keras_utils.generators import create_generator
@@ -57,6 +56,7 @@ def run():
 
     images, masks, file_names = next(generator)
     probs = model.predict(images, verbose=1)
+    probs = np.round(probs)
     iou = batch_general_jaccard(masks, probs)
     f1 = f1_score(masks, probs)
     print('mean IOU: {}'.format(np.mean(iou)))
