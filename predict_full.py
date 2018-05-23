@@ -23,8 +23,8 @@ class_color_map = {
 datasets = [
     {'name': 'buildings', 'size': 2570},
     {'name': 'roads', 'size': 2830},
-    {'name': 'water', 'size': 2952},
-    {'name': 'vegetation', 'size': 1352},
+    {'name': 'water', 'size': 1352},
+    {'name': 'vegetation', 'size': 2952},
 ]
 
 scores = {
