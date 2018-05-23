@@ -75,7 +75,7 @@ def pred():
             probs = m.predict(images, verbose=1)
             probs = np.round(probs)
             iou = batch_general_jaccard(masks, probs)
-            f1 = K.eval(f1_score(K.variable(masks), K.variable(probs)))
+            f1 = f1_score(masks, probs)
             print('Mean IOU for {} on {}: {}'.format(model['name'], dataset['name'], np.mean(iou)))
             print('F1 score for {} on {}: {}'.format(model['name'], dataset['name'], f1))
 

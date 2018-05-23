@@ -34,9 +34,9 @@ def batch_general_jaccard(y_true, y_pred):
 
 def f1_score(y_true, y_pred):
     """https://stackoverflow.com/questions/45411902/how-to-use-f1-score-with-keras-model"""
-    c1 = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    c2 = K.sum(K.round(K.clip(y_pred, 0, 1)))
-    c3 = K.sum(K.round(K.clip(y_true, 0, 1)))
+    c1 = np.sum(np.round(np.clip(y_true * y_pred, 0, 1)))
+    c2 = np.sum(np.round(np.clip(y_pred, 0, 1)))
+    c3 = np.sum(np.round(np.clip(y_true, 0, 1)))
     if c3 == 0:
         return 0
     precision = c1 / c2
