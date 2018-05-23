@@ -35,8 +35,8 @@ scores = {
 }
 
 models = [
-    {'name': 'unet', 'input_size': 320, 'method': build_unet},
-    {'name': 'densenet', 'input_size': 256, 'method': build_densenet}]
+    {'name': 'unet', 'input_size': 512, 'method': build_unet},
+    {'name': 'densenet', 'input_size': 320, 'method': build_densenet}]
 
 
 def pred():
@@ -101,8 +101,8 @@ def pred():
                 pred_save_path = "{}/{}".format(out_path, pred_name)
 
                 cv2.imwrite(pred_save_path, prob)
-                cv2.imwrite("{}/image-{}-no.tif".format(out_path, i), img)
-                cv2.imwrite("{}/mask-{}-no.tif".format(out_path, i), mask)
+                cv2.imwrite("{}/image-{}.tif".format(out_path, i), img)
+                cv2.imwrite("{}/mask-{}.tif".format(out_path, i), mask)
 
                 try:
                     # Get coordinates for corresponding image
