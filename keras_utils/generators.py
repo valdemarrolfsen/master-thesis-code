@@ -28,7 +28,7 @@ def load_images_from_folder(folder, num_samples=5000):
             continue
         if img is not None:
             images.append(img)
-    return images
+    return np.array(images)
 
 
 def set_up_generators():
