@@ -113,7 +113,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     file_name_generator = None
     if with_file_names:
         file_name_generator = image_generator
-
+    print(file_name_generator)
     if augment and not binary:
         raise NotImplementedError('Augment for categorical not implemented. Implement it in the generator.')
 
@@ -182,6 +182,9 @@ def custom_binary_gen(generator, batch_size, file_name_generator, augment):
 
         if file_name_generator:
             idx = (file_name_generator.batch_index - 1) * file_name_generator.batch_size
+            print(idx)
+            print(file_name_generator.batch_index)
+            print(file_name_generator.batch_size)
             file_names = file_name_generator.filenames[idx: idx + file_name_generator.batch_size]
             yield img, mask, file_names
         else:
