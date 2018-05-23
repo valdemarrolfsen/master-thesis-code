@@ -53,39 +53,11 @@ def run():
 
     if not save_imgs:
         return
-    # wow such hack
-    from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
     for i, prob in enumerate(probs):
-        mask = masks[i]
-        raster = get_real_image(images_path, file_names[i], use_gdal=True)
-        R = raster.GetRasterBand(1).ReadAsArray()
-        G = raster.GetRasterBand(2).ReadAsArray()
-        B = raster.GetRasterBand(3).ReadAsArray()
-        img = np.zeros((512, 512, 3))
-        img[:, :, 0] = B
-        img[:, :, 1] = G
-        img[:, :, 2] = R
-        prob = np.round(prob)
         prob = (prob[:, :, 0] * 255.).astype(np.uint8)
-        mask = (mask[:, :, 0] * 255.).astype(np.uint8)
         pred_name = "pred-{}.tif".format(i)
         pred_save_path = "{}/{}".format(args.output_path, pred_name)
-
         cv2.imwrite(pred_save_path, prob)
-        cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
-        cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), mask)
-
-        try:
-            # Get coordinates for corresponding image
-            ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(raster)
-
-            # Geo reference newly created raster
-            geo_reference_raster(
-                pred_save_path,
-                [ulx, scalex, skewx, uly, skewy, scaley]
-            )
-        except ValueError as e:
-            print("Was not able to reference image at path: {}".format(pred_save_path))
 
 
 if __name__ == '__main__':
