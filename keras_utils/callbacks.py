@@ -38,9 +38,16 @@ class ValidationCallback(Callback):
         for _ in tqdm(range(self.steps-1)):
             ims, mas = next(self.generator)
             p = self.model.predict(ims, verbose=0)
+
+            if self.binary:
+                p = np.round(p)
+            else:
+                p = np.argmax(p, axis=2)
+                mas = np.argmax(mas, axis=2)
             probs = np.concatenate((probs, p))
             masks = np.concatenate((masks, mas))
-        iou = batch_general_jaccard(masks, probs, binary=self.binary)
+
+        iou = batch_general_jaccard(masks, probs)
         miou = np.mean(iou)
         print('mean IOU: {}'.format(miou))
         logs['mIOU'] = miou
