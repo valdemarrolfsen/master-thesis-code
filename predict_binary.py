@@ -7,7 +7,7 @@ from keras.optimizers import Adam
 
 from keras_utils.generators import create_generator
 from keras_utils.losses import binary_soft_jaccard_loss
-from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded, maximize_threshold
+from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet, build_unet_old
 
