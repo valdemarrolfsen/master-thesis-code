@@ -1,8 +1,6 @@
-import gc
-
-import cv2
 import os
 import numpy as np
+from PIL import Image
 from tqdm import tqdm
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import to_categorical
@@ -24,8 +22,10 @@ def load_images_from_folder(folder, num_samples=5000):
         imgpath = os.path.join(folder, filename)
         if not os.path.isfile(imgpath):
             continue
-        img = cv2.imread(imgpath)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = np.array(Image.open(imgpath))
+        if not img.shape[0] == img.shape[1]:
+            print('Noe equal, skipping')
+            continue
         if img is not None:
             images.append(img)
     return images
