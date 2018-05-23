@@ -68,7 +68,7 @@ def pred():
                 loss=binary_soft_jaccard_loss,
                 metrics=['acc', binary_jaccard_distance_rounded])
 
-            weights_path = 'weights_train/weights.{}-{}-final.h5'.format(model['name'], dataset['name'])
+            weights_path = 'weights_train/weights.{}-{}-final-finetune.h5'.format(model['name'], dataset['name'])
             m.load_weights(weights_path)
 
             probs = m.predict(images, verbose=1)
