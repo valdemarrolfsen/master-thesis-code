@@ -7,10 +7,10 @@ from keras.optimizers import Adam
 
 from keras_utils.generators import create_generator
 from keras_utils.losses import binary_soft_jaccard_loss
-from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded, maximize_threshold
+from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from networks.densenet.densenet import build_densenet
-from networks.unet.unet import build_unet, build_unet_old
+from networks.unet.unet import build_unet
 
 class_color_map = {
     0: [237, 237, 237],  # Empty
@@ -21,10 +21,10 @@ class_color_map = {
 }
 
 datasets = [
-    'buildings',
-    'roads',
-    'water',
-    'vegetation'
+    {'name': 'buildings', 'size': 2569},
+    {'name': 'roads', 'size': 2829},
+    {'name': 'water', 'size': 1351},
+    {'name': 'vegetation', 'size': 2951},
 ]
 
 scores = {
@@ -34,6 +34,88 @@ scores = {
     'vegetation': 3
 }
 
+models = [
+    {'name': 'unet', 'input_size': 320, 'method': build_unet},
+    {'name': 'densenet', 'input_size': 256, 'method': build_densenet}]
+
+
+def pred():
+    image_path = '/data/{}/test'
+    for dataset in datasets:
+        im_path = image_path.format(dataset['name'])
+
+        for model in models:
+            input_size = model['input_size']
+            generator, _ = create_generator(
+                im_path,
+                (input_size, input_size),
+                dataset['size'],
+                1,
+                rescale=True,
+                with_file_names=True,
+                binary=True,
+                mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
+                std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
+            )
+            images, masks, file_names = next(generator)
+            m = model['method']((input_size, input_size), 1)
+            gpus = get_number_of_gpus()
+            if gpus > 1:
+                m = ModelMGPU(m, gpus)
+
+            m.compile(
+                optimizer=Adam(lr=1e-4),
+                loss=binary_soft_jaccard_loss,
+                metrics=['acc', binary_jaccard_distance_rounded])
+
+            weights_path = 'weights_train/weights.{}-{}-final.h5'.format(model['name'], dataset['name'])
+            m.load_weights(weights_path)
+
+            probs = m.predict(images, verbose=1)
+            probs = np.round(probs)
+            iou = batch_general_jaccard(masks, probs)
+            f1 = f1_score(masks, probs)
+            print('Mean IOU for {} on {}: {}'.format(model['name'], dataset['name'], np.mean(iou)))
+            print('F1 score for {} on {}: {}'.format(model['name'], dataset['name'], f1))
+
+            # wow such hack
+            from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
+
+            for i, (prob, mask) in enumerate(zip(probs, masks)):
+                if i > 200:
+                    break
+                raster = get_real_image(im_path, file_names[i], use_gdal=True)
+                R = raster.GetRasterBand(1).ReadAsArray()
+                G = raster.GetRasterBand(2).ReadAsArray()
+                B = raster.GetRasterBand(3).ReadAsArray()
+                img = np.zeros((512, 512, 3))
+                img[:, :, 0] = B
+                img[:, :, 1] = G
+                img[:, :, 2] = R
+                prob = np.round(prob)
+                prob = (prob[:, :, 0] * 255.).astype(np.uint8)
+                mask = (mask[:, :, 0] * 255.).astype(np.uint8)
+                pred_name = "pred-{}.tif".format(i)
+
+                out_path = '/data/finalpreds/{}/{}'.format(model['name'], dataset['name'])
+                pred_save_path = "{}/{}".format(out_path, pred_name)
+
+                cv2.imwrite(pred_save_path, prob)
+                cv2.imwrite("{}/image-{}-no.tif".format(out_path, i), img)
+                cv2.imwrite("{}/mask-{}-no.tif".format(out_path, i), mask)
+
+                try:
+                    # Get coordinates for corresponding image
+                    ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(raster)
+
+                    # Geo reference newly created raster
+                    geo_reference_raster(
+                        pred_save_path,
+                        [ulx, scalex, skewx, uly, skewy, scaley]
+                    )
+                except ValueError as e:
+                    print("Was not able to reference image at path: {}".format(pred_save_path))
+            K.clear_session()
 
 def run():
     parser = argparse.ArgumentParser()
@@ -110,7 +192,8 @@ def run():
 
         final_prob = np.maximum.reduce([final_prob, prob])
 
-    iou = batch_general_jaccard(masks, final_prob, binary=False)
+    masks = np.argmax(masks, axis=2)
+    iou = batch_general_jaccard(masks, final_prob)
     f1 = K.eval(f1_score(K.variable(masks), K.variable(final_prob)))
     print('Mean IOU for {}: {}'.format('multiclass', np.mean(iou)))
     print('F1 score for {}: {}'.format('multiclass', f1))
@@ -165,4 +248,4 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    pred()

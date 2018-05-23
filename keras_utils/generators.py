@@ -113,7 +113,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
     file_name_generator = None
     if with_file_names:
         file_name_generator = image_generator
-
+    print(file_name_generator)
     if augment and not binary:
         raise NotImplementedError('Augment for categorical not implemented. Implement it in the generator.')
 
