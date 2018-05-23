@@ -109,7 +109,7 @@ def run():
             model.fit_generator(
                 generator=train_generator,
                 steps_per_epoch=steps_per_epoch,
-                epochs=20, verbose=True,
+                epochs=100, verbose=True,
                 workers=8,
                 callbacks=cb
             )
