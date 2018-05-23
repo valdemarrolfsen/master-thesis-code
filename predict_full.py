@@ -62,7 +62,7 @@ def pred():
             m = model['method']((input_size, input_size), 1)
             gpus = get_number_of_gpus()
             if gpus > 1:
-                m = ModelMGPU(model, gpus)
+                m = ModelMGPU(m, gpus)
 
             m.compile(
                 optimizer=Adam(lr=1e-4),
