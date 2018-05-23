@@ -26,7 +26,6 @@ def run():
     model_name = args.model_name
     images_path = args.input_images
     input_size = args.input_size
-    batch_size = args.batch_size
     save_imgs = args.save_imgs
 
     model_choices = {
