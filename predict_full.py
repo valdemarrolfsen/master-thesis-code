@@ -21,10 +21,10 @@ class_color_map = {
 }
 
 datasets = [
-    {'name': 'buildings', 'size': 10},
-    {'name': 'roads', 'size': 2830},
-    {'name': 'water', 'size': 1352},
-    {'name': 'vegetation', 'size': 2952},
+    {'name': 'buildings', 'size': 2569},
+    {'name': 'roads', 'size': 2829},
+    {'name': 'water', 'size': 1351},
+    {'name': 'vegetation', 'size': 2951},
 ]
 
 scores = {
@@ -58,7 +58,6 @@ def pred():
                 std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
             )
             images, masks, file_names = next(generator)
-            print(len(file_names))
             m = model['method']((input_size, input_size), 1)
             gpus = get_number_of_gpus()
             if gpus > 1:

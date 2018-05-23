@@ -182,9 +182,6 @@ def custom_binary_gen(generator, batch_size, file_name_generator, augment):
 
         if file_name_generator:
             idx = (file_name_generator.batch_index - 1) * file_name_generator.batch_size
-            print(idx)
-            print(file_name_generator.batch_index)
-            print(file_name_generator.batch_size)
             file_names = file_name_generator.filenames[idx: idx + file_name_generator.batch_size]
             yield img, mask, file_names
         else:
