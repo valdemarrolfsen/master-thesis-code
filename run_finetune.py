@@ -17,7 +17,7 @@ from networks.unet.unet import build_unet
 datasets = [
     #'buildings',
     #'roads',
-    'water',
+    #'water',
     'vegetation'
 ]
 
