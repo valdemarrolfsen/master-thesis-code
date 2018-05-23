@@ -59,7 +59,7 @@ def pred():
             )
             images, masks, file_names = next(generator)
 
-            m = model['method']()
+            m = model['method']((input_size, input_size), 1)
             gpus = get_number_of_gpus()
             if gpus > 1:
                 m = ModelMGPU(model, gpus)
