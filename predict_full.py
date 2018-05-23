@@ -97,7 +97,7 @@ def pred():
                 mask = (mask[:, :, 0] * 255.).astype(np.uint8)
                 pred_name = "pred-{}.tif".format(i)
 
-                out_path = 'finalpreds/{}/{}'.format(model['name'], dataset['name'])
+                out_path = '/data/finalpreds/{}/{}'.format(model['name'], dataset['name'])
                 pred_save_path = "{}/{}".format(out_path, pred_name)
 
                 cv2.imwrite(pred_save_path, prob)
