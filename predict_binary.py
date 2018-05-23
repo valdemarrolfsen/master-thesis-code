@@ -57,8 +57,8 @@ def run():
 
     images, masks, file_names = next(generator)
     probs = model.predict(images, verbose=1)
-    iou = batch_general_jaccard(masks, probs, binary=True)
-    f1 = K.eval(f1_score(K.variable(masks), K.variable(probs)))
+    iou = batch_general_jaccard(masks, probs)
+    f1 = K.eval(f1_score(masks, probs))
     print('mean IOU: {}'.format(np.mean(iou)))
     print('F1 score: {}'.format(f1))
 
