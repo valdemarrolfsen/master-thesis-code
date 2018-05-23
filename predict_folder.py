@@ -2,12 +2,13 @@ import argparse
 
 import cv2
 import numpy as np
-from keras import backend as K
+import os
+from PIL import Image
 from keras.optimizers import Adam
+from tqdm import tqdm
 
-from keras_utils.generators import create_generator, load_images_from_folder
 from keras_utils.losses import binary_soft_jaccard_loss
-from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded
+from keras_utils.metrics import binary_jaccard_distance_rounded
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet, build_unet_old
@@ -47,10 +48,19 @@ def run():
         metrics=['acc', binary_jaccard_distance_rounded])
 
     model.load_weights(args.weights_path)
-    images = load_images_from_folder(images_path, 10000)
-    probs = model.predict(images, verbose=1)
-    probs = np.round(probs)
 
+    probs = []
+    for i, filename in enumerate(tqdm(os.listdir(images_path))):
+        imgpath = os.path.join(images_path, filename)
+        if not os.path.isfile(imgpath):
+            continue
+        img = np.array(Image.open(imgpath))
+        if not img.shape[0] == img.shape[1]:
+            continue
+        img = np.expand_dims(img, axis=0)
+        prob = model.predict(img, verbose=1)
+        probs.append(prob)
+    probs = np.round(probs)
     if not save_imgs:
         return
     for i, prob in enumerate(probs):

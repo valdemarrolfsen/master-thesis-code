@@ -26,7 +26,7 @@ def load_images_from_folder(folder, num_samples=5000):
         if not img.shape[0] == img.shape[1]:
             continue
         if img is not None:
-           images = np.append(images, img)
+           images = np.concatenate((images, img))
     return np.array(images)
 
 
