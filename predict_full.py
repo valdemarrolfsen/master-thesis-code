@@ -82,7 +82,7 @@ def pred():
             # wow such hack
             from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 
-            for i, prob, mask in enumerate(zip(probs, masks)):
+            for i, (prob, mask) in enumerate(zip(probs, masks)):
                 if i > 200:
                     break
                 raster = get_real_image(im_path, file_names[i], use_gdal=True)
