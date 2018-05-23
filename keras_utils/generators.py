@@ -9,7 +9,7 @@ from keras_utils.augment import image_augmentation
 
 
 def load_images_from_folder(folder, num_samples=5000):
-    images = []
+    images = np.array([])
     for filename in os.listdir(folder):
         fold = os.path.join(folder, filename)
         if os.path.isdir(fold):
@@ -24,10 +24,9 @@ def load_images_from_folder(folder, num_samples=5000):
             continue
         img = np.array(Image.open(imgpath))
         if not img.shape[0] == img.shape[1]:
-            print('Noe equal, skipping')
             continue
         if img is not None:
-            images.append(img)
+            np.append(images, img)
     return np.array(images)
 
 
