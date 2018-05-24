@@ -4,7 +4,12 @@ import os
 from preprocessing import label_generator
 
 datasets = [
-    'drammen/tiled-512x512/',
+    'bodo/tiled-512x512/',
+    'oslo/tiled-512x512/',
+    'bergen/tiled-512x512/',
+    'trondheim/tiled-512x512/',
+    'stavanger/tiled-512x512/',
+    'tromso/tiled-512x512/',
 ]
 
 

@@ -35,10 +35,15 @@ class ValidationCallback(Callback):
         logs = logs or {}
         images, masks = next(self.generator)
         probs = self.model.predict(images, verbose=0)
+        if self.binary:
+            probs = np.round(probs)
+        else:
+            probs = np.argmax(probs, axis=2)
+            masks = np.argmax(masks, axis=2)
+
         for _ in tqdm(range(self.steps-1)):
             ims, mas = next(self.generator)
             p = self.model.predict(ims, verbose=0)
-
             if self.binary:
                 p = np.round(p)
             else:

@@ -117,6 +117,7 @@ def pred():
                     print("Was not able to reference image at path: {}".format(pred_save_path))
             K.clear_session()
 
+
 def run():
     parser = argparse.ArgumentParser()
     parser.add_argument("--weights-path", type=str)
