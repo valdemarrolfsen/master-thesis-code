@@ -1,9 +1,12 @@
 import argparse
 import cv2
 import numpy as np
+from keras.optimizers import Adam
 
 from keras_utils.generators import create_generator
-from keras_utils.metrics import batch_general_jaccard, f1_score
+from keras_utils.losses import binary_soft_jaccard_loss
+from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded
+from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
@@ -27,6 +30,16 @@ def run(args):
     model_choice = model_choices[model_name]
 
     model = model_choice((input_size, input_size), n_classes)
+
+    gpus = get_number_of_gpus()
+    print('Fund {} gpus'.format(gpus))
+    if gpus > 1:
+        model = ModelMGPU(model, gpus)
+
+    model.compile(
+        optimizer=Adam(lr=1e-4),
+        loss=binary_soft_jaccard_loss,
+        metrics=['acc', binary_jaccard_distance_rounded])
 
     model.load_weights(args.weights_path)
 
