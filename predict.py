@@ -1,10 +1,9 @@
 import argparse
-
 import cv2
 import numpy as np
 
 from keras_utils.generators import create_generator
-from keras_utils.metrics import batch_general_jaccard
+from keras_utils.metrics import batch_general_jaccard, f1_score
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
@@ -37,23 +36,29 @@ def run(args):
         images_path,
         (input_size, input_size),
         batch_size,
-        n_classes,
-        augment=True,
-        rescale=False,
-        with_file_names=True,
-        binary=binary
+        nb_classes=n_classes,
+        rescale=True,
+        binary=binary,
+        augment=False,
+        mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
+        std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
     )
 
     images, masks, file_names = next(generator)
     probs = model.predict(images, verbose=1)
-    # Calculate IOU for the batch
+
+    probs = np.argmax(probs, axis=3)
     iou = batch_general_jaccard(masks, probs)
-    print('mean IOU: {}'.format(np.mean(iou)))
+    f1 = f1_score(masks, probs)
+    print('Mean IOU: {}'.format(np.mean(iou)))
+    print('F1 score: {}'.format(f1))
+
+    if not save_imgs:
+        return
+
     for i, prob in enumerate(probs):
-        result = np.argmax(prob, axis=2)
+        result = prob
         mask_result = np.argmax(masks[i], axis=2)
-        if not save_imgs:
-            continue
 
         # img = get_real_image(images_path, file_names[i])
         raster = get_real_image(images_path, file_names[i], use_gdal=True)
