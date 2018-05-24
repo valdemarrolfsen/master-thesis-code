@@ -69,7 +69,7 @@ def run():
 
         print("Running for config {}".format(run))
 
-        for j, dataset in enumerate(datasets):
+        for j, dataset in enumerate(run['datasets']):
 
             binary = True if dataset != 'multiclass' else False
             nb_classes = 1 if binary else 5
