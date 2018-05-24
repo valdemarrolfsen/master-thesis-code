@@ -36,7 +36,7 @@ runs = [
         'max_lr': 0.0002,
         'input_size': 512,
         'batch_size': 10,
-        'rescale_masks': False,
+        'rescale_masks': True,
         'datasets': ['multiclass']
     },
     {
@@ -47,7 +47,7 @@ runs = [
         'max_lr': 0.0002,
         'input_size': 512,
         'batch_size': 10,
-        'rescale_masks': True,
+        'rescale_masks': False,
         'datasets': ['inra']
     }
 ]
@@ -81,7 +81,7 @@ def run():
                 input_size,
                 batch_size,
                 nb_classes=nb_classes,
-                rescale=True,
+                rescale=run['rescale_masks'],
                 binary=binary,
                 augment=False,
                 mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
@@ -93,7 +93,7 @@ def run():
                 input_size,
                 batch_size,
                 nb_classes=nb_classes,
-                rescale=True,
+                rescale=run['rescale_masks'],
                 binary=binary,
                 augment=False,
                 mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
