@@ -2,12 +2,11 @@ import argparse
 
 import cv2
 import numpy as np
-from keras import backend as K
 from keras.optimizers import Adam
 
 from keras_utils.generators import create_generator
 from keras_utils.losses import binary_soft_jaccard_loss
-from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded, maximize_threshold
+from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet, build_unet_old
 
@@ -57,8 +56,9 @@ def run():
 
     images, masks, file_names = next(generator)
     probs = model.predict(images, verbose=1)
-    iou = batch_general_jaccard(masks, probs, binary=True)
-    f1 = K.eval(f1_score(K.variable(masks), K.variable(probs)))
+    probs = np.round(probs)
+    iou = batch_general_jaccard(masks, probs)
+    f1 = f1_score(masks, probs)
     print('mean IOU: {}'.format(np.mean(iou)))
     print('F1 score: {}'.format(f1))
 

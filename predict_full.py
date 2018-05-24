@@ -35,8 +35,8 @@ scores = {
 }
 
 models = [
-    {'name': 'unet', 'input_size': 320, 'method': build_unet},
-    {'name': 'densenet', 'input_size': 256, 'method': build_densenet}]
+    {'name': 'unet', 'input_size': 512, 'method': build_unet},
+    {'name': 'densenet', 'input_size': 320, 'method': build_densenet}]
 
 
 def pred():
@@ -68,7 +68,7 @@ def pred():
                 loss=binary_soft_jaccard_loss,
                 metrics=['acc', binary_jaccard_distance_rounded])
 
-            weights_path = 'weights_train/weights.{}-{}-final.h5'.format(model['name'], dataset['name'])
+            weights_path = 'weights_train/weights.{}-{}-final-finetune.h5'.format(model['name'], dataset['name'])
             m.load_weights(weights_path)
 
             probs = m.predict(images, verbose=1)
@@ -101,8 +101,8 @@ def pred():
                 pred_save_path = "{}/{}".format(out_path, pred_name)
 
                 cv2.imwrite(pred_save_path, prob)
-                cv2.imwrite("{}/image-{}-no.tif".format(out_path, i), img)
-                cv2.imwrite("{}/mask-{}-no.tif".format(out_path, i), mask)
+                cv2.imwrite("{}/image-{}.tif".format(out_path, i), img)
+                cv2.imwrite("{}/mask-{}.tif".format(out_path, i), mask)
 
                 try:
                     # Get coordinates for corresponding image
@@ -116,6 +116,7 @@ def pred():
                 except ValueError as e:
                     print("Was not able to reference image at path: {}".format(pred_save_path))
             K.clear_session()
+
 
 def run():
     parser = argparse.ArgumentParser()

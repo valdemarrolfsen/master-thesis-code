@@ -106,9 +106,7 @@ def run():
     pred = np.round(pred)
     pred = (pred[:, :, 0] * 255.).astype(np.uint8)
     out_path = os.path.join(output_path, 'test.tif')
-    real_path = os.path.join(output_path, 'real.tif')
     print(cv2.imwrite(out_path, pred))
-    print(cv2.imwrite(real_path, image))
 
     cheap = cheap_tiling_prediction(image, window_size=input_size, nb_classes=1, pred_func=(
         lambda img_batch_subdiv: model.predict(

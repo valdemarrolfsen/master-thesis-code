@@ -19,7 +19,7 @@ def callbacks(logdir, weightsdir, filename, monitor_val='val_acc', base_lr=1e-4,
     else:
         lr_callback = ReduceLROnPlateau(monitor=monitor_val, factor=np.sqrt(0.1), verbose=1, patience=3, min_lr=0.1e-6, mode=mode)
 
-    early_stopping = EarlyStopping(monitor=monitor_val, patience=6, verbose=1, mode=mode)
+    early_stopping = EarlyStopping(monitor=monitor_val, patience=7, verbose=1, mode=mode)
     return [checkpoint, lr_callback, tensorboard_callback, early_stopping]
 
 
@@ -35,12 +35,24 @@ class ValidationCallback(Callback):
         logs = logs or {}
         images, masks = next(self.generator)
         probs = self.model.predict(images, verbose=0)
+        if self.binary:
+            probs = np.round(probs)
+        else:
+            probs = np.argmax(probs, axis=3)
+            masks = np.argmax(masks, axis=3)
+
         for _ in tqdm(range(self.steps-1)):
             ims, mas = next(self.generator)
             p = self.model.predict(ims, verbose=0)
+            if self.binary:
+                p = np.round(p)
+            else:
+                p = np.argmax(p, axis=3)
+                mas = np.argmax(mas, axis=3)
             probs = np.concatenate((probs, p))
             masks = np.concatenate((masks, mas))
-        iou = batch_general_jaccard(masks, probs, binary=self.binary)
+
+        iou = batch_general_jaccard(masks, probs)
         miou = np.mean(iou)
         print('mean IOU: {}'.format(miou))
         logs['mIOU'] = miou

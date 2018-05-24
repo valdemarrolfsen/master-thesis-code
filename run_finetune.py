@@ -1,32 +1,29 @@
-import os
-
 import numpy as np
+import os
 import tensorflow as tf
 from keras import backend as K
 from keras.optimizers import Adam
 
 from keras_utils.callbacks import callbacks, ValidationCallback
 from keras_utils.generators import create_generator
-from keras_utils.losses import binary_soft_jaccard_loss
+from keras_utils.losses import binary_soft_jaccard_loss, soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from networks.densenet.densenet import build_densenet
-from networks.unet.train import session_config
 from networks.unet.unet import build_unet
 
 datasets = [
-    #'buildings',
-    #'roads',
-    #'water',
-    'vegetation'
+    'multiclass',
 ]
 
 runs = [
-    # {'name': 'unet-{}-final', 'pre_weights_name': None, 'network': 'unet', 'base_lr': 0.0002, 'max_lr': 0.002, 'input_size': 320, 'batch_size': 20},
-    # {'name': 'densenet-{}-final-finetune', 'pre_weights_name': 'densenet-{}-final', 'network': 'densenet', 'base_lr': 0.000002,
-    # 'max_lr': 0.000055, 'input_size': 320, 'batch_size': 2},
-    {'name': 'unet-{}-final-finetune', 'pre_weights_name': 'unet-{}-final', 'network': 'unet', 'base_lr': 0.00002, 'max_lr': 0.0002, 'input_size': 512,
-     'batch_size': 10}
+    {'name': 'unet-{}-final', 'pre_weights_name': None, 'network': 'unet', 'base_lr': 0.0002, 'max_lr': 0.002, 'input_size': 320, 'batch_size': 20},
+    {'name': 'unet-{}-final-finetune', 'pre_weights_name': 'unet-{}-final', 'network': 'unet', 'base_lr': 0.00002, 'max_lr': 0.0002,
+     'input_size': 512, 'batch_size': 10},
+    # {'name': 'densenet-{}-final', 'pre_weights_name': None, 'network': 'densenet', 'base_lr': 0.00002, 'max_lr': 0.00055, 'input_size': 256,
+    #  'batch_size': 4},
+    # {'name': 'densenet-{}-final-finetune', 'pre_weights_name': 'densenet-{}-final', 'network': 'densenet', 'base_lr': 0.000002, 'max_lr': 0.000055,
+    #  'input_size': 320, 'batch_size': 2},
 ]
 
 
@@ -35,7 +32,6 @@ def run():
     tf.set_random_seed(2)
     data_dir = '/data/{}/'
     weights_dir = 'weights_train'
-    binary = True
 
     for i, run in enumerate(runs):
         base_lr = run['base_lr']
@@ -49,13 +45,15 @@ def run():
 
         for j, dataset in enumerate(datasets):
 
-            session_config()
+            binary = True if dataset != 'multiclass' else False
+            nb_classes = 1 if binary else 5
+
             print('Running training for {}'.format(dataset))
             train_generator, num_samples = create_generator(
                 os.path.join(data_dir.format(dataset), 'train'),
                 input_size,
                 batch_size,
-                1,
+                nb_classes=nb_classes,
                 rescale=True,
                 binary=binary,
                 augment=False,
@@ -67,7 +65,7 @@ def run():
                 os.path.join(data_dir.format(dataset), 'val'),
                 input_size,
                 batch_size,
-                1,
+                nb_classes=nb_classes,
                 rescale=True,
                 binary=binary,
                 augment=False,
@@ -76,18 +74,23 @@ def run():
             )
 
             if run['network'] == 'unet':
-                model = build_unet(input_size, nb_classes=1)
+                model = build_unet(input_size, nb_classes=nb_classes)
             else:
-                model = build_densenet(input_size, 1, 67)
+                model = build_densenet(input_size, nb_classes, 67)
 
             model.summary()
             gpus = get_number_of_gpus()
             print('Fund {} gpus'.format(gpus))
             if gpus > 1:
                 model = ModelMGPU(model, gpus)
+
+            if binary:
+                loss = binary_soft_jaccard_loss
+            else:
+                loss = soft_jaccard_loss
             model.compile(
                 optimizer=Adam(),
-                loss=binary_soft_jaccard_loss,
+                loss=loss,
                 metrics=['acc', binary_jaccard_distance_rounded])
 
             if run['pre_weights_name']:
@@ -99,7 +102,7 @@ def run():
             steps_per_epoch = num_samples // batch_size
             cyclic = 'triangular2'
 
-            cb = [ValidationCallback(val_samples // batch_size, val_generator)] + callbacks(
+            cb = [ValidationCallback(val_samples // batch_size, val_generator, binary=binary)] + callbacks(
                 logs_dir.format(dataset),
                 filename=weights_name.format(dataset), weightsdir=weights_dir,
                 monitor_val='mIOU',
@@ -109,11 +112,10 @@ def run():
             model.fit_generator(
                 generator=train_generator,
                 steps_per_epoch=steps_per_epoch,
-                epochs=20, verbose=True,
+                epochs=100, verbose=True,
                 workers=8,
                 callbacks=cb
             )
-
             K.clear_session()
 
 
