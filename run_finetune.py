@@ -74,8 +74,6 @@ def run():
             binary = True if dataset != 'multiclass' else False
             nb_classes = 1 if binary else 5
 
-            print(binary)
-
             print('Running training for {}'.format(dataset))
 
             train_generator, num_samples = create_generator(
