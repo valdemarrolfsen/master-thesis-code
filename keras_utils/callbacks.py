@@ -19,7 +19,7 @@ def callbacks(logdir, weightsdir, filename, monitor_val='val_acc', base_lr=1e-4,
     else:
         lr_callback = ReduceLROnPlateau(monitor=monitor_val, factor=np.sqrt(0.1), verbose=1, patience=3, min_lr=0.1e-6, mode=mode)
 
-    early_stopping = EarlyStopping(monitor=monitor_val, patience=6, verbose=1, mode=mode)
+    early_stopping = EarlyStopping(monitor=monitor_val, patience=7, verbose=1, mode=mode)
     return [checkpoint, lr_callback, tensorboard_callback, early_stopping]
 
 
