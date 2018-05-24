@@ -38,6 +38,7 @@ def run(args):
         batch_size,
         nb_classes=n_classes,
         rescale=True,
+        with_file_names=True,
         binary=binary,
         augment=False,
         mean=np.array([[[0.36654497, 0.35386439, 0.30782658]]]),
