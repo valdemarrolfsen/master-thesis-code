@@ -36,7 +36,7 @@ runs = [
         'max_lr': 0.0002,
         'input_size': 512,
         'batch_size': 10,
-        'rescale_masks': True,
+        'rescale_masks': False,
         'datasets': ['multiclass']
     },
     {
@@ -47,7 +47,7 @@ runs = [
         'max_lr': 0.0002,
         'input_size': 512,
         'batch_size': 10,
-        'rescale_masks': False,
+        'rescale_masks': True,
         'datasets': ['inra']
     }
 ]

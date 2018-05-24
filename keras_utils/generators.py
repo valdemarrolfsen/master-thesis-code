@@ -59,7 +59,6 @@ def set_up_generators(rescale):
     image_datagen = ImageDataGenerator(**datagen_args)
 
     if not rescale:
-        print("Noe rescale needed")
         datagen_args['rescale'] = None
 
     datagen_args['featurewise_std_normalization'] = False
