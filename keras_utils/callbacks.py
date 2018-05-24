@@ -38,8 +38,8 @@ class ValidationCallback(Callback):
         if self.binary:
             probs = np.round(probs)
         else:
-            probs = np.argmax(probs, axis=2)
-            masks = np.argmax(masks, axis=2)
+            probs = np.argmax(probs, axis=3)
+            masks = np.argmax(masks, axis=3)
 
         for _ in tqdm(range(self.steps-1)):
             ims, mas = next(self.generator)
@@ -47,8 +47,8 @@ class ValidationCallback(Callback):
             if self.binary:
                 p = np.round(p)
             else:
-                p = np.argmax(p, axis=2)
-                mas = np.argmax(mas, axis=2)
+                p = np.argmax(p, axis=3)
+                mas = np.argmax(mas, axis=3)
             probs = np.concatenate((probs, p))
             masks = np.concatenate((masks, mas))
 

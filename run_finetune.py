@@ -6,7 +6,7 @@ from keras.optimizers import Adam
 
 from keras_utils.callbacks import callbacks, ValidationCallback
 from keras_utils.generators import create_generator
-from keras_utils.losses import binary_soft_jaccard_loss
+from keras_utils.losses import binary_soft_jaccard_loss, soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from networks.densenet.densenet import build_densenet
@@ -83,9 +83,14 @@ def run():
             print('Fund {} gpus'.format(gpus))
             if gpus > 1:
                 model = ModelMGPU(model, gpus)
+
+            if binary:
+                loss = binary_soft_jaccard_loss
+            else:
+                loss = soft_jaccard_loss
             model.compile(
                 optimizer=Adam(),
-                loss=binary_soft_jaccard_loss,
+                loss=loss,
                 metrics=['acc', binary_jaccard_distance_rounded])
 
             if run['pre_weights_name']:
