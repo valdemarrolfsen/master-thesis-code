@@ -62,6 +62,8 @@ def run(args):
     probs = model.predict(images, verbose=1)
 
     probs = np.argmax(probs, axis=3)
+    masks = np.argmax(masks, axis=3)
+
     iou = batch_general_jaccard(masks, probs)
     f1 = f1_score(masks, probs)
     print('Mean IOU: {}'.format(np.mean(iou)))
@@ -72,7 +74,7 @@ def run(args):
 
     for i, prob in enumerate(probs):
         result = prob
-        mask_result = np.argmax(masks[i], axis=2)
+        mask_result = masks[i]
 
         # img = get_real_image(images_path, file_names[i])
         raster = get_real_image(images_path, file_names[i], use_gdal=True)
