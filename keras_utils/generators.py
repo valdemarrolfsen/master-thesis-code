@@ -30,7 +30,7 @@ def load_images_from_folder(folder, num_samples=5000):
     return np.array(images)
 
 
-def set_up_generators():
+def set_up_generators(rescale):
     datagen_args = dict(
         data_format='channels_last',
         # set input mean to 0 over the dataset
@@ -58,8 +58,9 @@ def set_up_generators():
 
     image_datagen = ImageDataGenerator(**datagen_args)
 
-    # We do not want to augment the labels other than skew and shift
-    datagen_args['rescale'] = None
+    if not rescale:
+        datagen_args['rescale'] = None
+
     datagen_args['featurewise_std_normalization'] = False
     datagen_args['featurewise_center'] = False
     label_datagen = ImageDataGenerator(**datagen_args)
@@ -75,7 +76,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
         raise ValueError('You need to provide mean and std to the generator')
 
     # Set up the generators
-    image_datagen, label_datagen = set_up_generators()
+    image_datagen, label_datagen = set_up_generators(rescale)
 
     image_datagen.mean = mean
     image_datagen.std = std
