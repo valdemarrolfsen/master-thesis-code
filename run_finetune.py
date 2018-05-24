@@ -17,17 +17,17 @@ datasets = [
 ]
 
 runs = [
-    {
-        'name': 'unet-{}-final',
-        'pre_weights_name': None,
-        'network': 'unet',
-        'base_lr': 0.0002,
-        'max_lr': 0.002,
-        'input_size': 320,
-        'batch_size': 20,
-        'rescale_masks': False,
-        'datasets': ['multiclass']
-    },
+    # {
+    #     'name': 'unet-{}-final',
+    #     'pre_weights_name': None,
+    #     'network': 'unet',
+    #     'base_lr': 0.0002,
+    #     'max_lr': 0.002,
+    #     'input_size': 320,
+    #     'batch_size': 20,
+    #     'rescale_masks': False,
+    #     'datasets': ['multiclass']
+    # },
     {
         'name': 'unet-{}-final-finetune',
         'pre_weights_name': 'unet-{}-final',
