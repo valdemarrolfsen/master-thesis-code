@@ -129,7 +129,7 @@ def run():
             steps_per_epoch = num_samples // batch_size
             cyclic = 'triangular2'
 
-            cb = [ValidationCallback(val_samples // batch_size, val_generator, binary=binary)] + callbacks(
+            cb = [ValidationCallback(400, val_generator, binary=binary)] + callbacks(
                 logs_dir.format(dataset),
                 filename=weights_name.format(dataset), weightsdir=weights_dir,
                 monitor_val='mIOU',
