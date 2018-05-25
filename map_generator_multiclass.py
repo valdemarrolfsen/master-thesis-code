@@ -102,7 +102,7 @@ def run():
         )
     )
     pred = np.argmax(pred, axis=2)
-    pred_color = np.zeros((input_size, input_size, 3))
+    pred_color = np.zeros((image.shape[0], image.shape[1], 3))
 
     class_color_map = {
         0: [237, 237, 237],  # Empty
@@ -127,7 +127,7 @@ def run():
     ))
 
     cheap = np.argmax(cheap, axis=2)
-    cheap_color = np.zeros((input_size, input_size, 3))
+    cheap_color = np.zeros((image.shape[0], image.shape[1], 3))
 
     for c in range(nb_classes):
         cheap_color[:, :, 0] += ((cheap[:, :] == c) * (class_color_map[c][2])).astype('uint8')
