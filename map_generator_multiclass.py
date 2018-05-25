@@ -69,7 +69,7 @@ def run():
     image_path = args.test_image
     input_size = args.input_size
     output_path = args.output_path
-
+    nb_classes = 5
     model_choices = {
         'unet': build_unet,
         'densenet': build_densenet
@@ -94,17 +94,31 @@ def run():
         image,
         window_size=input_size,
         subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
-        nb_classes=1,
+        nb_classes=nb_classes,
         pred_func=(
             lambda img_batch_subdiv: model.predict(
                 image_to_neural_input(img_batch_subdiv, generator), verbose=True
             )
         )
     )
-    pred = np.round(pred)
-    pred = (pred[:, :, 0] * 255.).astype(np.uint8)
+    pred = np.argmax(pred, axis=2)
+    pred_color = np.zeros((input_size, input_size, 3))
+
+    class_color_map = {
+        0: [237, 237, 237],  # Empty
+        1: [254, 241, 179],  # Roads
+        2: [116, 173, 209],  # Water
+        3: [193, 235, 176],  # Grass
+        4: [170, 170, 170]  # Buildings
+    }
+
+    for c in range(nb_classes):
+        pred_color[:, :, 0] += ((pred[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+        pred_color[:, :, 1] += ((pred[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+        pred_color[:, :, 2] += ((pred[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+
     out_path = os.path.join(output_path, 'test.tif')
-    print(cv2.imwrite(out_path, pred))
+    print(cv2.imwrite(out_path, pred_color))
 
     cheap = cheap_tiling_prediction(image, window_size=input_size, nb_classes=1, pred_func=(
         lambda img_batch_subdiv: model.predict(
@@ -112,15 +126,16 @@ def run():
         )
     ))
 
-    # cheap = overlapping_predictions(image, input_size, pred_func=(
-    #     lambda img_batch_subdiv: model.predict(
-    #         image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
-    #     ))
-    # )
-    cheap = np.round(cheap)
-    cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
+    cheap = np.argmax(cheap, axis=2)
+    cheap_color = np.zeros((input_size, input_size, 3))
+
+    for c in range(nb_classes):
+        cheap_color[:, :, 0] += ((cheap[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+        cheap_color[:, :, 1] += ((cheap[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+        cheap_color[:, :, 2] += ((cheap[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+
     out_path = os.path.join(output_path, 'test-cheap.tif')
-    print(cv2.imwrite(out_path, cheap))
+    print(cv2.imwrite(out_path, cheap_color))
 
 
 if __name__ == '__main__':
