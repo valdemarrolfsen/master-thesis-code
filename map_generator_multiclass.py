@@ -120,7 +120,7 @@ def run():
     out_path = os.path.join(output_path, 'test.tif')
     print(cv2.imwrite(out_path, pred_color))
 
-    cheap = cheap_tiling_prediction(image, window_size=input_size, nb_classes=1, pred_func=(
+    cheap = cheap_tiling_prediction(image, window_size=input_size, nb_classes=nb_classes, pred_func=(
         lambda img_batch_subdiv: model.predict(
             image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
         )
