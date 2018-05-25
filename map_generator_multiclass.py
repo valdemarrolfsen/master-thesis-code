@@ -76,7 +76,7 @@ def run():
     }
 
     model_choice = model_choices[model_name]
-    model = model_choice((input_size, input_size), 1)
+    model = model_choice((input_size, input_size), nb_classes)
     gpus = get_number_of_gpus()
     print('Fund {} gpus'.format(gpus))
     if gpus > 1:
