@@ -33,15 +33,8 @@ class ValidationCallback(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
-        images, masks = next(self.generator)
-        probs = self.model.predict(images, verbose=0)
-        if self.binary:
-            probs = np.round(probs)
-        else:
-            probs = np.argmax(probs, axis=3)
-            masks = np.argmax(masks, axis=3)
-
-        for _ in tqdm(range(self.steps-1)):
+        ious = []
+        for _ in tqdm(range(self.steps)):
             ims, mas = next(self.generator)
             p = self.model.predict(ims, verbose=0)
             if self.binary:
@@ -49,11 +42,8 @@ class ValidationCallback(Callback):
             else:
                 p = np.argmax(p, axis=3)
                 mas = np.argmax(mas, axis=3)
-            probs = np.concatenate((probs, p))
-            masks = np.concatenate((masks, mas))
-
-        iou = batch_general_jaccard(masks, probs)
-        miou = np.mean(iou)
+            ious.append(np.mean(batch_general_jaccard(mas, p)))
+        miou = np.mean(ious)
         print('mean IOU: {}'.format(miou))
         logs['mIOU'] = miou
 
