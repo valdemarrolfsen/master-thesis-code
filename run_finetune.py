@@ -12,10 +12,6 @@ from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
 
-datasets = [
-    'multiclass',
-]
-
 runs = [
     # {
     #     'name': 'unet-{}-final',
@@ -28,17 +24,17 @@ runs = [
     #     'rescale_masks': False,
     #     'datasets': ['multiclass']
     # },
-    {
-        'name': 'unet-{}-final-finetune',
-        'pre_weights_name': 'unet-{}-final',
-        'network': 'unet',
-        'base_lr': 0.00002,
-        'max_lr': 0.0002,
-        'input_size': 512,
-        'batch_size': 10,
-        'rescale_masks': False,
-        'datasets': ['multiclass']
-    },
+    # {
+    #     'name': 'unet-{}-final-finetune',
+    #     'pre_weights_name': 'unet-{}-final',
+    #     'network': 'unet',
+    #     'base_lr': 0.00002,
+    #     'max_lr': 0.0002,
+    #     'input_size': 512,
+    #     'batch_size': 10,
+    #     'rescale_masks': False,
+    #     'datasets': ['multiclass']
+    # },
     {
         'name': 'unet-{}-finetune',
         'pre_weights_name': 'unet-{}-final',
