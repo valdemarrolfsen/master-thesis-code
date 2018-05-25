@@ -63,12 +63,14 @@ def run():
     parser.add_argument("--output-path", type=str, default="")
     parser.add_argument("--input-size", type=int, default=713)
     parser.add_argument("--model-name", type=str, default="")
+    parser.add_argument("--name", type=str, default="")
 
     args = parser.parse_args()
     model_name = args.model_name
     image_path = args.test_image
     input_size = args.input_size
     output_path = args.output_path
+    output_name = args.name
 
     model_choices = {
         'unet': build_unet,
@@ -103,7 +105,7 @@ def run():
     )
     pred = np.round(pred)
     pred = (pred[:, :, 0] * 255.).astype(np.uint8)
-    out_path = os.path.join(output_path, 'test.tif')
+    out_path = os.path.join(output_path, output_name)
     print(cv2.imwrite(out_path, pred))
 
     cheap = cheap_tiling_prediction(image, window_size=input_size, nb_classes=1, pred_func=(
