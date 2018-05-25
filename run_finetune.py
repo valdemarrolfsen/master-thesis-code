@@ -37,7 +37,7 @@ runs = [
     # },
     {
         'name': 'unet-{}-finetune',
-        'pre_weights_name': 'unet-{}-final',
+        'pre_weights_name': 'unet-{}',
         'network': 'unet',
         'base_lr': 0.00002,
         'max_lr': 0.0002,
