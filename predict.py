@@ -44,8 +44,7 @@ def run(args):
     model.load_weights(args.weights_path)
 
     binary = n_classes == 1
-
-    generator, _ = create_generator(
+    generator, samples = create_generator(
         images_path,
         (input_size, input_size),
         batch_size,
@@ -58,64 +57,70 @@ def run(args):
         std=np.array([[[0.19212837, 0.19031791, 0.18903286]]])
     )
 
-    images, masks, file_names = next(generator)
-    probs = model.predict(images, verbose=1)
+    steps = samples // batch_size
+    f1s = []
+    ious = []
+    for i in range(steps):
+        images, masks, file_names = next(generator)
+        probs = model.predict(images, verbose=1)
 
-    probs = np.argmax(probs, axis=3)
-    masks = np.argmax(masks, axis=3)
+        probs = np.argmax(probs, axis=3)
+        masks = np.argmax(masks, axis=3)
+        iou = batch_general_jaccard(masks, probs)
+        ious.append(iou)
+        f1 = f1_score(masks, probs)
+        f1s.append(f1)
 
-    iou = batch_general_jaccard(masks, probs)
-    f1 = f1_score(masks, probs)
-    print('Mean IOU: {}'.format(np.mean(iou)))
-    print('F1 score: {}'.format(f1))
+        if not save_imgs:
+            continue
 
-    if not save_imgs:
-        return
+        for i, prob in enumerate(probs):
+            result = prob
+            mask_result = masks[i]
 
-    for i, prob in enumerate(probs):
-        result = prob
-        mask_result = masks[i]
+            # img = get_real_image(images_path, file_names[i])
+            raster = get_real_image(images_path, file_names[i], use_gdal=True)
+            R = raster.GetRasterBand(1).ReadAsArray()
+            G = raster.GetRasterBand(2).ReadAsArray()
+            B = raster.GetRasterBand(3).ReadAsArray()
+            img = np.zeros((512, 512, 3))
+            img[:, :, 0] = B
+            img[:, :, 1] = G
+            img[:, :, 2] = R
 
-        # img = get_real_image(images_path, file_names[i])
-        raster = get_real_image(images_path, file_names[i], use_gdal=True)
-        R = raster.GetRasterBand(1).ReadAsArray()
-        G = raster.GetRasterBand(2).ReadAsArray()
-        B = raster.GetRasterBand(3).ReadAsArray()
-        img = np.zeros((512, 512, 3))
-        img[:, :, 0] = B
-        img[:, :, 1] = G
-        img[:, :, 2] = R
+            seg_img = np.zeros((input_size, input_size, 3))
+            seg_mask = np.zeros((input_size, input_size, 3))
 
-        seg_img = np.zeros((input_size, input_size, 3))
-        seg_mask = np.zeros((input_size, input_size, 3))
+            for c in range(n_classes):
+                seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+                seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+                seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
-        for c in range(n_classes):
-            seg_img[:, :, 0] += ((result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
-            seg_img[:, :, 1] += ((result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
-            seg_img[:, :, 2] += ((result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+                seg_mask[:, :, 0] += ((mask_result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
+                seg_mask[:, :, 1] += ((mask_result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
+                seg_mask[:, :, 2] += ((mask_result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
-            seg_mask[:, :, 0] += ((mask_result[:, :] == c) * (class_color_map[c][2])).astype('uint8')
-            seg_mask[:, :, 1] += ((mask_result[:, :] == c) * (class_color_map[c][1])).astype('uint8')
-            seg_mask[:, :, 2] += ((mask_result[:, :] == c) * (class_color_map[c][0])).astype('uint8')
+            pred_name = "pred-{}.tif".format(i)
+            pred_save_path = "{}/{}".format(args.output_path, pred_name)
 
-        pred_name = "pred-{}.tif".format(i)
-        pred_save_path = "{}/{}".format(args.output_path, pred_name)
+            cv2.imwrite(pred_save_path, seg_img)
+            cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), seg_mask)
+            cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
 
-        cv2.imwrite(pred_save_path, seg_img)
-        cv2.imwrite("{}/mask-{}.tif".format(args.output_path, i), seg_mask)
-        cv2.imwrite("{}/image-{}.tif".format(args.output_path, i), img)
+            try:
+                # Get coordinates for corresponding image
+                ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(raster)
 
-        try:
-            # Get coordinates for corresponding image
-            ulx, scalex, skewx, uly, skewy, scaley = get_geo_frame(raster)
+                # Geo reference newly created raster
+                geo_reference_raster(
+                    pred_save_path,
+                    [ulx, scalex, skewx, uly, skewy, scaley]
+                )
+            except ValueError as e:
+                print("Was not able to reference image at path: {}".format(pred_save_path))
 
-            # Geo reference newly created raster
-            geo_reference_raster(
-                pred_save_path,
-                [ulx, scalex, skewx, uly, skewy, scaley]
-            )
-        except ValueError as e:
-            print("Was not able to reference image at path: {}".format(pred_save_path))
+    print('Mean IOU: {}'.format(np.mean(ious)))
+    print('F1 score: {}'.format(f1s))
 
 
 if __name__ == '__main__':
