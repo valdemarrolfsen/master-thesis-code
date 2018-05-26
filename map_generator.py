@@ -92,21 +92,21 @@ def run():
     generator = get_generator()
     # load the image
     image = np.array(Image.open(image_path))
-    pred = predict_img_with_smooth_windowing(
-        image,
-        window_size=input_size,
-        subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
-        nb_classes=1,
-        pred_func=(
-            lambda img_batch_subdiv: model.predict(
-                image_to_neural_input(img_batch_subdiv, generator), verbose=True
-            )
-        )
-    )
-    pred = np.round(pred)
-    pred = (pred[:, :, 0] * 255.).astype(np.uint8)
-    out_path = os.path.join(output_path, output_name)
-    print(cv2.imwrite(out_path, pred))
+    # pred = predict_img_with_smooth_windowing(
+    #     image,
+    #     window_size=input_size,
+    #     subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
+    #     nb_classes=1,
+    #     pred_func=(
+    #         lambda img_batch_subdiv: model.predict(
+    #             image_to_neural_input(img_batch_subdiv, generator), verbose=True
+    #         )
+    #     )
+    # )
+    # pred = np.round(pred)
+    # pred = (pred[:, :, 0] * 255.).astype(np.uint8)
+    # out_path = os.path.join(output_path, output_name)
+    # print(cv2.imwrite(out_path, pred))
 
     cheap = cheap_tiling_prediction(image, window_size=input_size, nb_classes=1, pred_func=(
         lambda img_batch_subdiv: model.predict(
@@ -121,7 +121,7 @@ def run():
     # )
     cheap = np.round(cheap)
     cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
-    out_path = os.path.join(output_path, 'test-cheap.tif')
+    out_path = os.path.join(output_path, '{}-cheap.tif'.format(output_name))
     print(cv2.imwrite(out_path, cheap))
 
 
