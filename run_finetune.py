@@ -13,38 +13,27 @@ from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
 
 runs = [
-    # {
-    #     'name': 'unet-{}-final',
-    #     'pre_weights_name': None,
-    #     'network': 'unet',
-    #     'base_lr': 0.0002,
-    #     'max_lr': 0.002,
-    #     'input_size': 320,
-    #     'batch_size': 20,
-    #     'rescale_masks': False,
-    #     'datasets': ['multiclass']
-    # },
-    # {
-    #     'name': 'unet-{}-final-finetune',
-    #     'pre_weights_name': 'unet-{}-final',
-    #     'network': 'unet',
-    #     'base_lr': 0.00002,
-    #     'max_lr': 0.0002,
-    #     'input_size': 512,
-    #     'batch_size': 10,
-    #     'rescale_masks': False,
-    #     'datasets': ['multiclass']
-    # },
     {
-        'name': 'unet-{}-finetune',
-        'pre_weights_name': 'unet-{}',
-        'network': 'unet',
+        'name': 'densenet-{}-final',
+        'pre_weights_name': None,
+        'network': 'densenet',
         'base_lr': 0.00002,
-        'max_lr': 0.0002,
-        'input_size': 512,
-        'batch_size': 10,
-        'rescale_masks': True,
-        'datasets': ['inra']
+        'max_lr': 0.00055,
+        'input_size': 256,
+        'batch_size': 4,
+        'rescale_masks': False,
+        'datasets': ['multiclass']
+    },
+    {
+        'name': 'densenet-{}-final-finetune',
+        'pre_weights_name': 'densenet-{}-final',
+        'network': 'densenet',
+        'base_lr': 0.000002,
+        'max_lr': 0.000055,
+        'input_size': 320,
+        'batch_size': 2,
+        'rescale_masks': False,
+        'datasets': ['multiclass']
     }
 ]
 
