@@ -51,7 +51,7 @@ def batch_general_jaccard(y_true, y_pred):
 def batch_classwise_general_jaccard(y_true, y_pred):
     batch_result = []
     for true, pred in zip(y_true, y_pred):
-        batch_result.append(general_jaccard(true, pred))
+        batch_result.append(classwise_general_jaccard(true, pred))
     return np.mean(batch_result, axis=0)
 
 
@@ -65,6 +65,22 @@ def f1_score(y_true, y_pred):
     precision = c1 / c2
     recall = c1 / c3
     return 2 * (precision * recall) / (precision + recall)
+
+
+def classwise_f1_score(y_true, y_pred):
+    result = []
+
+    if y_true.sum() == 0:
+        if y_pred.sum() == 0:
+            return 1
+        else:
+            return 0
+
+    for cls in set(y_true.flatten()):
+        if cls == 0:
+            continue
+        result += [f1_score(y_true == cls, y_pred == cls)]
+    return result
 
 
 def binary_jaccard_distance_rounded(target, output):
