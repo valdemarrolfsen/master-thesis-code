@@ -120,7 +120,7 @@ def run(args):
                 print("Was not able to reference image at path: {}".format(pred_save_path))
 
     print('Mean IOU: {}'.format(np.mean(ious)))
-    print('F1 score: {}'.format(f1s))
+    print('F1 score: {}'.format(np.mean(f1s)))
 
 
 if __name__ == '__main__':
