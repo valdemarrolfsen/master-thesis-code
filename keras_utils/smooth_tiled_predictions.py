@@ -10,6 +10,7 @@
 
 import numpy as np
 import scipy.signal
+from PIL import Image
 from tqdm import tqdm
 
 import gc
@@ -260,6 +261,31 @@ def cheap_tiling_prediction(img, window_size, nb_classes, pred_func):
         for j in range(0, prd.shape[1], window_size):
             im = img[i:i + window_size, j:j + window_size]
             prd[i:i + window_size, j:j + window_size] = pred_func([im])
+    prd = prd[:original_shape[0], :original_shape[1]]
+    return prd
+
+
+def cheap_densenet_tiling_prediction(img, window_size, nb_classes, pred_func):
+    """
+    Does predictions on an image without tiling.
+    """
+    original_shape = img.shape
+    print(original_shape)
+    full_border = img.shape[0] + (window_size - (img.shape[0] % window_size))
+    prd = np.zeros((full_border, full_border, nb_classes))
+    tmp = np.zeros((full_border, full_border, original_shape[-1]))
+    tmp[:original_shape[0], :original_shape[1], :] = img
+    img = tmp
+    print(img.shape, tmp.shape, prd.shape)
+    for i in tqdm(range(0, prd.shape[0], window_size)):
+        for j in range(0, prd.shape[1], window_size):
+
+            im = img[i:i + window_size, j:j + window_size]
+            im = Image.fromarray(im)
+            im = im.resize((320, 320))
+            im = np.array(im)
+            prd[i:i + 320, j:j + 320] = pred_func([im])
+
     prd = prd[:original_shape[0], :original_shape[1]]
     return prd
 

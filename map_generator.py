@@ -8,7 +8,8 @@ from PIL import Image
 from keras_utils.losses import binary_soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
-from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction, overlapping_predictions
+from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction, overlapping_predictions, \
+    cheap_densenet_tiling_prediction
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
 
@@ -92,28 +93,28 @@ def run():
     generator = get_generator()
     # load the image
     image = np.array(Image.open(image_path))
-    pred = predict_img_with_smooth_windowing(
-        image,
-        window_size=input_size,
-        subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
-        nb_classes=1,
-        pred_func=(
-            lambda img_batch_subdiv: model.predict(
-                image_to_neural_input(img_batch_subdiv, generator), verbose=True
-            )
-        )
-    )
-    pred = np.round(pred)
-    pred = (pred[:, :, 0] * 255.).astype(np.uint8)
-    out_path = os.path.join(output_path, output_name)
-    print(cv2.imwrite(out_path, pred))
-
-    cheap = cheap_tiling_prediction(image, window_size=input_size, nb_classes=1, pred_func=(
+    # pred = predict_img_with_smooth_windowing(
+    #     image,
+    #     window_size=input_size,
+    #     subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
+    #     nb_classes=1,
+    #     pred_func=(
+    #         lambda img_batch_subdiv: model.predict(
+    #             image_to_neural_input(img_batch_subdiv, generator), verbose=True
+    #         )
+    #     )
+    # )
+    # pred = np.round(pred)
+    # pred = (pred[:, :, 0] * 255.).astype(np.uint8)
+    # out_path = os.path.join(output_path, output_name)
+    # print(cv2.imwrite(out_path, pred))
+    #
+    cheap = cheap_densenet_tiling_prediction(image, window_size=512, nb_classes=1, pred_func=(
         lambda img_batch_subdiv: model.predict(
             image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
         )
     ))
-
+    
     cheap = np.round(cheap)
     cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
     out_path = os.path.join(output_path, '{}-cheap.tif'.format(output_name))
