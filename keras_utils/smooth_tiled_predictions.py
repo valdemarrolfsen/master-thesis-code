@@ -289,6 +289,7 @@ def cheap_densenet_tiling_prediction(img, window_size, nb_classes, pred_func):
             prd[_i:_i + 320, _j:_j + 320] = pred_func([im])
             _j += 320
         _i += 320
+        _j = 0
 
     prd = prd[:original_shape[0], :original_shape[1]]
     return prd
