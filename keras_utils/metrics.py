@@ -99,7 +99,7 @@ def classwise_f1_score(y_true, y_pred):
     for cls in set(y_true.flatten()):
         if cls == 0:
             continue
-        result += [sk_f1(y_true == cls, y_pred == cls)]
+        result += [sk_f1((y_true == cls).astype(np.int), (y_pred == cls).astype(np.int))]
     return result
 
 
