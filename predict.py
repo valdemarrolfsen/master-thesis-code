@@ -120,7 +120,7 @@ def run(args):
             except ValueError as e:
                 print("Was not able to reference image at path: {}".format(pred_save_path))
 
-    print('Mean IOU: {}'.format(np.mean(ious, axis=0)))
+    print('Mean IOU: {}'.format(np.mean(ious)))
     print('F1 score: {}'.format(np.mean(f1s)))
 
 
