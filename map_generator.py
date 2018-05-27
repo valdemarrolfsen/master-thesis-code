@@ -114,7 +114,7 @@ def run():
             image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
         )
     ))
-    
+
     cheap = np.round(cheap)
     cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
     out_path = os.path.join(output_path, '{}-cheap.tif'.format(output_name))
