@@ -218,7 +218,7 @@ def _windowed_dense_subdivs(padded_img, window_size, subdivisions, nb_classes, p
         im = np.array(im)
         temp_divs.append(im)
 
-    subdivs = pred_func(temp_divs)
+    subdivs = pred_func(np.array(temp_divs))
     temp_divs = None
 
     out_divs = []
