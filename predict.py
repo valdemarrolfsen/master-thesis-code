@@ -20,7 +20,7 @@ def run(args):
     images_path = args.test_images
     input_size = args.input_size
     batch_size = args.batch_size
-    save_imgs = args.save_imgs
+    no_save_imgs = args.no_save_imgs
 
     model_choices = {
         'unet': build_unet,
@@ -72,7 +72,7 @@ def run(args):
         ious.append(iou)
         f1s.append(f1)
 
-        if not save_imgs:
+        if no_save_imgs:
             continue
 
         for i, prob in enumerate(probs):
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     parser.add_argument("--batch-size", type=int, default=713)
     parser.add_argument("--model-name", type=str, default="")
     parser.add_argument("--classes", type=int)
-    parser.add_argument("--save-imgs", type=bool, default=True)
+    parser.add_argument("--no-save-imgs", type=bool, default=True)
 
     class_color_map = {
         0: [237, 237, 237],  # Empty
