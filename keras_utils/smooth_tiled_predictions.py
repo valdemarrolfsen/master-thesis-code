@@ -204,6 +204,7 @@ def _windowed_dense_subdivs(padded_img, window_size, subdivisions, nb_classes, p
 
     temp_divs = []
     for div in subdivs:
+        div = np.array(div)
         im = Image.fromarray(div.astype(np.uint8))
         im = im.resize((320, 320))
         im = np.array(im)
