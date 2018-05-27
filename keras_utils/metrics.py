@@ -25,6 +25,22 @@ def general_jaccard(y_true, y_pred):
     return np.mean(result)
 
 
+def classwise_general_jaccard(y_true, y_pred):
+    result = []
+
+    if y_true.sum() == 0:
+        if y_pred.sum() == 0:
+            return 1
+        else:
+            return 0
+
+    for cls in set(y_true.flatten()):
+        if cls == 0:
+            continue
+        result += [boolean_jaccard(y_true == cls, y_pred == cls)]
+    return result
+
+
 def batch_general_jaccard(y_true, y_pred):
     batch_result = []
     for true, pred in zip(y_true, y_pred):
