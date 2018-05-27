@@ -6,7 +6,7 @@ from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
 from PIL import Image
 from keras_utils.losses import binary_soft_jaccard_loss
-from keras_utils.metrics import binary_jaccard_distance_rounded
+from keras_utils.metrics import binary_jaccard_distance_rounded, batch_general_jaccard, f1_score
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction, overlapping_predictions
 from networks.densenet.densenet import build_densenet
@@ -64,6 +64,7 @@ def run():
     parser.add_argument("--input-size", type=int, default=713)
     parser.add_argument("--model-name", type=str, default="")
     parser.add_argument("--name", type=str, default="")
+    parser.add_argument("--mask", type=str, default="")
 
     args = parser.parse_args()
     model_name = args.model_name
@@ -71,6 +72,7 @@ def run():
     input_size = args.input_size
     output_path = args.output_path
     file_name = args.name
+    mask = args.mask
 
     nb_classes = 5
     model_choices = {
@@ -107,6 +109,12 @@ def run():
     pred = np.argmax(pred, axis=2)
     pred_color = np.zeros((image.shape[0], image.shape[1], 3))
 
+    if mask:
+        mask = cv2.imread(mask, 0)
+    print('mIOU:', batch_general_jaccard(mask, pred))
+    print('F1:', f1_score(mask, pred))
+
+
     class_color_map = {
         0: [237, 237, 237],  # Empty
         1: [254, 241, 179],  # Roads
@@ -131,6 +139,10 @@ def run():
 
     cheap = np.argmax(cheap, axis=2)
     cheap_color = np.zeros((image.shape[0], image.shape[1], 3))
+
+    if mask:
+        print('cheap mIOU:', batch_general_jaccard(mask, cheap))
+        print('cheap F1:', f1_score(mask, cheap))
 
     for c in range(nb_classes):
         cheap_color[:, :, 0] += ((cheap[:, :] == c) * (class_color_map[c][2])).astype('uint8')
