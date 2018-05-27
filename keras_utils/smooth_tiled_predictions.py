@@ -277,8 +277,6 @@ def cheap_densenet_tiling_prediction(img, window_size, nb_classes, pred_func):
     tmp[:original_shape[0], :original_shape[1], :] = img
     img = tmp
     print(img.shape, tmp.shape, prd.shape)
-    _i = 0
-    _j = 0
     for i in tqdm(range(0, prd.shape[0], window_size)):
         for j in range(0, prd.shape[1], window_size):
 
@@ -286,10 +284,10 @@ def cheap_densenet_tiling_prediction(img, window_size, nb_classes, pred_func):
             im = Image.fromarray(im.astype(np.uint8))
             im = im.resize((320, 320))
             im = np.array(im)
-            prd[_i:_i + 320, _j:_j + 320] = pred_func([im])
-            _j += 320
-        _i += 320
-        _j = 0
+            p = pred_func([im])
+            p = Image.fromarray(p.astype(np.uint8), 'L')
+            p = p.resize((window_size, window_size))
+            prd[i:i + window_size, j:j + window_size] = p
 
     prd = prd[:original_shape[0], :original_shape[1]]
     return prd
