@@ -5,7 +5,8 @@ from keras.optimizers import Adam
 
 from keras_utils.generators import create_generator
 from keras_utils.losses import binary_soft_jaccard_loss
-from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded
+from keras_utils.metrics import batch_general_jaccard, f1_score, binary_jaccard_distance_rounded, batch_classwise_general_jaccard, \
+    batch_classwise_f1_score
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from keras_utils.prediction import get_real_image, get_geo_frame, geo_reference_raster
 from networks.densenet.densenet import build_densenet
@@ -66,9 +67,9 @@ def run(args):
 
         probs = np.argmax(probs, axis=3)
         masks = np.argmax(masks, axis=3)
-        iou = batch_general_jaccard(masks, probs)
+        iou = batch_classwise_general_jaccard(masks, probs)
+        f1 = batch_classwise_f1_score(masks, probs)
         ious.append(iou)
-        f1 = f1_score(masks, probs)
         f1s.append(f1)
 
         if not save_imgs:
@@ -119,7 +120,7 @@ def run(args):
             except ValueError as e:
                 print("Was not able to reference image at path: {}".format(pred_save_path))
 
-    print('Mean IOU: {}'.format(np.mean(ious)))
+    print('Mean IOU: {}'.format(np.mean(ious, axis=0)))
     print('F1 score: {}'.format(np.mean(f1s)))
 
 
