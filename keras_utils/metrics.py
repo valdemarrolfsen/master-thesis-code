@@ -82,7 +82,7 @@ def batch_classwise_f1_score(y_true, y_pred):
     batch_result = []
     for true, pred in zip(y_true, y_pred):
         batch_result.append(classwise_f1_score(true, pred))
-    return np.mean(batch_result, axis=0)
+    return np.mean(batch_result)
 
 
 def classwise_f1_score(y_true, y_pred):
@@ -98,7 +98,7 @@ def classwise_f1_score(y_true, y_pred):
         if cls == 0:
             continue
         result += [boolean_f1((y_true == cls).astype(np.int), (y_pred == cls).astype(np.int))]
-    return result
+    return np.mean(result)
 
 
 def binary_jaccard_distance_rounded(target, output):

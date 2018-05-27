@@ -67,7 +67,7 @@ def run(args):
 
         probs = np.argmax(probs, axis=3)
         masks = np.argmax(masks, axis=3)
-        iou = batch_classwise_general_jaccard(masks, probs)
+        iou = batch_general_jaccard(masks, probs)
         f1 = batch_classwise_f1_score(masks, probs)
         ious.append(iou)
         f1s.append(f1)
