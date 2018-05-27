@@ -6,7 +6,8 @@ from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
 from PIL import Image
 from keras_utils.losses import binary_soft_jaccard_loss
-from keras_utils.metrics import binary_jaccard_distance_rounded, batch_general_jaccard, f1_score, general_jaccard, batch_classwise_general_jaccard
+from keras_utils.metrics import binary_jaccard_distance_rounded, batch_general_jaccard, f1_score, general_jaccard, batch_classwise_general_jaccard, \
+    batch_classwise_f1_score
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
 from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction, overlapping_predictions
 from networks.densenet.densenet import build_densenet
@@ -114,7 +115,7 @@ def run():
         mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
         p = np.reshape(pred, (1, pred.shape[0], pred.shape[1]))
         print('mIOU:', batch_classwise_general_jaccard(mask, p))
-        print('F1:', f1_score(mask, p))
+        print('F1:', batch_classwise_f1_score(mask, p))
 
     class_color_map = {
         0: [237, 237, 237],  # Empty
@@ -146,7 +147,7 @@ def run():
         mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
         p = np.reshape(cheap, (1, cheap.shape[0], cheap.shape[1]))
         print('mIOU:', batch_classwise_general_jaccard(mask, p))
-        print('F1:', f1_score(mask, p))
+        print('F1:', batch_classwise_f1_score(mask, p))
 
     for c in range(nb_classes):
         cheap_color[:, :, 0] += ((cheap[:, :] == c) * (class_color_map[c][2])).astype('uint8')

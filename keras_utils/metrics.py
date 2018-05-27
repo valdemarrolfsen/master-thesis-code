@@ -67,6 +67,24 @@ def f1_score(y_true, y_pred):
     return 2 * (precision * recall) / (precision + recall)
 
 
+def boolean_f1(y_true, y_pred):
+    c1 = (y_true * y_pred).sum()
+    c2 = np.sum(y_pred)
+    c3 = np.sum(y_true)
+    if c3 == 0:
+        return 0
+    precision = c1 / c2
+    recall = c1 / c3
+    return 2 * (precision * recall) / (precision + recall)
+
+
+def batch_classwise_f1_score(y_true, y_pred):
+    batch_result = []
+    for true, pred in zip(y_true, y_pred):
+        batch_result.append(classwise_f1_score(true, pred))
+    return np.mean(batch_result, axis=0)
+
+
 def classwise_f1_score(y_true, y_pred):
     result = []
 
@@ -79,7 +97,7 @@ def classwise_f1_score(y_true, y_pred):
     for cls in set(y_true.flatten()):
         if cls == 0:
             continue
-        result += [f1_score(y_true == cls, y_pred == cls)]
+        result += [boolean_f1(y_true == cls, y_pred == cls)]
     return result
 
 
