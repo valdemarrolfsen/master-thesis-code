@@ -70,10 +70,13 @@ def f1_score(y_true, y_pred):
 def boolean_f1(y_true, y_pred):
     smooth = K.epsilon()
     c1 = (y_true * y_pred).sum()
-    c2 = np.sum(y_pred)
-    c3 = np.sum(y_true)
+    c2 = y_pred.sum()
+    c3 = y_true.sum()
     if c3 == 0:
         return 0
+    print(c1)
+    print(c2)
+    print(c3)
     precision = c1 + smooth / c2 + smooth
     recall = c1 / c3
     return 2 * (precision * recall) / (precision + recall)
