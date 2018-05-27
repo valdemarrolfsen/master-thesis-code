@@ -109,7 +109,7 @@ def run():
     # out_path = os.path.join(output_path, output_name)
     # print(cv2.imwrite(out_path, pred))
 
-    cheap = cheap_densenet_tiling_prediction(image, window_size=input_size, nb_classes=1, pred_func=(
+    cheap = cheap_densenet_tiling_prediction(image, window_size=512, nb_classes=1, pred_func=(
         lambda img_batch_subdiv: model.predict(
             image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
         )
