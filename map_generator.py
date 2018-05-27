@@ -95,7 +95,7 @@ def run():
     image = np.array(Image.open(image_path))
     pred = predict_img_with_smooth_windowing(
         image,
-        window_size=input_size,
+        window_size=512,
         subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
         nb_classes=1,
         pred_func=(
