@@ -56,7 +56,9 @@ def batch_general_jaccard(y_true, y_pred):
 def batch_classwise_general_jaccard(y_true, y_pred, nb_classes=1):
     batch_result = []
     for true, pred in zip(y_true, y_pred):
-        batch_result.append(classwise_general_jaccard(true, pred, nb_classes))
+        jac = classwise_general_jaccard(true, pred, nb_classes)
+        print(jac)
+        batch_result.append(jac)
     return np.mean(batch_result, axis=0)
 
 
