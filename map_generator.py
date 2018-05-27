@@ -92,10 +92,15 @@ def run():
     model.load_weights(args.weights_path)
     generator = get_generator()
     # load the image
-    image = np.array(Image.open(image_path))
+    image = Image.open(image_path)
+    size = image.size[0]
+    factor = input_size / 512
+    image = image.resize(int(size*factor), int(size*factor))
+    image = np.array(image)
+
     pred = predict_img_with_smooth_windowing(
         image,
-        window_size=512,
+        window_size=input_size,
         subdivisions=2,  # Minimal amount of overlap for windowing. Must be an even number.
         nb_classes=1,
         pred_func=(
@@ -106,17 +111,24 @@ def run():
     )
     pred = np.round(pred)
     pred = (pred[:, :, 0] * 255.).astype(np.uint8)
+
+    pred = Image.fromarray(pred, 'L')
+    pred = pred.resize(size, size)
+    pred = np.array(pred)
     out_path = os.path.join(output_path, output_name)
     print(cv2.imwrite(out_path, pred))
 
-    cheap = cheap_densenet_tiling_prediction(image, window_size=512, nb_classes=1, pred_func=(
+    cheap = cheap_tiling_prediction(image, window_size=input_size, nb_classes=1, pred_func=(
         lambda img_batch_subdiv: model.predict(
             image_to_neural_input(np.array(img_batch_subdiv), generator), verbose=True
         )
     ))
-
     cheap = np.round(cheap)
     cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
+
+    cheap = Image.fromarray(cheap, 'L')
+    cheap = cheap.resize(size, size)
+    cheap = np.array(cheap)
     out_path = os.path.join(output_path, '{}-cheap.tif'.format(output_name))
     print(cv2.imwrite(out_path, cheap))
 

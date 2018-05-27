@@ -175,74 +175,6 @@ def _windowed_subdivs(padded_img, window_size, subdivisions, nb_classes, pred_fu
     return subdivs
 
 
-def _windowed_dense_subdivs(padded_img, window_size, subdivisions, nb_classes, pred_func):
-    """
-    Create tiled overlapping patches.
-    Returns:
-        5D numpy array of shape = (
-            nb_patches_along_X,
-            nb_patches_along_Y,
-            patches_resolution_along_X,
-            patches_resolution_along_Y,
-            nb_output_channels
-        )
-    Note:
-        patches_resolution_along_X == patches_resolution_along_Y == window_size
-    """
-    WINDOW_SPLINE_2D = _window_2D(window_size=window_size, power=2)
-
-    step = int(window_size / subdivisions)
-    padx_len = padded_img.shape[0]
-    pady_len = padded_img.shape[1]
-    subdivs = []
-
-    for i in range(0, padx_len - window_size + 1, step):
-        subdivs.append([])
-        for j in range(0, pady_len - window_size + 1, step):
-            patch = padded_img[i:i + window_size, j:j + window_size, :]
-            subdivs[-1].append(patch)
-
-    temp_divs = []
-    for div in subdivs:
-        div = np.array(div)
-        im = Image.fromarray(div.astype(np.uint8))
-        im = im.resize((320, 320))
-        im = np.array(im)
-        temp_divs.append(im)
-    # Here, `gc.collect()` clears RAM between operations.
-    # It should run faster if they are removed, if enough memory is available.
-    gc.collect()
-
-    subdivs = np.array(temp_divs)
-    gc.collect()
-    a, b, c, d, e = subdivs.shape
-    subdivs = subdivs.reshape(a * b, c, d, e)
-    gc.collect()
-
-    subdivs = pred_func(subdivs)
-    temp_divs = None
-
-    out_divs = []
-    for div in subdivs:
-        p = Image.fromarray(div.astype(np.uint8), 'L')
-        p = p.resize((window_size, window_size))
-        p = np.array(p)
-        p = p.reshape((p.shape[0], p.shape[1], 1))
-        out_divs.append(p)
-
-    subdivs = np.array(out_divs)
-    out_divs = None
-    gc.collect()
-    subdivs = np.array([patch * WINDOW_SPLINE_2D for patch in subdivs])
-    gc.collect()
-
-    # Such 5D array:
-    subdivs = subdivs.reshape(a, b, c, d, nb_classes)
-    gc.collect()
-
-    return subdivs
-
-
 def _recreate_from_subdivs(subdivs, window_size, subdivisions, padded_out_shape):
     """
     Merge tiled overlapping patches smoothly.
@@ -296,7 +228,7 @@ def predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_c
     res = []
     for pad in tqdm(pads):
         # For every rotation:
-        sd = _windowed_dense_subdivs(pad, window_size, subdivisions, nb_classes, pred_func)
+        sd = _windowed_subdivs(pad, window_size, subdivisions, nb_classes, pred_func)
         one_padded_result = _recreate_from_subdivs(
             sd, window_size, subdivisions,
             padded_out_shape=list(pad.shape[:-1]) + [nb_classes])
