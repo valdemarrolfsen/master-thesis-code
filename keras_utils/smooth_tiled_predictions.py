@@ -285,6 +285,8 @@ def cheap_densenet_tiling_prediction(img, window_size, nb_classes, pred_func):
             im = im.resize((320, 320))
             im = np.array(im)
             p = pred_func([im])
+            p = np.round(p)
+            p = p[0]
             p = Image.fromarray(p.astype(np.uint8), 'L')
             p = p.resize((window_size, window_size))
             prd[i:i + window_size, j:j + window_size] = p
