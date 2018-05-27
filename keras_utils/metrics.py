@@ -68,6 +68,7 @@ def f1_score(y_true, y_pred):
 
 
 def boolean_f1(y_true, y_pred):
+    smooth = K.epsilon()
     c1 = (y_true * y_pred).sum()
     c2 = np.sum(y_pred)
     c3 = np.sum(y_true)
@@ -75,7 +76,7 @@ def boolean_f1(y_true, y_pred):
         return 0
     precision = c1 / c2
     recall = c1 / c3
-    return 2 * (precision * recall) / (precision + recall)
+    return 2 * (precision * recall) + smooth / (precision + recall + smooth)
 
 
 def batch_classwise_f1_score(y_true, y_pred):
