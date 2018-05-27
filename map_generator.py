@@ -95,7 +95,7 @@ def run():
     image = Image.open(image_path)
     size = image.size[0]
     factor = input_size / 512
-    image = image.resize(int(size*factor), int(size*factor))
+    image = image.resize((int(size*factor), int(size*factor)))
     image = np.array(image)
 
     pred = predict_img_with_smooth_windowing(
@@ -113,7 +113,7 @@ def run():
     pred = (pred[:, :, 0] * 255.).astype(np.uint8)
 
     pred = Image.fromarray(pred, 'L')
-    pred = pred.resize(size, size)
+    pred = pred.resize((size, size))
     pred = np.array(pred)
     out_path = os.path.join(output_path, output_name)
     print(cv2.imwrite(out_path, pred))
@@ -127,7 +127,7 @@ def run():
     cheap = (cheap[:, :, 0] * 255.).astype(np.uint8)
 
     cheap = Image.fromarray(cheap, 'L')
-    cheap = cheap.resize(size, size)
+    cheap = cheap.resize((size, size))
     cheap = np.array(cheap)
     out_path = os.path.join(output_path, '{}-cheap.tif'.format(output_name))
     print(cv2.imwrite(out_path, cheap))
