@@ -1,6 +1,6 @@
 import numpy as np
 from keras import backend as K
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score as sk_f1
 
 
 def boolean_jaccard(y_true, y_pred):
@@ -75,9 +75,6 @@ def boolean_f1(y_true, y_pred):
     c3 = y_true.sum()
     if c3 == 0:
         return 0
-    print(c1)
-    print(c2)
-    print(c3)
     precision = c1 / c2 + smooth
     recall = c1 / c3
     return 2 * (precision * recall) / (precision + recall)
@@ -102,7 +99,7 @@ def classwise_f1_score(y_true, y_pred):
     for cls in set(y_true.flatten()):
         if cls == 0:
             continue
-        result += [f1_score(y_true == cls, y_pred == cls)]
+        result += [sk_f1(y_true == cls, y_pred == cls)]
     return result
 
 
