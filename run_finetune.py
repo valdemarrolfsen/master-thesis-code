@@ -14,17 +14,6 @@ from networks.unet.unet import build_unet
 
 runs = [
     {
-        'name': 'densenet-{}-final',
-        'pre_weights_name': None,
-        'network': 'densenet',
-        'base_lr': 0.00002,
-        'max_lr': 0.00055,
-        'input_size': 256,
-        'batch_size': 4,
-        'rescale_masks': False,
-        'datasets': ['multiclass']
-    },
-    {
         'name': 'densenet-{}-final-finetune',
         'pre_weights_name': 'densenet-{}-final',
         'network': 'densenet',
