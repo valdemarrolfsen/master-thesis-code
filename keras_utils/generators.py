@@ -67,7 +67,7 @@ def set_up_generators(rescale):
     return image_datagen, label_datagen
 
 
-def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False, augment=False, with_file_names=False, binary=False, mean=None,
+def create_generator(datadir, input_size, batch_size, nb_classes, rescale_masks=False, augment=False, with_file_names=False, binary=False, mean=None,
                      std=None):
     image_dir = os.path.join(datadir, "examples")
     label_dir = os.path.join(datadir, "labels")
@@ -76,7 +76,7 @@ def create_generator(datadir, input_size, batch_size, nb_classes, rescale=False,
         raise ValueError('You need to provide mean and std to the generator')
 
     # Set up the generators
-    image_datagen, label_datagen = set_up_generators(rescale)
+    image_datagen, label_datagen = set_up_generators(rescale_masks)
 
     image_datagen.mean = mean
     image_datagen.std = std

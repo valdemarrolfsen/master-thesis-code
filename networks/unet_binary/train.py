@@ -15,9 +15,9 @@ tf.set_random_seed(2)
 def train_unet_binary(network, data_dir, logdir, weights_dir, weights_name, input_size, batch_size, initial_epoch):
     model = get_network(network, input_size)
     train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, 1,
-                                                    rescale=False, binary=True)
+                                                    rescale_masks=False, binary=True)
     val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, 1,
-                                                  rescale=False, binary=True)
+                                                  rescale_masks=False, binary=True)
 
     model.fit_generator(
         generator=train_generator,

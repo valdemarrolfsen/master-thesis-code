@@ -19,7 +19,7 @@ def run():
         input_size,
         batch_size,
         1,
-        rescale=False,
+        rescale_masks=False,
         binary=True
     )
 

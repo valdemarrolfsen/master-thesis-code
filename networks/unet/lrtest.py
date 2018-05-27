@@ -41,7 +41,7 @@ def lrtest_unet(data_dir, logdir, weights_dir, weights_name, input_size, nb_clas
         loss=loss,
         metrics=['acc', binary_jaccard_distance_rounded])
 
-    train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes, rescale=False, binary=binary,
+    train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes, rescale_masks=False, binary=binary,
                                                     augment=augment)
 
     steps_per_epoch = num_samples // batch_size

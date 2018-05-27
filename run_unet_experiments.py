@@ -72,10 +72,10 @@ def run():
     binary = True
     session_config()
 
-    train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes=1, rescale=False,
+    train_generator, num_samples = create_generator(os.path.join(data_dir, 'train'), input_size, batch_size, nb_classes=1, rescale_masks=False,
                                                     binary=binary,
                                                     augment=False)
-    val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, nb_classes=1, rescale=False,
+    val_generator, val_samples = create_generator(os.path.join(data_dir, 'val'), input_size, batch_size, nb_classes=1, rescale_masks=False,
                                                   binary=binary,
                                                   augment=False)
 

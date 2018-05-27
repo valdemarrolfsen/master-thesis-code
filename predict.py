@@ -49,7 +49,7 @@ def run(args):
         (input_size, input_size),
         batch_size,
         nb_classes=n_classes,
-        rescale=True,
+        rescale_masks=False,
         with_file_names=True,
         binary=binary,
         augment=False,
