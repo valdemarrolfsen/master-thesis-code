@@ -77,7 +77,7 @@ def boolean_f1(y_true, y_pred):
     print(c1)
     print(c2)
     print(c3)
-    precision = c1 + smooth / c2 + smooth
+    precision = c1 / c2 + smooth
     recall = c1 / c3
     return 2 * (precision * recall) / (precision + recall)
 
