@@ -25,14 +25,19 @@ def general_jaccard(y_true, y_pred):
     return np.mean(result)
 
 
-def classwise_general_jaccard(y_true, y_pred):
+def classwise_general_jaccard(y_true, y_pred, nb_classes=1):
     result = []
-
     if y_true.sum() == 0:
         if y_pred.sum() == 0:
-            return 1
+            if nb_classes > 1:
+                return [1]*nb_classes
+            else:
+                return 1
         else:
-            return 0
+            if nb_classes > 1:
+                return [0]*nb_classes
+            else:
+                return 0
 
     for cls in set(y_true.flatten()):
         if cls == 0:
@@ -48,10 +53,10 @@ def batch_general_jaccard(y_true, y_pred):
     return batch_result
 
 
-def batch_classwise_general_jaccard(y_true, y_pred):
+def batch_classwise_general_jaccard(y_true, y_pred, nb_classes=1):
     batch_result = []
     for true, pred in zip(y_true, y_pred):
-        batch_result.append(classwise_general_jaccard(true, pred))
+        batch_result.append(classwise_general_jaccard(true, pred, nb_classes))
     return np.mean(batch_result, axis=0)
 
 
