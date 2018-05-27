@@ -63,12 +63,15 @@ def run():
     parser.add_argument("--output-path", type=str, default="")
     parser.add_argument("--input-size", type=int, default=713)
     parser.add_argument("--model-name", type=str, default="")
+    parser.add_argument("--name", type=str, default="")
 
     args = parser.parse_args()
     model_name = args.model_name
     image_path = args.test_image
     input_size = args.input_size
     output_path = args.output_path
+    file_name = args.name
+
     nb_classes = 5
     model_choices = {
         'unet': build_unet,
@@ -117,7 +120,7 @@ def run():
         pred_color[:, :, 1] += ((pred[:, :] == c) * (class_color_map[c][1])).astype('uint8')
         pred_color[:, :, 2] += ((pred[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
-    out_path = os.path.join(output_path, 'test.tif')
+    out_path = os.path.join(output_path, file_name)
     print(cv2.imwrite(out_path, pred_color))
 
     cheap = cheap_tiling_prediction(image, window_size=input_size, nb_classes=nb_classes, pred_func=(
@@ -134,7 +137,7 @@ def run():
         cheap_color[:, :, 1] += ((cheap[:, :] == c) * (class_color_map[c][1])).astype('uint8')
         cheap_color[:, :, 2] += ((cheap[:, :] == c) * (class_color_map[c][0])).astype('uint8')
 
-    out_path = os.path.join(output_path, 'test-cheap.tif')
+    out_path = os.path.join(output_path, 'cheap-{}'.format(file_name))
     print(cv2.imwrite(out_path, cheap_color))
 
 
