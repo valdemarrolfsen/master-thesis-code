@@ -72,7 +72,7 @@ def run():
     input_size = args.input_size
     output_path = args.output_path
     file_name = args.name
-    mask = args.mask
+    mask_path = args.mask
 
     nb_classes = 5
     model_choices = {
@@ -109,9 +109,9 @@ def run():
     pred = np.argmax(pred, axis=2)
     pred_color = np.zeros((image.shape[0], image.shape[1], 3))
 
-    if mask:
-        mask = cv2.imread(mask, 0)
-        mask.reshape(1, mask.shape[0], mask.shape[1])
+    if mask_path:
+        mask = cv2.imread(mask_path, 0)
+        mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
         p = np.reshape(pred, (1, pred.shape[0], pred.shape[1]))
         print('mIOU:', batch_general_jaccard(mask, p))
         print('F1:', f1_score(mask, p))
@@ -141,7 +141,9 @@ def run():
     cheap = np.argmax(cheap, axis=2)
     cheap_color = np.zeros((image.shape[0], image.shape[1], 3))
 
-    if mask:
+    if mask_path:
+        mask = cv2.imread(mask_path, 0)
+        mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
         p = np.reshape(cheap, (1, cheap.shape[0], cheap.shape[1]))
         print('mIOU:', batch_general_jaccard(mask, p))
         print('F1:', f1_score(mask, p))
