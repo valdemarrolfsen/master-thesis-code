@@ -202,23 +202,23 @@ def _windowed_dense_subdivs(padded_img, window_size, subdivisions, nb_classes, p
             patch = padded_img[i:i + window_size, j:j + window_size, :]
             subdivs[-1].append(patch)
 
-    # Here, `gc.collect()` clears RAM between operations.
-    # It should run faster if they are removed, if enough memory is available.
-    gc.collect()
-    subdivs = np.array(subdivs)
-    gc.collect()
-    a, b, c, d, e = subdivs.shape
-    subdivs = subdivs.reshape(a * b, c, d, e)
-    gc.collect()
-
     temp_divs = []
     for div in subdivs:
         im = Image.fromarray(div.astype(np.uint8))
         im = im.resize((320, 320))
         im = np.array(im)
         temp_divs.append(im)
+    # Here, `gc.collect()` clears RAM between operations.
+    # It should run faster if they are removed, if enough memory is available.
+    gc.collect()
 
-    subdivs = pred_func(np.array(temp_divs))
+    subdivs = np.array(temp_divs)
+    gc.collect()
+    a, b, c, d, e = subdivs.shape
+    subdivs = subdivs.reshape(a * b, c, d, e)
+    gc.collect()
+
+    subdivs = pred_func(subdivs)
     temp_divs = None
 
     out_divs = []
@@ -229,7 +229,7 @@ def _windowed_dense_subdivs(padded_img, window_size, subdivisions, nb_classes, p
         p = p.reshape((p.shape[0], p.shape[1], 1))
         out_divs.append(p)
 
-    subdivs = out_divs
+    subdivs = np.array(out_divs)
     out_divs = None
     gc.collect()
     subdivs = np.array([patch * WINDOW_SPLINE_2D for patch in subdivs])
@@ -346,7 +346,6 @@ def cheap_densenet_tiling_prediction(img, window_size, nb_classes, pred_func):
     print(img.shape, tmp.shape, prd.shape)
     for i in tqdm(range(0, prd.shape[0], window_size)):
         for j in range(0, prd.shape[1], window_size):
-
             im = img[i:i + window_size, j:j + window_size]
             im = Image.fromarray(im.astype(np.uint8))
             im = im.resize((320, 320))
