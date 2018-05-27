@@ -48,6 +48,13 @@ def batch_general_jaccard(y_true, y_pred):
     return batch_result
 
 
+def batch_classwise_general_jaccard(y_true, y_pred):
+    batch_result = []
+    for true, pred in zip(y_true, y_pred):
+        batch_result.append(general_jaccard(true, pred))
+    return np.mean(batch_result, axis=0)
+
+
 def f1_score(y_true, y_pred):
     """https://stackoverflow.com/questions/45411902/how-to-use-f1-score-with-keras-model"""
     c1 = np.sum(np.round(np.clip(y_true * y_pred, 0, 1)))
