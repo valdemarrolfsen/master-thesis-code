@@ -1,5 +1,6 @@
 import numpy as np
 from keras import backend as K
+from sklearn.metrics import f1_score
 
 
 def boolean_jaccard(y_true, y_pred):
@@ -101,7 +102,7 @@ def classwise_f1_score(y_true, y_pred):
     for cls in set(y_true.flatten()):
         if cls == 0:
             continue
-        result += [boolean_f1(y_true == cls, y_pred == cls)]
+        result += [f1_score(y_true == cls, y_pred == cls)]
     return result
 
 
