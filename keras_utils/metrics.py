@@ -30,12 +30,12 @@ def classwise_general_jaccard(y_true, y_pred, nb_classes=1):
     if y_true.sum() == 0:
         if y_pred.sum() == 0:
             if nb_classes > 1:
-                return [1]*nb_classes
+                return [1]*(nb_classes-1)
             else:
                 return 1
         else:
             if nb_classes > 1:
-                return [0]*nb_classes
+                return [0]*(nb_classes-1)
             else:
                 return 0
 
