@@ -153,7 +153,9 @@ def run():
     cheap = np.array(cheap)
 
     if mask_path:
-        mask = cv2.imread(mask_path, 0)
+        mask = Image.open(mask_path).convert('L')
+        mask = mask.resize((cheap.shape[0], cheap.shape[0]))
+        mask = np.array(mask)
         mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
         p = np.reshape(cheap, (1, cheap.shape[0], cheap.shape[1]))
         print('mIOU:', batch_general_jaccard(mask, p))
