@@ -115,11 +115,11 @@ def run():
         )
     )
     pred = np.argmax(pred, axis=2)
-    pred_color = np.zeros((size, size, 3))
+    pred_color = np.zeros((pred.shape[0], pred.shape[0], 3))
 
-    pred = Image.fromarray(pred, 'L')
-    pred = pred.resize((size, size))
-    pred = np.array(pred)
+    # pred = Image.fromarray(pred, 'L')
+    # pred = pred.resize((size, size))
+    # pred = np.array(pred)
 
     print("Prediction shape {}".format(pred.shape))
 
