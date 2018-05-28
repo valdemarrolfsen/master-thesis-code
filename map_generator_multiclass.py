@@ -118,6 +118,7 @@ def run():
     if mask_path:
         mask = Image.open(mask_path).convert('L')
         mask = mask.resize((pred.shape[0], pred.shape[0]))
+        mask = np.array(mask)
         mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
         p = np.reshape(pred, (1, pred.shape[0], pred.shape[1]))
         print('mIOU:', batch_general_jaccard(mask, p))
