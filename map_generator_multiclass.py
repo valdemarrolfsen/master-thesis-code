@@ -112,7 +112,7 @@ def run():
         )
     )
     pred = np.argmax(pred, axis=2)
-    pred_color = np.zeros((image.shape[0], image.shape[1], 3))
+    pred_color = np.zeros((size, size, 3))
 
     pred = Image.fromarray(pred, 'L')
     pred = pred.resize((size, size))
@@ -148,7 +148,7 @@ def run():
     ))
 
     cheap = np.argmax(cheap, axis=2)
-    cheap_color = np.zeros((image.shape[0], image.shape[1], 3))
+    cheap_color = np.zeros((size, size, 3))
     cheap = Image.fromarray(cheap, 'L')
     cheap = cheap.resize((size, size))
     cheap = np.array(cheap)
