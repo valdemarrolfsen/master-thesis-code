@@ -117,15 +117,12 @@ def run():
     pred = np.argmax(pred, axis=2)
     pred_color = np.zeros((pred.shape[0], pred.shape[0], 3))
 
-    # pred = Image.fromarray(pred, 'L')
-    # pred = pred.resize((size, size))
-    # pred = np.array(pred)
-
     print("Prediction shape {}".format(pred.shape))
 
     if mask_path:
         mask = cv2.imread(mask_path, 0)
         mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
+        mask = mask.resize((pred.shape[0], pred.shape[0]))
         p = np.reshape(pred, (1, pred.shape[0], pred.shape[1]))
         print('mIOU:', batch_general_jaccard(mask, p))
         print('F1:', batch_classwise_f1_score(mask, p))
