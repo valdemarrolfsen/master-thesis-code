@@ -100,6 +100,9 @@ def run():
     factor = input_size / 512
     image = image.resize((int(size*factor), int(size*factor)))
     image = np.array(image)
+
+    print("Image shape {}".format(image.shape))
+
     pred = predict_img_with_smooth_windowing(
         image,
         window_size=input_size,
@@ -117,6 +120,8 @@ def run():
     pred = Image.fromarray(pred, 'L')
     pred = pred.resize((size, size))
     pred = np.array(pred)
+
+    print("Prediction shape {}".format(pred.shape))
 
     if mask_path:
         mask = cv2.imread(mask_path, 0)
