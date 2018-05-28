@@ -147,10 +147,7 @@ def run():
     ))
 
     cheap = np.argmax(cheap, axis=2)
-    cheap_color = np.zeros((size, size, 3))
-    cheap = Image.fromarray(cheap, 'L')
-    cheap = cheap.resize((size, size))
-    cheap = np.array(cheap)
+    cheap_color = np.zeros((cheap.shape[0], cheap.shape[1], 3))
 
     if mask_path:
         mask = Image.open(mask_path).convert('L')
