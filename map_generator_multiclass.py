@@ -101,8 +101,6 @@ def run():
     image = image.resize((int(size*factor), int(size*factor)))
     image = np.array(image)
 
-    print("Image shape {}".format(image.shape))
-
     pred = predict_img_with_smooth_windowing(
         image,
         window_size=input_size,
@@ -117,12 +115,10 @@ def run():
     pred = np.argmax(pred, axis=2)
     pred_color = np.zeros((pred.shape[0], pred.shape[0], 3))
 
-    print("Prediction shape {}".format(pred.shape))
-
     if mask_path:
-        mask = cv2.imread(mask_path, 0)
-        mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
+        mask = Image.open(mask_path, 'L')
         mask = mask.resize((pred.shape[0], pred.shape[0]))
+        mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
         p = np.reshape(pred, (1, pred.shape[0], pred.shape[1]))
         print('mIOU:', batch_general_jaccard(mask, p))
         print('F1:', batch_classwise_f1_score(mask, p))
