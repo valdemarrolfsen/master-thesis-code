@@ -95,7 +95,11 @@ def run():
     model.load_weights(args.weights_path)
     generator = get_generator()
     # load the image
-    image = np.array(Image.open(image_path))
+    image = Image.open(image_path)
+    size = image.size[0]
+    factor = input_size / 512
+    image = image.resize((int(size*factor), int(size*factor)))
+    image = np.array(image)
     pred = predict_img_with_smooth_windowing(
         image,
         window_size=input_size,
@@ -110,11 +114,15 @@ def run():
     pred = np.argmax(pred, axis=2)
     pred_color = np.zeros((image.shape[0], image.shape[1], 3))
 
+    pred = Image.fromarray(pred, 'L')
+    pred = pred.resize((size, size))
+    pred = np.array(pred)
+
     if mask_path:
         mask = cv2.imread(mask_path, 0)
         mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
         p = np.reshape(pred, (1, pred.shape[0], pred.shape[1]))
-        print('mIOU:', batch_classwise_general_jaccard(mask, p))
+        print('mIOU:', batch_general_jaccard(mask, p))
         print('F1:', batch_classwise_f1_score(mask, p))
 
     class_color_map = {
@@ -141,12 +149,15 @@ def run():
 
     cheap = np.argmax(cheap, axis=2)
     cheap_color = np.zeros((image.shape[0], image.shape[1], 3))
+    cheap = Image.fromarray(cheap, 'L')
+    cheap = cheap.resize((size, size))
+    cheap = np.array(cheap)
 
     if mask_path:
         mask = cv2.imread(mask_path, 0)
         mask = np.reshape(mask, (1, mask.shape[0], mask.shape[1]))
         p = np.reshape(cheap, (1, cheap.shape[0], cheap.shape[1]))
-        print('mIOU:', batch_classwise_general_jaccard(mask, p))
+        print('mIOU:', batch_general_jaccard(mask, p))
         print('F1:', batch_classwise_f1_score(mask, p))
 
     for c in range(nb_classes):

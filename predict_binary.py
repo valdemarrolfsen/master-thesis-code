@@ -58,7 +58,7 @@ def run():
     images, masks, file_names = next(generator)
     probs = model.predict(images, verbose=1)
     probs = np.round(probs)
-    iou = batch_classwise_general_jaccard(masks, probs)
+    iou = batch_general_jaccard(masks, probs)
     f1 = batch_classwise_f1_score(masks, probs)
     print('mean IOU: {}'.format(iou))
     print('F1 score: {}'.format(f1))
