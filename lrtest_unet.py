@@ -1,7 +1,6 @@
 import argparse
 
 from networks.unet.lrtest import lrtest_unet
-from networks.unet.train import train_unet
 
 
 def define_args():
