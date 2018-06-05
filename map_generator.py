@@ -1,15 +1,16 @@
-import os
 import argparse
+
 import cv2
 import numpy as np
+import os
+from PIL import Image
 from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
-from PIL import Image
+
 from keras_utils.losses import binary_soft_jaccard_loss
 from keras_utils.metrics import binary_jaccard_distance_rounded
 from keras_utils.multigpu import get_number_of_gpus, ModelMGPU
-from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction, overlapping_predictions, \
-    cheap_densenet_tiling_prediction
+from keras_utils.smooth_tiled_predictions import predict_img_with_smooth_windowing, cheap_tiling_prediction
 from networks.densenet.densenet import build_densenet
 from networks.unet.unet import build_unet
 
